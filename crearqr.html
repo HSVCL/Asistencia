@@ -1,1 +1,886 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistencia QR | Hermandad de la S.V. del Carmen de Lima</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Georgia:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+<style>
+    /* ========================================================== */
+    /* Estilos CSS Base y Variables */
+    /* ========================================================== */
 
+    :root {
+        --color-primario-fondo: #FFF8E1; 
+        --color-secundario-fondo: #FEFBEA; 
+        --color-acento-base: #A0522D; 
+        --color-acento-oscuro: #5D4037; 
+        --color-texto-oscuro: #3E2723; 
+        --color-exito: #4CAF50; 
+        
+        --sombra-elegante: 0 10px 20px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);
+        --degradado-acento: linear-gradient(135deg, var(--color-acento-base) 0%, var(--color-acento-oscuro) 100%); 
+        --degradado-fondo-pagina: linear-gradient(180deg, #FAF0E6 0%, #FFFDE7 100%);
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 0;
+        background: var(--degradado-fondo-pagina);
+        color: var(--color-texto-oscuro);
+        line-height: 1.6;
+        min-height: 10vh;
+    }
+    
+    /* Preloader */
+    #preloader {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background-color: var(--color-primario-fondo); z-index: 9999; 
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
+        opacity: 1; visibility: visible; transition: opacity 1s ease-out, visibility 1s ease-out; 
+    }
+    #preloader.hidden { opacity: 0; visibility: hidden; }
+    .loader {
+        width: 60px; height: 60px; border: 6px solid var(--color-secundario-fondo);
+        border-top: 6px solid var(--color-acento-base); border-radius: 50%; 
+        animation: spin 1.2s linear infinite; margin-bottom: 20px; 
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    
+    /* Contenedor Principal */
+    .contenedor {
+        width: 95%; max-width: 900px; margin: 30px auto; 
+        background: linear-gradient(to right, #FFF8E1 0%, #FEFBEA 100%);
+        box-shadow: var(--sombra-elegante); border-radius: 20px; padding: 30px 20px;
+        opacity: 0; transform: translateY(20px);
+        transition: opacity 1s ease-in-out 1s, transform 1s ease-in-out 1s; 
+    }
+    .contenedor.visible { opacity: 1; transform: translateY(0); }
+    
+    /* ---------------------------------------------------------- */
+    /* ENCABEZADO - AJUSTE PARA UN SOLO LOGO (CENTRAL) */
+    /* ---------------------------------------------------------- */
+    .main-header { 
+        text-align: center; 
+        padding-bottom: 20px; 
+        border-bottom: 3px double var(--color-acento-base); 
+        margin-bottom: 20px; 
+    }
+
+    .header-logo-container { 
+        display: flex; 
+        flex-direction: column; /* Centrar verticalmente */
+        justify-content: center; 
+        align-items: center; 
+        margin-bottom: 10px; 
+    }
+
+    /* Contenedor del Único Logo (Hermandad) */
+    .logo-header { 
+        width: 90px; /* Tamaño del logo */
+        height: 90px; 
+        margin: 0 auto 10px auto; /* Centrar y darle margen inferior */
+    }
+
+    .logo-header img { 
+        max-width: 100%; 
+        max-height: 100%; 
+        object-fit: contain; 
+    }
+
+    .header-texto { 
+        /* En modo de un solo logo, el texto ocupa todo el ancho */
+        max-width: 100%; 
+    }
+    .header-texto h1 { 
+        color: var(--color-acento-oscuro); 
+        font-family: 'Georgia', serif; 
+        font-size: 1.6em; /* Aumentado */
+        margin-bottom: 3px; 
+        text-transform: uppercase; 
+        line-height: 1.2;
+    }
+    .header-texto h2 { 
+        font-size: 1em; 
+        margin: 0; 
+        color: var(--color-acento-base); 
+        font-weight: 500; 
+    }
+    
+    /* Botón Principal */
+    .btn-main {
+        background: var(--degradado-acento); color: white; padding: 15px 35px; text-decoration: none;
+        border-radius: 50px; font-size: 1.1em; font-weight: 700; letter-spacing: 1px;
+        transition: all 0.3s ease; border: none; display: inline-block; 
+        text-transform: uppercase; cursor: pointer; 
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    /* Estilo del botón de búsqueda */
+    #step2 .btn-main {
+        animation: none;
+    }
+
+    .btn-main:hover {
+        background: linear-gradient(135deg, var(--color-acento-oscuro) 0%, var(--color-acento-base) 100%);
+        transform: translateY(-2px) scale(1.01);
+    }
+    .btn-main:disabled {
+        background: #CCC;
+        cursor: not-allowed;
+        animation: none;
+        box-shadow: none;
+    }
+    
+    /* ---------------------------------------------------------- */
+    /* ESTILOS DE FASES Y TRANSICIÓN */
+    /* ---------------------------------------------------------- */
+    
+    #stepContainer {
+        position: relative;
+        overflow: hidden; 
+        min-height: 380px; 
+        padding: 0;
+    }
+
+    .step-content {
+        position: absolute;
+        width: 100%;
+        top: 0;
+        left: 0;
+        padding: 20px; 
+        opacity: 0;
+        visibility: hidden; 
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out, visibility 0.5s;
+        box-sizing: border-box;
+        text-align: center;
+        background-color: var(--color-secundario-fondo);
+        border-radius: 12px;
+        border: 1px solid #E0E0E0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        min-height: 380px; 
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Fase Visible (Clase 'active') */
+    .step-content.active {
+        position: relative; 
+        opacity: 1;
+        visibility: visible; 
+        transform: translateX(0);
+        margin: 0;
+    }
+    
+    .step-icon {
+        font-size: 4em;
+        color: var(--color-acento-base);
+        margin-bottom: 20px;
+    }
+    .step-icon.success { color: var(--color-exito); }
+
+    /* Estilos del Formulario (Paso 2) */
+    .input-group {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 90%; 
+        max-width: 350px;
+    }
+    .input-group label {
+        align-self: flex-start;
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: var(--color-acento-oscuro);
+    }
+    .input-group input {
+        width: 100%;
+        padding: 12px;
+        font-size: 1.1em;
+        border: 2px solid #DDD;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Estilo del QR en Pantalla (Paso 3) */
+    #qr-placeholder {
+        margin: 20px auto; 
+        border: 4px solid var(--color-acento-base); 
+        border-radius: 8px; 
+        padding: 10px;
+        max-width: 180px; 
+    }
+    #qr-placeholder img {
+        width: 150px; 
+        height: 150px;
+    }
+
+
+    /* Estilos de Botones Secundarios */
+    .btn-secondary {
+        background-color: #999;
+        color: white;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 50px;
+        font-size: 1em;
+        margin-left: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    .btn-secondary:hover {
+        background-color: #777;
+    }
+
+    /* ---------------------------------------------------------- */
+    /* FORMATO PDF (Oculto) */
+    /* ---------------------------------------------------------- */
+    #qrCardFormat {
+        width: 500px; 
+        padding: 30px; 
+        box-sizing: border-box;
+        border: 4px solid var(--color-acento-oscuro); 
+        border-radius: 20px; 
+        background-color: white;
+        text-align: center;
+        position: absolute; 
+        left: -9999px;
+        font-family: 'Poppins', sans-serif; 
+    }
+    .card-logo {
+        width: 80px; 
+        height: 80px;
+        margin-bottom: 8px;
+    }
+    /* Resto de estilos PDF se mantiene igual para calidad de impresión */
+
+
+    /* ---------------------------------------------------------- */
+    /* Responsive Design (Menos de 600px) */
+    /* ---------------------------------------------------------- */
+    @media (max-width: 600px) {
+        .contenedor { padding: 20px 10px; }
+        
+        /* En móvil, el logo ya está en una línea diferente (encima del texto) */
+        .logo-header {
+            width: 70px; /* Reducción de tamaño en móvil */
+            height: 70px;
+            margin-bottom: 8px;
+        }
+
+        .header-texto h1 { font-size: 1.3em; line-height: 1.1; }
+        .header-texto h2 { font-size: 0.9em; }
+
+        .step-icon { font-size: 3em; }
+        .step-content { min-height: 300px; padding: 10px; }
+        .btn-main { padding: 10px 20px; font-size: 0.9em; }
+        .btn-secondary { padding: 8px 15px; font-size: 0.8em; margin-left: 5px; }
+        .input-group { max-width: 90%; }
+        
+        #hermano-info h4 { font-size: 1.1em; }
+        #verifiedGroupName { font-size: 0.9em; }
+    }
+</style>
+</head>
+<body>
+    
+    <div id="preloader">
+        <div class="loader"></div>
+        <div class="loader-text">Preparando el Sistema de Asistencia...</div>
+    </div>
+
+    <div class="contenedor" id="mainContainer">
+        <div class="main-header">
+            <div class="header-logo-container">
+                
+                <div class="logo-header">
+                    <img src="https://edwinhsvcl14-maker.github.io/asistencias/logo_hermandad.png" alt="Logo de la Hermandad">
+                </div>
+                
+                <div class="header-texto">
+                   
+                    <h1>SISTEMA DE ASISTENCIA AUTOMÁTICA</h1>
+                    <h2 id="headerGroupName">Hermandad de la Santísima Virgen del Carmen de Lima11</h2> 
+                    <h2 id="headerGroupName">Generación de Código QR</h2> 
+
+                </div>
+                
+                </div>
+        </div>
+
+        <div id="stepContainer">
+            
+            <div id="step1" class="step-content active">
+                <i class="fas fa-qrcode step-icon"></i>
+                <h3 style="color: var(--color-acento-oscuro);">¡Bienvenidos al Futuro de la Asistencia!</h3>
+                <p style="max-width: 600px; font-size: 1.05em; color: var(--color-texto-oscuro); text-align: center;">
+                    Este sistema permite generar su **Código QR personal** para registrar su asistencia de manera eficiente y transparente.
+                </p>
+                <p style="max-width: 600px; font-size: 0.95em; font-style: italic;">
+                    Haga clic para iniciar el proceso de verificación y descarga.
+                </p>
+                <button class="btn-main" onclick="nextStep(2)">Comenzar Proceso <i class="fas fa-arrow-right"></i></button>
+            </div>
+            
+            <div id="step2" class="step-content">
+                <i class="fas fa-id-card step-icon"></i>
+                <h3 style="color: var(--color-acento-oscuro);">Paso 1: Verificación de Hermano(a)</h3>
+                <p>Por favor, ingrese su **Número de DNI** para verificar su registro.</p>
+                
+                <div class="input-group">
+                    <label for="dniInput">Número de DNI (8 dígitos)</label>
+                    <input type="text" id="dniInput" maxlength="8" placeholder="Ej: 12345678">
+                </div>
+                
+                <div id="error-message" style="display: none;"></div>
+                
+                <button class="btn-main" style="margin-top: 30px;" onclick="verifyDNI()">
+                    <i class="fas fa-search"></i> Buscar Hermano(a)
+                </button>
+            </div>
+            
+            <div id="step3" class="step-content">
+                <i class="fas fa-check-circle step-icon success" id="statusIcon"></i>
+                <h3 style="color: var(--color-exito);">¡Hermano(a) Verificado con Éxito!</h3>
+                
+                <div id="hermano-info">
+                    <p style="font-size: 1.2em; font-weight: 600;">Bienvenido(a):</p>
+                    <h4 id="hermanoNombre"></h4>
+                    <p id="verifiedGroupName" style="font-style: italic; color: var(--color-acento-base);"></p> 
+                    <p>Su Código QR personal está listo para ser generado y descargado en formato **PDF**.</p>
+                </div>
+                
+                <div id="qr-placeholder">
+                    <img src="https://placehold.co/150x150/A0522D/FFF8E1?text=QR+LISTO" alt="Código QR Personal" id="qrImage">
+                </div>
+
+                <div style="display: flex; margin-top: 15px;">
+                    <button class="btn-main" onclick="downloadPDF()">
+                        <i class="fas fa-file-pdf"></i> Descargar Tarjeta QR (PDF)
+                    </button>
+                    <button class="btn-secondary" onclick="nextStep(1)">
+                        <i class="fas fa-redo"></i> Volver a Empezar
+                    </button>
+                </div>
+            </div>
+
+        </div>
+        <div id="qrCardFormat">
+            <div class="card-header">
+                <img src="https://edwinhsvcl14-maker.github.io/asistencias/logo_hermandad.png" alt="Logo Hermandad" class="card-logo"> 
+                <h4>Hermandad de la Santísima Virgen del Carmen de Lima</h4>
+                <p style="font-size: 0.8em; color: var(--color-acento-base); font-weight: 600;">Código de Asistencia Personal e Intransferible</p>
+            </div>
+            
+            <div class="card-info">
+                <p>Hermano(a):</p>
+                <h5 id="pdfHermanoNombre"></h5>
+                <p id="pdfGroupName"></p> 
+            </div>
+            
+            <img src="" alt="Logo de la Cuadrilla/Grupo" class="card-logo" id="pdfHermandadLogo"> 
+
+            <div class="card-qr-container">
+                <img src="" alt="Código QR para PDF" id="pdfQrImage">
+            </div>
+
+            <p>Presente este documento para registrar su asistencia.</p>
+        </div>
+        <div class="pie-pagina">
+            <p style="font-size: 0.85em; color: var(--color-acento-oscuro);">Desarrollado para la HSVCL</p>
+        </div>
+    </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+    const { jsPDF } = window.jspdf;
+
+    // ==========================================================
+    // Datos de Prueba (Simulación de Base de Datos de Hermanos)
+    // ==========================================================
+    const BROTHER_DATABASE = {
+    // Formato: DNI: { name: 'Nombre', group_id: 'ID_Grupo' }
+    // === EJEMPLOS EXISTENTES ===
+    '46094780': { name: 'Juan Pérez López', group_id: 16 }, // Cuadrilla 16
+    '87654321': { name: 'María Fernanda García', group_id: 'GS' }, // Grupo Sahumadoras
+    '11223344': { name: 'Luis Alberto Suarez Sandoval', group_id: 10 }, // Cuadrilla 10
+    '99887766': { name: 'Ricardo Gómez Salas', group_id: 'GC' }, // Grupo Cantoras
+    '44556677': { name: 'Elena Ramírez Ruiz', group_id: 13 }, // Cuadrilla 13
+    
+    // === GRUPO DE SAHUMADORAS (GS) - (Lista anterior) ===
+    '06698109': { name: 'ALCALA BARREDA MARIA DEL CARMEN', group_id: 'GS' },
+    '46294216': { name: 'ALVINES DAVILA CYNTHIA KATHERIN', group_id: 'GS' },
+    '07034104': { name: 'ARBIETO OSORIO ELSA', group_id: 'GS' },
+    '73351596': { name: 'AVALOS HUAPAYA NOELIA DEL PILAR', group_id: 'GS' },
+    '06226397': { name: 'BARRANTES ALVARADO MARIA BRIGIDA', group_id: 'GS' },
+    '43134345': { name: 'BORDA BARRIONUEVO PAOLA SARA', group_id: 'GS' },
+    '06743668': { name: 'CABANILLAS GUERRA LUISA AURORA', group_id: 'GS' },
+    '06061365': { name: 'CABANILLAS MUCHA ROXANA MARTHA', group_id: 'GS' },
+    '07373988': { name: 'CACERES ROSARIO SONIA MARLENE', group_id: 'GS' },
+    '10437677': { name: 'CARBAJAL PAREDES VDA. DE REYNA MARIA ELIZABETH', group_id: 'GS' },
+    '06379872': { name: 'CARBONEL CANDELA ROSA OFELIA', group_id: 'GS' },
+    '09432592': { name: 'CARDENAS BEDOYA ROSARIO', group_id: 'GS' },
+    '71627610': { name: 'CARDOZA GUZMAN MONICA CAROLINA', group_id: 'GS' },
+    '08968774': { name: 'CESPEDES GARCIA YSABEL', group_id: 'GS' },
+    '07511088': { name: 'CHIRINOS RAMIREZ VERONICA VIRGINIA', group_id: 'GS' },
+    '07510023': { name: 'CHUQUISANA HURTADO TATIANA', group_id: 'GS' },
+    '06777948': { name: 'CONTRERAS ARANA MARIA FELISITA', group_id: 'GS' },
+    '06168820': { name: 'COX MESIAS MARIA ISABEL', group_id: 'GS' },
+    '73601188': { name: 'CUCHURI RIVAS DE MARTINEZ MARIA GABRIELA', group_id: 'GS' },
+    '70643313': { name: 'CUEVA ALVAREZ, KIMBERLY NAYELI', group_id: 'GS' },
+    '25716586': { name: 'DE LA HAZA ALEGRE WENDY MILAGROS', group_id: 'GS' },
+    '07216627': { name: 'DIAZ GASTULO MARIA ISABEL', group_id: 'GS' },
+    '06213183': { name: 'DIETZ CALDERON MERCEDES', group_id: 'GS' },
+    '75525736': { name: 'ECHEGARAY QUIÑONEZ LUISA YESENIA', group_id: 'GS' },
+    '10801764': { name: 'ENCARNACION CRESPIN CLAVERINA', group_id: 'GS' },
+    '42728615': { name: 'ESPINOZA CAMPOS MERCEDES', group_id: 'GS' },
+    '09326221': { name: 'FERNANDEZ CASANOVA LILIANA PATRICIA', group_id: 'GS' },
+    '71947974': { name: 'GARCIA SOLIS LOURDES ESTEFANY', group_id: 'GS' },
+    '75372427': { name: 'GARCIA VILLAFUERTE KIMBERLY ALESSANDRA', group_id: 'GS' },
+    '07482590': { name: 'GAVILAN CHAVEZ MARIA ANTONIETA', group_id: 'GS' },
+    '09937100': { name: 'GIL ZANABRIA GISELL EVELING', group_id: 'GS' },
+    '71834133': { name: 'GOMEZ HERRERA DEYANEIRA', group_id: 'GS' },
+    '72536307': { name: 'GUERRERO MANCILLA SAMANTHA MARGOT', group_id: 'GS' },
+    '08430372': { name: 'GUERRERO TERREROS MARIA DEL CARMEN', group_id: 'GS' },
+    '18130932': { name: 'GUTIERREZ VARGAS CARMEN ROSA', group_id: 'GS' },
+    '72213811': { name: 'GUZMAN VILLAVICENCIO ERIKA YOLANDA', group_id: 'GS' },
+    '10816624': { name: 'HERRERA VALENZUELA SHIRLEY PAMELA', group_id: 'GS' },
+    '06961360': { name: 'HUAMAN SANCHEZ ROSA', group_id: 'GS' },
+    '70918230': { name: 'JARA ESTRELLA LEONELA GUADALUPE', group_id: 'GS' },
+    '06679246': { name: 'JOYA ABURTO MARINA SOLEDAD', group_id: 'GS' },
+    '73111286': { name: 'KAM ROCA CARMEN PATRICIA', group_id: 'GS' },
+    '46335705': { name: 'LAU OLAYA JENNY KARINA', group_id: 'GS' },
+    '44229972': { name: 'LAZO VIVAR JACKELINE BRIGETTE', group_id: 'GS' },
+    '07365675': { name: 'LOPEZ ALVAREZ MARTHA ROSAURA', group_id: 'GS' },
+    '08112768': { name: 'MATALLANA OTINIANO LEONOR', group_id: 'GS' },
+    '41549846': { name: 'MEDINA GAMARRA YULIANA ANGELICA', group_id: 'GS' },
+    '40646634': { name: 'MELO AZANERO LILY SANDRA GUILIANA', group_id: 'GS' },
+    '09930194': { name: 'MENDOZA DIAZ MARY ANN', group_id: 'GS' },
+    '06031114': { name: 'MIRANDA HUAMAN LOURDES ANTONIA', group_id: 'GS' },
+    '09357764': { name: 'MONTEVERDE SOLIS CARMEN ROSA YANINA', group_id: 'GS' },
+    '47039594': { name: 'MORALES ELGUERA KIARA YESA BELLA', group_id: 'GS' },
+    '09684158': { name: 'MORENO SIRIO YENI DEL CARMEN', group_id: 'GS' },
+    '07079483': { name: 'MORI HUAMAN VDA. DE CHACALTANA LUPE', group_id: 'GS' },
+    '73136899': { name: 'OJEDA CARRILLO MARIA ALEJANDRA', group_id: 'GS' },
+    '06234691': { name: 'OLIVARES CACEDA JUANA ROSA', group_id: 'GS' },
+    '06160813': { name: 'OLIVARES ORELLANA CECILIA', group_id: 'GS' },
+    '44342889': { name: 'ORMEÑO VALENZUELA LESNY ANAMILE', group_id: 'GS' },
+    '47374565': { name: 'OROYA ARISTA MARYORIE MERCEDES', group_id: 'GS' },
+    '06090457': { name: 'PAIVA MUCHA VDA DE PALACIOS TERESA MARGARITA', group_id: 'GS' },
+    '44160029': { name: 'PALOMINO TORRES MANUELA LUCILA', group_id: 'GS' },
+    '08255517': { name: 'PARDAVE MARTINEZ MONICA MARGARITA', group_id: 'GS' },
+    '06090262': { name: 'PAREDES ARIAS JULIA ZORAIDA', group_id: 'GS' },
+    '06171218': { name: 'PAREDES BALAREZO ROSA ELENA', group_id: 'GS' },
+    '09231265': { name: 'PELAEZ LAZURTEGUI LEONILA ELVIRA', group_id: 'GS' },
+    '09558603': { name: 'PEÑARES ASENCIO MARIA DEL CARMEN', group_id: 'GS' },
+    '06715915': { name: 'PEREZ VEGA SABINA AGUEDA', group_id: 'GS' },
+    '07497083': { name: 'PINEDA BELLEZA CARMEN LILIAM', group_id: 'GS' },
+    '07371245': { name: 'PINEDA BELLEZA MARGARITA MATILDE', group_id: 'GS' },
+    '40202778': { name: 'QUEVEDO RODRIGUEZ OLIMPIA ANGELA', group_id: 'GS' },
+    '08183024': { name: 'QUINO PIZARRO CARMEN CECILIA', group_id: 'GS' },
+    '74917345': { name: 'QUIROZ DELGADO JARUMI XIOMARA', group_id: 'GS' },
+    '07302062': { name: 'RENTERIA KLAUER JUANA ELIZABETH', group_id: 'GS' },
+    '46569951': { name: 'REYES BARRANTES MELISSA SUE', group_id: 'GS' },
+    '73062945': { name: 'RIEGA GOMEZ VDA. DE MAMANI VALERY NICHOLE', group_id: 'GS' },
+    '43477354': { name: 'ROJAS GUZMAN JOHANNA MARIELLA', group_id: 'GS' },
+    '09735581': { name: 'ROJAS REYES CARMEN PATRICIA', group_id: 'GS' },
+    '06031029': { name: 'ROMANI MORALES TERESA', group_id: 'GS' },
+    '75500441': { name: 'ROSALES AGUILAR VALERIA', group_id: 'GS' },
+    '42551515': { name: 'ROSAS REYES, VICTORIA MARCELINA', group_id: 'GS' },
+    '73628197': { name: 'RUIZ SALDIVAR CARLA KASSANDRA', group_id: 'GS' },
+    '06572273': { name: 'SALVATIERRA LARA MIRIAM ESTELA', group_id: 'GS' },
+    '07615606': { name: 'SANCHEZ AUBIAN MARIA ADELAIDA', group_id: 'GS' },
+    '40883537': { name: 'SANCHEZ GOMEZ SABINA JAZMIN', group_id: 'GS' },
+    '43051235': { name: 'SANTIBAÑEZ SANCHEZ SANDY ELIZABETH', group_id: 'GS' },
+    '25629997': { name: 'SILVA PONCE MARIA DEL ROSARIO', group_id: 'GS' },
+    '76850999': { name: 'SUAREZ LEIVA, ROSA LUZ', group_id: 'GS' },
+    '07610084': { name: 'TEJADA CARRILLO VDA. DE SANCHEZ ISABEL', group_id: 'GS' },
+    '43012657': { name: 'TELLO CORA MARISU LAURA', group_id: 'GS' },
+    '06649351': { name: 'TORRES ZEVALLOS CARMEN ROSA', group_id: 'GS' },
+    '46492028': { name: 'TREJO GARCIA MAYA', group_id: 'GS' },
+    '08062169': { name: 'TRIGO VALLEJOS ZOILA', group_id: 'GS' },
+    '45880229': { name: 'VALERIO GARCIA IBONNE DEL CARMEN', group_id: 'GS' },
+    '06043876': { name: 'VALLE DE MAQUIAVELO EMMA VIRGINIA', group_id: 'GS' },
+    '45847827': { name: 'VASQUEZ SANCHEZ CARMEN MELISSA', group_id: 'GS' },
+    '06061321': { name: 'VASQUEZ VIUDA DE MANCHINARE JUANA VICTORIA', group_id: 'GS' },
+    '08151225': { name: 'VELASQUEZ MENDOZA YULI', group_id: 'GS' },
+    '06201731': { name: 'VERA TUDELA GAMERO MARIA LUISA', group_id: 'GS' },
+    '72840582': { name: 'VITE SILVA MARIA FERNANDA', group_id: 'GS' },
+    '08847489': { name: 'VIVANCO MINA IRMA LUCIA', group_id: 'GS' },
+    '07503950': { name: 'WONG MATTA MILAGROS MADELEIGNE', group_id: 'GS' },
+    '44180722': { name: 'ZAMBRANO YAURI YANINA JHENIFER', group_id: 'GS' },
+
+    // === DECIMOTERCERA CUADRILLA (13) - NUEVOS DATOS ===
+    '07057964': { name: 'ALVAREZ PINEDA, Sergio Luis', group_id: 13 },
+    '41181530': { name: 'ARAMBURÚ LOYAGA, Luis Enrique', group_id: 13 },
+    '06460818': { name: 'ARANA VILLEGAS, Julio César', group_id: 13 },
+    '43312355': { name: 'ARDILES MINAYA, Ricardo Alexis', group_id: 13 },
+    '09938148': { name: 'ARÉVALO GARCIA, Víctor Mario', group_id: 13 },
+    '40285209': { name: 'ARIZA RIQUELME, Anibal Alejandro', group_id: 13 },
+    '06245732': { name: 'AYULO ZARATE, César Enrique', group_id: 13 },
+    '07468322': { name: 'BALDEON LOSTAUNAU, Manuel Jesús', group_id: 13 },
+    '45895212': { name: 'BARCENA GALLEGOS, Peter Alberto', group_id: 13 },
+    '07404433': { name: 'BENITEZ RAMIREZ, Martin Eduardo Giovanni', group_id: 13 },
+    '08530304': { name: 'BERNABÉ LOPEZ, Claudio Oscar', group_id: 13 },
+    '06957955': { name: 'BUSTAMANTE LARA, Miguel Eugenio', group_id: 13 },
+    '06170853': { name: 'CARDENAS ZOLEZZI, Jorge Luis', group_id: 13 },
+    '40357769': { name: 'CASAVERDE MARTINEZ, Eduardo Jesús', group_id: 13 },
+    '40351769': { name: 'CASAVERDE MARTINEZ, Edwin Antonio', group_id: 13 },
+    '42453309': { name: 'CASTILLO SANCHEZ, Fredy Antonio', group_id: 13 },
+    '06031830': { name: 'CAVERO RODRIGUEZ, José Luis', group_id: 13 },
+    '44109202': { name: 'CHIRINOS NEYRA, Julio Cesar', group_id: 13 },
+    '41258385': { name: 'CHOCHOCA CARRIÓN, Jorge Eduardo', group_id: 13 },
+    '06225796': { name: 'CHOCLOT ROJAS, Rubén', group_id: 13 },
+    '71693639': { name: 'CHOY ROBLES, Richard David', group_id: 13 },
+    '42397041': { name: 'COLOMA ALCALDE, José Ricardo', group_id: 13 },
+    '09780244': { name: 'CORNEJO PODESTA, Carlos', group_id: 13 },
+    '25824470': { name: 'COSTA ECHEVARRIA, Francisco', group_id: 13 },
+    '42756747': { name: 'CUBILLAS RAMOS, Nelson Jesús', group_id: 13 },
+    '06027275': { name: 'DANERI FRANCIA, Rómulo Rigoberto', group_id: 13 },
+    '07857895': { name: 'DEL POZO CORDERO, Pedro Teófilo', group_id: 13 },
+    '09955556': { name: 'DONGO MENESES, Jonathan Anthony', group_id: 13 },
+    '07410812': { name: 'ESCALANTE MARROQUÍN, José Francisco', group_id: 13 },
+    '06242610': { name: 'ESTELA DIAZ, Indalecio', group_id: 13 },
+    '08061503': { name: 'GOMEZ AREVALO, Juan Manuel', group_id: 13 },
+    '41367701': { name: 'GOMEZ FARACH, Farid Naim', group_id: 13 },
+    '70782975': { name: 'GONZALES PACORA, Diego Alonso', group_id: 13 },
+    '72747125': { name: 'GUTIERREZ CHONG, Walter Alfonso', group_id: 13 },
+    '47858661': { name: 'GUZMÁN HONORES, Gonzalo', group_id: 13 },
+    '06088652': { name: 'LA ROSA CARRILLO, Julio Ernesto', group_id: 13 },
+    '09429351': { name: 'LAY ZAPATA, Carlos Roberto', group_id: 13 },
+    '10801424': { name: 'LÓPEZ VELA, José Antonio', group_id: 13 },
+    '07068446': { name: 'LÓPEZ ZEGARRA, Enrique', group_id: 13 },
+    '06216621': { name: 'LUJAN ROMAN, Brick Iván', group_id: 13 },
+    '08255768': { name: 'MALAGA CALDERON, Guido', group_id: 13 },
+    '06041958': { name: 'MARTINEZ LLANOS, Augusto Fernando', group_id: 13 },
+    '07457508': { name: 'MEDINA GALVEZ, Ernesto Manuel', group_id: 13 },
+    '43378781': { name: 'MEDINA GALVEZ, Juan Carlos', group_id: 13 },
+    '07382037': { name: 'MEDINA TORALES, Juan Ángel', group_id: 13 },
+    '07456736': { name: 'MEDINA TORALES, Marco Antonio', group_id: 13 },
+    '07530103': { name: 'MEDINA TORALES, Miguel Ángel', group_id: 13 },
+    '09567320': { name: 'MELENDEZ SALCEDO, Luis Alberto', group_id: 13 },
+    '09101684': { name: 'MONTALVO CORREA, Juan Jesús', group_id: 13 },
+    '72299877': { name: 'MONTOYA MARCHINARES, Brayan', group_id: 13 },
+    '07418182': { name: 'MORALES ARRILUZ, Manuel Elías', group_id: 13 },
+    '09942278': { name: 'MORALES ISA, Jorge Alberto', group_id: 13 },
+    '07945199': { name: 'MORALES MACPHERSON, Ysaac Víctor', group_id: 13 },
+    '09953226': { name: 'NUE SOSA, Rodolfo Germán', group_id: 13 },
+    '07846582': { name: 'OBLITAS BALDARRAGO, Edgard Cesar Hugo', group_id: 13 },
+    '07847804': { name: 'OBREGÓN BERROSPI, Raúl Ricardo', group_id: 13 },
+    '22314433': { name: 'ORMEÑO TORREALVA, Victor Leonidas', group_id: 13 },
+    '70827521': { name: 'PONZONI REYES, Harold Jeanfranco', group_id: 13 },
+    '09965357': { name: 'QUESQUÉN QUIROZ, Hernán Flavio', group_id: 13 },
+    '07847051': { name: 'QUINTANA QUICO, Jorge Arturo', group_id: 13 },
+    '71020468': { name: 'RAMIREZ REPPO, Carlos Alonso', group_id: 13 },
+    '06015376': { name: 'RAMOS COSSIO, Fernando Daniel', group_id: 13 },
+    '06043036': { name: 'RAMOS COSSIO, Jorge Alfonso', group_id: 13 },
+    '06032576': { name: 'RAMOS COSSIO, Luis Alberto', group_id: 13 },
+    '42825140': { name: 'RAMOS DELGADO, Moisés Hilarión', group_id: 13 },
+    '06063772': { name: 'RAMOS FRANCO, Oscar Richard', group_id: 13 },
+    '46844483': { name: 'RAMOS MENDOZA, Renzo', group_id: 13 },
+    '06771178': { name: 'ROBLEDILLO SHARFFE; César Adolfo', group_id: 13 },
+    '42986674': { name: 'RODRIGUEZ BORROVICH, Julio Cesar', group_id: 13 },
+    '07339217': { name: 'RODRIGUEZ CHUY, Jorge Antonio', group_id: 13 },
+    '43411632': { name: 'RODRIGUEZ LIMAS, José Martin', group_id: 13 },
+    '08170552': { name: 'RODRIGUEZ LIMAS, Luis Pedro', group_id: 13 },
+    '43251345': { name: 'RODRIGUEZ SÁNCHEZ, Enrique Antonio', group_id: 13 },
+    '07426541': { name: 'RODRIGUEZ VÁSQUEZ, Cesar Alberto', group_id: 13 },
+    '07429783': { name: 'RODRIGUEZ VÁSQUEZ, Luis Manuel', group_id: 13 },
+    '10683869': { name: 'ROJAS BARRERA, Fernando', group_id: 13 },
+    '72715870': { name: 'ROSELL SINARAHUA, Andrés Rolando', group_id: 13 },
+    '08760827': { name: 'SANCHEZ LOPEZ, Fernando Flavio', group_id: 13 },
+    '08694353': { name: 'SANCHO RAYMUNDO, Helbert Denyz', group_id: 13 },
+    '06282377': { name: 'SANDOVAL RIOS, Wilmer César', group_id: 13 },
+    '07278563': { name: 'SILVA ROSELL, Juan Pablo', group_id: 13 },
+    '27077299': { name: 'TELLO VILLAR, César Antonio', group_id: 13 },
+    '42722269': { name: 'TORRES HERRERA, Jonathan Joseph', group_id: 13 },
+    '40508469': { name: 'URIONDO MINAYA, William Fermín', group_id: 13 },
+    '42191844': { name: 'VALERIO GARCÍA, Walter Jesús Martin', group_id: 13 },
+    '42342719': { name: 'VALERIO GUTIÉRREZ, Walter Liberato', group_id: 13 },
+    '10504470': { name: 'VARGAS KOO, Arturo Antonio', group_id: 13 },
+    '06259083': { name: 'VÁSQUEZ COSSÍO, Dumas Félix', group_id: 13 },
+    '72897350': { name: 'VASQUEZ FERNANDEZ, Victor Enrique', group_id: 13 },
+    '08644491': { name: 'VIDAL MENDIETA, Carlos Alberto', group_id: 13 },
+    '76234296': { name: 'WALDE RODRIGUEZ, Diego Alonso', group_id: 13 }
+}
+    // Mapeo para obtener el nombre completo y el sufijo para el logo
+    const GROUP_MAP = {
+        1: { name: 'Primera Cuadrilla', logo_suffix: '1_.png' },
+        2: { name: 'Segunda Cuadrilla', logo_suffix: '2_.png' },
+        3: { name: 'Tercera Cuadrilla', logo_suffix: '3_.png' },
+        4: { name: 'Cuarta Cuadrilla', logo_suffix: '4_.png' },
+        5: { name: 'Quinta Cuadrilla', logo_suffix: '5_.png' },
+        6: { name: 'Sexta Cuadrilla', logo_suffix: '6_.png' },
+        7: { name: 'Séptima Cuadrilla', logo_suffix: '7_.png' },
+        8: { name: 'Octava Cuadrilla', logo_suffix: '8_.png' },
+        9: { name: 'Novena Cuadrilla', logo_suffix: '9_.png' },
+        10: { name: 'Décima Cuadrilla', logo_suffix: '10_.png' },
+        11: { name: 'Décima Primera Cuadrilla', logo_suffix: '11_.png' },
+        12: { name: 'Décima Segunda Cuadrilla', logo_suffix: '12_.png' },
+        13: { name: 'Décima Tercera Cuadrilla', logo_suffix: '13_.png' },
+        14: { name: 'Décima Cuarta Cuadrilla', logo_suffix: '14_.png' },
+        15: { name: 'Décima Quinta Cuadrilla', logo_suffix: '15_.png' },
+        16: { name: 'Décima Sexta Cuadrilla', logo_suffix: '16_.png' },
+        17: { name: 'Décima Séptima Cuadrilla', logo_suffix: '17_.png' },
+        18: { name: 'Décima Octava Cuadrilla', logo_suffix: '18_.png' },
+        19: { name: 'Décima Novena Cuadrilla', logo_suffix: '19_.png' },
+        20: { name: 'Vigésima Cuadrilla', logo_suffix: '20_.png' },
+        'GS': { name: 'Grupo de Sahumadoras', logo_suffix: 'gs_.png' },
+        'GC': { name: 'Grupo de Cantoras', logo_suffix: 'gc_.png' }
+    };
+    
+    // Almacenamiento temporal de los datos del hermano verificado
+    let verifiedBrotherData = null;
+    const defaultLogoUrl = 'https://edwinhsvcl14-maker.github.io/asistencias/logo_hermandad.png';
+
+
+    // Función para generar la URL del logo dinámicamente
+    function generateLogoUrl(group_id) {
+        const base_url = 'https://edwinhsvcl14-maker.github.io/asistencias/'; 
+        const map = GROUP_MAP[group_id];
+        
+        if (map) {
+            return `${base_url}${map.logo_suffix}`;
+        }
+        return defaultLogoUrl; 
+    }
+
+    // Función para obtener el texto condicional de pertenencia
+    function getGroupPrefixText(group_id) {
+        if (group_id === 'GS' || group_id === 'GC') {
+            return 'Pertenece a:'; // Para Grupos (Sahumadoras, Cantoras)
+        } else if (typeof group_id === 'number' && group_id >= 1 && group_id <= 20) {
+            return 'Perteneciente a la:'; // Para Cuadrillas
+        }
+        return 'Perteneciente a la:'; // Por defecto
+    }
+
+    // ==========================================================
+    // Lógica de Preloader y Carga
+    // ==========================================================
+    window.addEventListener('load', () => {
+        const preloader = document.getElementById('preloader');
+        const mainContainer = document.getElementById('mainContainer');
+        
+        // El h2 por defecto es el nombre de la hermandad
+        document.getElementById('headerGroupName').textContent = 'Hermandad de la Santísima Virgen del Carmen de Lima';
+
+        preloader.classList.add('hidden');
+        setTimeout(() => {
+            mainContainer.classList.add('visible');
+        }, 1000); 
+    });
+
+    // ==========================================================
+    // Lógica de Transición de Fases
+    // ==========================================================
+    let currentStep = 1;
+
+    function nextStep(stepNumber) {
+        if (stepNumber === currentStep) return;
+        
+        const currentContent = document.getElementById(`step${currentStep}`);
+        const nextContent = document.getElementById(`step${stepNumber}`);
+
+        if (!currentContent || !nextContent) return;
+
+        const exitClass = stepNumber > currentStep ? 'exit-left' : 'exit-right';
+        const enterClass = stepNumber > currentStep ? 'enter-right' : 'enter-left';
+
+        currentContent.classList.remove('active');
+        currentContent.classList.add(exitClass);
+        
+        nextContent.classList.add(enterClass);
+        
+        setTimeout(() => {
+            currentContent.classList.remove(exitClass);
+            currentContent.classList.remove('enter-left');
+            
+            nextContent.classList.remove(enterClass);
+            nextContent.classList.add('active');
+            
+            currentStep = stepNumber;
+
+            if (stepNumber === 1) {
+                document.getElementById('dniInput').value = '';
+                document.getElementById('error-message').style.display = 'none';
+                verifiedBrotherData = null; // Limpiar datos de sesión
+                // Restaurar texto del encabezado al estado por defecto
+                document.getElementById('headerGroupName').textContent = 'Hermandad de la Santísima Virgen del Carmen de Lima';
+            }
+        }, 500);
+    }
+
+    // ==========================================================
+    // Lógica de Verificación (Paso 2)
+    // ==========================================================
+
+    function verifyDNI() {
+        const dniInput = document.getElementById('dniInput');
+        const errorMessage = document.getElementById('error-message');
+        const dni = dniInput.value.trim();
+        
+        errorMessage.style.display = 'none';
+        
+        if (dni.length !== 8 || isNaN(dni)) {
+            errorMessage.textContent = '❌ El DNI debe contener exactamente 8 dígitos numéricos.';
+            errorMessage.style.display = 'block';
+            return;
+        }
+
+        const btnSearch = document.querySelector('#step2 .btn-main');
+        
+        btnSearch.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+        btnSearch.disabled = true;
+        dniInput.disabled = true;
+
+        setTimeout(() => {
+            const brother = BROTHER_DATABASE[dni];
+            
+            if (brother) {
+                verifiedBrotherData = brother; // Guardar datos
+                const groupInfo = GROUP_MAP[brother.group_id];
+                const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${dni}`;
+                const groupName = groupInfo.name;
+                const groupLogoUrl = generateLogoUrl(brother.group_id);
+                const groupPrefixText = getGroupPrefixText(brother.group_id); // Obtener prefijo condicional
+
+                // 1. Fase Visible (Paso 3)
+                document.getElementById('hermanoNombre').textContent = brother.name;
+                document.getElementById('verifiedGroupName').textContent = `${groupPrefixText} ${groupName}`; // Usar prefijo condicional
+                document.getElementById('qrImage').src = qrUrl;
+
+                // 2. Formato Oculto (PDF)
+                document.getElementById('pdfHermanoNombre').textContent = brother.name;
+                document.getElementById('pdfGroupName').textContent = `${groupPrefixText} ${groupName}`; // Usar prefijo condicional
+                document.getElementById('pdfQrImage').src = qrUrl;
+                document.getElementById('pdfHermandadLogo').src = groupLogoUrl; // Logo dinámico en el PDF
+
+                // 3. Encabezado del Sistema (Se mantiene estático o se actualiza solo el subtítulo)
+                document.getElementById('headerGroupName').textContent = `${groupName}`; // Muestra el nombre del grupo en el subtítulo del encabezado.
+
+                // ÉXITO
+                nextStep(3);
+                
+            } else {
+                // ERROR (Usando SweetAlert2)
+                Swal.fire({
+                    icon: 'error',
+                    title: '¡Hermano No Encontrado!',
+                    text: `El DNI ${dni} no está registrado. Verifique el número o contacte a la Cuadrilla.`,
+                    confirmButtonText: 'Entendido'
+                });
+                errorMessage.textContent = `🚫 Hermano con DNI ${dni} no encontrado.`;
+                errorMessage.style.display = 'block';
+            }
+            
+            btnSearch.innerHTML = '<i class="fas fa-search"></i> Buscar Hermano(a)';
+            btnSearch.disabled = false;
+            dniInput.disabled = false;
+            
+        }, 3000); 
+    }
+
+    // ==========================================================
+    // Lógica de GENERACIÓN Y DESCARGA DE PDF (Paso 3) - A4 GRANDE
+    // ==========================================================
+    async function downloadPDF() {
+        if (!verifiedBrotherData) {
+             Swal.fire({
+                icon: 'warning',
+                title: 'Error de Sesión',
+                text: 'No se encontraron datos de hermano. Por favor, reinicie el proceso.',
+                confirmButtonText: 'Reiniciar'
+            }).then(() => nextStep(1));
+            return;
+        }
+
+        const dni = document.getElementById('dniInput').value.trim();
+        const hermanoName = verifiedBrotherData.name;
+
+        const inputElement = document.getElementById('qrCardFormat');
+        
+        const downloadButton = document.querySelector('#step3 .btn-main');
+        downloadButton.innerHTML = '<i class="fas fa-file-export fa-spin"></i> Generando PDF...';
+        downloadButton.disabled = true;
+
+        try {
+            // 1. Capturar el contenido HTML del formato oculto 
+            const canvas = await html2canvas(inputElement, { 
+                scale: 2, 
+                useCORS: true
+            });
+
+            const imgData = canvas.toDataURL('image/jpeg', 0.9); 
+
+            // 2. Crear el documento PDF en formato A4
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4' 
+            });
+
+            const pdfWidth = doc.internal.pageSize.getWidth(); 
+
+            // Dimensiones para la tarjeta en A4: Reducción del tamaño para asegurar el margen
+            const targetWidthMM = 140; 
+            const imgHeightMM = (canvas.height * targetWidthMM) / canvas.width;
+            
+            // Centrado en A4 y margen superior (15mm)
+            const xOffset = (pdfWidth - targetWidthMM) / 2;
+            const yOffset = 15; 
+
+            // 3. Añadir la imagen (tarjeta) al PDF, centrada y grande
+            doc.addImage(imgData, 'JPEG', xOffset, yOffset, targetWidthMM, imgHeightMM); 
+
+            // 4. Descargar el archivo
+            const groupPrefix = GROUP_MAP[verifiedBrotherData.group_id].name.replace(/\s/g, '_');
+            doc.save(`Tarjeta_QR_${groupPrefix}_${hermanoName.replace(/\s/g, '_')}_${dni}.pdf`);
+            
+            // ÉXITO (Usando SweetAlert2)
+            Swal.fire({
+                icon: 'success',
+                title: '¡Descarga Exitosa!',
+                text: `La Tarjeta QR de ${hermanoName} ha sido generada en formato A4 y descargada.`,
+                confirmButtonText: 'Cerrar'
+            });
+
+        } catch (error) {
+            console.error('Error al generar el PDF:', error);
+             // ERROR (Usando SweetAlert2)
+             Swal.fire({
+                icon: 'error',
+                title: 'Error de Generación',
+                text: 'Ocurrió un error al generar el PDF. Revise la consola (F12) o intente de nuevo.',
+                confirmButtonText: 'Aceptar'
+            });
+        } finally {
+            // 5. Restaurar el botón
+            downloadButton.innerHTML = '<i class="fas fa-file-pdf"></i> Descargar Tarjeta QR (PDF)';
+            downloadButton.disabled = false;
+        }
+    }
+    
+    // Limitar el input DNI a solo números
+    document.addEventListener('DOMContentLoaded', () => {
+        const dniInput = document.getElementById('dniInput');
+        if (dniInput) {
+            dniInput.addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 8);
+            });
+        }
+    });
+
+</script>
+
+</body>
+</html>
