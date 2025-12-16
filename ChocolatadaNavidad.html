@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event ChocolaMágica de Navisinva! - Hermandad del Carmen</title>
-    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <style>
@@ -156,8 +156,7 @@
             padding: 80px 20px 100px;
         }
 
-        /* * CAMBIO 2 y 3: TÍTULO con más grosor (Font Weight 900) y nueva sombra amarilla
-         */
+        /* TÍTULO principal con más grosor (Font Weight 900) y sombra amarilla */
         .main-title {
             font-family: 'Luckiest Guy', cursive;
             font-size: 6em;
@@ -165,27 +164,11 @@
             margin: 0;
             padding: 10px 20px;
             color: var(--color-title-yellow);
-            font-weight: 900; /* Hace que el texto sea más grueso (aunque Luckiest Guy es ya grueso) */
+            font-weight: 900; 
             text-shadow: 
-                -5px 5px 0 var(--color-title-red), /* Sombra roja de profundidad */
-                -10px 10px 0 rgba(0, 0, 0, 0.3), /* Sombra negra */
-                0 0 30px var(--color-light-yellow-shadow); /* NUEVA: Sombra de brillo amarillo claro */
-            animation: bounce-title 1.5s ease-in-out infinite alternate;
-        }
-
-
-        .main-title-hsvcl {
-            font-family: 'Luckiest Guy', cursive;
-            font-size: 3em;
-            line-height: 1;
-            margin: 0;
-            padding: 10px 20px;
-            color: var(--color-title-red);
-            font-weight: 900; /* Hace que el texto sea más grueso (aunque Luckiest Guy es ya grueso) */
-            text-shadow: 
-               
-                -10px 10px 0 rgba(0, 0, 0, 0.3), /* Sombra negra */
-               
+                -5px 5px 0 var(--color-title-red), 
+                -10px 10px 0 rgba(0, 0, 0, 0.3), 
+                0 0 30px var(--color-light-yellow-shadow); 
             animation: bounce-title 1.5s ease-in-out infinite alternate;
         }
 
@@ -194,13 +177,12 @@
             100% { transform: translateY(-5px) scale(1.02); }
         }
 
-        /* * CAMBIO 1: Texto de la hermandad en Rojo Brillante (como el botón)
-         */
+        /* Texto de la hermandad en Rojo Brillante y más grueso */
         .small-text {
-            font-size: 1.5em;
-            font-weight: 400;
+            font-size: 3em;
+            font-weight: 700; 
             margin: 5px 0 20px;
-            color: var(--color-red-bright); /* ¡CORREGIDO: Usando el rojo brillante del botón! */
+            color: var(--color-red-bright); 
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); 
         }
 
@@ -220,20 +202,19 @@
             z-index: 25;
         }
 
-        /* escudo-hsvcl (MODIFICADO: Más pequeño y sin brillo/animación) */
-.escudo-hsvcl {
-    width: 150px; /* Reducido a 65px */
-    height: 150px; /* Reducido a 65px */
-    margin: 10px auto 10px; /* Margen superior e inferior reducido */
-    background-image: url('https://edwinhsvcl14-maker.github.io/asistencias/logo_hermandad.png'); 
-    background-size: cover;
-    background-position: center;
-    border-radius: 50%;
-    /* BOX-SHADOW ELIMINADO */
-    /* ANIMATION ELIMINADA */
-    position: relative;
-    z-index: 25;
-}
+        /* escudo-hsvcl (Pequeño y sin efectos) */
+        .escudo-hsvcl {
+            width: 65px; 
+            height: 65px; 
+            margin: 10px auto 10px; 
+            background-image: url('https://edwinhsvcl14-maker.github.io/asistencias/logo_hermandad.png'); 
+            background-size: cover;
+            background-position: center;
+            border-radius: 50%;
+            position: relative;
+            z-index: 25;
+        }
+
 
         @keyframes pulse-shine {
             0% {
@@ -394,7 +375,7 @@
         }
 
         /* ================================================================== */
-        /* --- RESPONSIVE MEJORADO (Ajustando .small-text) --- */
+        /* --- RESPONSIVE MEJORADO --- */
         /* ================================================================== */
         
         @media (max-width: 768px) {
@@ -402,13 +383,19 @@
                 font-size: 3.5em; 
                 text-shadow: -2px 2px 0 var(--color-title-red), -4px 4px 0 rgba(0, 0, 0, 0.3); 
             }
+             /* CAMBIO CLAVE: Reducimos el small-text para que quepa en 2-3 líneas */
             .small-text { 
-                font-size: 1.5em; 
+                font-size: 1.4em; /* Reducido de 1.5em a 1.4em para mejor ajuste en tabletas */
             }
             .adviento-corona {
                 width: 150px; 
                 height: 150px;
                 margin-bottom: 30px;
+            }
+            .escudo-hsvcl { 
+                width: 50px;
+                height: 50px;
+                margin: 5px auto 5px;
             }
             .info-block { 
                 padding: 10px 20px; 
@@ -432,12 +419,13 @@
                 font-size: 2.8em; 
                 padding: 5px 10px;
              }
+             /* CAMBIO CLAVE: Reducción máxima para móvil (menos de 500px) */
+             .small-text {
+                font-size: 1.1em; /* Ajuste crucial para que quepa en 2 o 3 líneas */
+             }
              .adviento-corona {
                 width: 120px; 
                 height: 120px;
-             }
-             .small-text {
-                font-size: 1.2em;
              }
              .info-item {
                 font-size: 1em; 
@@ -467,7 +455,7 @@
     <section class="hero-container">
         
         <div class="hero-content">
-             <div class="main-title-hsvcl">Hermandad de la Santísima Virgen del Carmen de Lima</div>
+             <div class="small-text">Hermandad de la Santísima Virgen del Carmen de Lima</div>
              
              <div class="escudo-hsvcl" title="Escudo HSVCL"></div>
 
