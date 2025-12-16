@@ -164,12 +164,28 @@
             line-height: 1;
             margin: 0;
             padding: 10px 20px;
-            color: var(--color-title-yellow);
+            color: var();
             font-weight: 900; /* Hace que el texto sea más grueso (aunque Luckiest Guy es ya grueso) */
             text-shadow: 
                 -5px 5px 0 var(--color-title-red), /* Sombra roja de profundidad */
                 -10px 10px 0 rgba(0, 0, 0, 0.3), /* Sombra negra */
                 0 0 30px var(--color-light-yellow-shadow); /* NUEVA: Sombra de brillo amarillo claro */
+            animation: bounce-title 1.5s ease-in-out infinite alternate;
+        }
+
+
+        .main-title-hsvcl {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 3em;
+            line-height: 1;
+            margin: 0;
+            padding: 10px 20px;
+            color: var(--color-title-red);
+            font-weight: 900; /* Hace que el texto sea más grueso (aunque Luckiest Guy es ya grueso) */
+            text-shadow: 
+                -5px 5px 0 var(--color-light-yellow-shadow), /* Sombra roja de profundidad */
+                -10px 10px 0 rgba(0, 0, 0, 0.3), /* Sombra negra */
+                0 0 30px var(--color-title-yellow); /* NUEVA: Sombra de brillo amarillo claro */
             animation: bounce-title 1.5s ease-in-out infinite alternate;
         }
 
@@ -452,7 +468,7 @@
     <section class="hero-container">
         
         <div class="hero-content">
-             <div class="small-text">Hermandad de la Santísima Virgen del Carmen de Lima</div>
+             <div class="main-title-hsvcl">Hermandad de la Santísima Virgen del Carmen de Lima</div>
              
              <div class="escudo-hsvcl" title="Escudo HSVCL"></div>
 
