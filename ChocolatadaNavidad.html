@@ -21,7 +21,7 @@
             --color-title-red: #C0392B; /* Rojo de profundidad del título */
             --color-card-bg: #EAF2F8; /* Gris/Blanco para el fondo de las tarjetas */
             --color-dark-red-text: #800020; /* Vinotinto / Borgoña Profundo (Ya no se usa directamente) */
-            --color-light-yellow-shadow: #FFFFAA; /* NUEVO: Sombra amarilla clara para el título */
+            --color-light-yellow-shadow: #FFFFAA; /* Sombra amarilla clara para el título */
         }
         
         /* ------------------------------------------------------------------ */
@@ -156,7 +156,7 @@
             padding: 80px 20px 100px;
         }
 
-        /* TÍTULO principal con más grosor (Font Weight 900) y sombra amarilla */
+        /* TÍTULO principal */
         .main-title {
             font-family: 'Luckiest Guy', cursive;
             font-size: 6em;
@@ -177,7 +177,7 @@
             100% { transform: translateY(-5px) scale(1.02); }
         }
 
-        /* Texto de la hermandad en Rojo Brillante y más grueso */
+        /* Texto de la hermandad (Grueso) */
         .small-text {
             font-size: 3em;
             font-weight: 700; 
@@ -202,7 +202,7 @@
             z-index: 25;
         }
 
-        /* escudo-hsvcl (Pequeño y sin efectos) */
+        /* escudo-hsvcl (Pequeño y sin efectos - Versión de escritorio) */
         .escudo-hsvcl {
             width: 65px; 
             height: 65px; 
@@ -375,7 +375,7 @@
         }
 
         /* ================================================================== */
-        /* --- RESPONSIVE MEJORADO --- */
+        /* --- RESPONSIVE MEJORADO (Móviles y Tabletas) --- */
         /* ================================================================== */
         
         @media (max-width: 768px) {
@@ -383,18 +383,18 @@
                 font-size: 3.5em; 
                 text-shadow: -2px 2px 0 var(--color-title-red), -4px 4px 0 rgba(0, 0, 0, 0.3); 
             }
-             /* CAMBIO CLAVE: Reducimos el small-text para que quepa en 2-3 líneas */
             .small-text { 
-                font-size: 1.4em; /* Reducido de 1.5em a 1.4em para mejor ajuste en tabletas */
+                font-size: 1.4em; 
             }
             .adviento-corona {
                 width: 150px; 
                 height: 150px;
                 margin-bottom: 30px;
             }
+             /* CAMBIO CLAVE: Escudo con el doble de tamaño (100px) para vista móvil */
             .escudo-hsvcl { 
-                width: 50px;
-                height: 50px;
+                width: 100px; /* Tamaño duplicado para móvil */
+                height: 100px; /* Tamaño duplicado para móvil */
                 margin: 5px auto 5px;
             }
             .info-block { 
@@ -419,13 +419,17 @@
                 font-size: 2.8em; 
                 padding: 5px 10px;
              }
-             /* CAMBIO CLAVE: Reducción máxima para móvil (menos de 500px) */
              .small-text {
-                font-size: 1.1em; /* Ajuste crucial para que quepa en 2 o 3 líneas */
+                font-size: 1.1em; 
              }
              .adviento-corona {
                 width: 120px; 
                 height: 120px;
+             }
+             /* Aseguramos que el escudo mantenga un buen tamaño incluso en los móviles más pequeños */
+             .escudo-hsvcl { 
+                width: 90px;
+                height: 90px;
              }
              .info-item {
                 font-size: 1em; 
