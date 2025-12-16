@@ -12,16 +12,14 @@
         /* Variables de Color (Basadas en la Imagen) */
         /* ------------------------------------------------------------------ */
         :root {
-            /* CAMBIO CLAVE 1: De #0f2323 (Casi negro) a un verde intermedio */
-            --color-dark-blue: #0A6640; /* Verde Oscuro/Medio para el fondo principal */
-            
-            --color-white-snow: #FDFEFE; /* Blanco Nieve */
-            --color-red-bright: #E74C3C; /* Rojo Cereza Brillante */
-            --color-gold-shadow: #FFD700; /* Dorado para Sombra/Acento */
-            --color-green-accent: #27AE60; /* Verde Pino para Acentos (Mantiene el fondo de featured) */
-            --color-title-yellow: #F1C40F; /* Amarillo Limón del título */
-            --color-title-red: #C0392B; /* Rojo de profundidad del título */
-            --color-card-bg-new: #FFFDD0; /* Amarillo Claro / Crema para tarjetas */
+            --color-dark-blue: #0A6640; /* Fondo principal: Verde Oscuro/Medio */
+            --color-white-snow: #FDFEFE; 
+            --color-red-bright: #E74C3C; 
+            --color-gold-shadow: #FFD700; 
+            --color-green-accent: #27AE60; 
+            --color-title-yellow: #F1C40F; 
+            --color-title-red: #C0392B; 
+            --color-card-bg-new: #FFFDD0; /* Fondo de tarjetas: Crema */
             --color-dark-red-text: #800020;
             --color-light-yellow-shadow: #FFFFAA; 
         }
@@ -33,7 +31,6 @@
             font-family: 'Montserrat', sans-serif;
             margin: 0;
             padding: 0;
-            /* Se aplica el nuevo color aquí */
             background-color: var(--color-dark-blue); 
             color: var(--color-white-snow);
             line-height: 1.6;
@@ -130,7 +127,6 @@
         /* ------------------------------------------------------------------ */
         .hero-container {
             position: relative;
-            /* Se aplica el nuevo color aquí */
             background-color: var(--color-dark-blue);
             min-height: 80vh;
             overflow: hidden;
@@ -181,19 +177,18 @@
             100% { transform: translateY(-5px) scale(1.02); }
         }
 
-        /* Texto de la hermandad (Grueso) */
+        /* Texto de la hermandad (Grueso con contorno blanco) - Sin cambios */
         .small-text {
             font-size: 3em;
             font-weight: 700; 
             margin: 5px 0 20px;
             color: var(--color-red-bright); 
-            /* CAMBIO CLAVE 2: Contorno/sombra blanca al texto rojo */
             text-shadow: 
                 -1px -1px 0 var(--color-white-snow), 
                 1px -1px 0 var(--color-white-snow), 
                 -1px 1px 0 var(--color-white-snow), 
                 1px 1px 0 var(--color-white-snow),
-                2px 2px 2px rgba(0, 0, 0, 0.5); /* Sombra suave para profundidad */
+                2px 2px 2px rgba(0, 0, 0, 0.5); 
         }
 
         /* CORONA DE ADVIENTO (Sin cambios) */
@@ -212,10 +207,11 @@
             z-index: 25;
         }
 
-        /* escudo-hsvcl (Sin cambios) */
+        /* ESCUDO DE LA HERMANDAD */
         .escudo-hsvcl {
-            width: 65px; 
-            height: 65px; 
+            /* AJUSTE CLAVE 1: Tamaño más grande por defecto (escritorio) */
+            width: 90px; 
+            height: 90px; 
             margin: 10px auto 10px; 
             background-image: url('https://edwinhsvcl14-maker.github.io/asistencias/logo_hermandad.png'); 
             background-size: cover;
@@ -326,7 +322,6 @@
 
         /* Sección de Tarjetas Destacadas y Footer */
         .featured-section {
-            /* Mantiene el color original que te gustó */
             background-color: var(--color-green-accent);
             padding: 80px 40px;
             text-align: center;
@@ -379,7 +374,6 @@
         
         
         .footer-section {
-            /* Mantiene el color del fondo principal */
             background-color: var(--color-dark-blue);
             padding: 50px 40px;
             text-align: center;
@@ -409,7 +403,6 @@
             }
             .small-text { 
                 font-size: 1.4em; 
-                /* Se mantiene el contorno blanco en móviles */
                 text-shadow: 
                     -1px -1px 0 var(--color-white-snow), 
                     1px -1px 0 var(--color-white-snow), 
@@ -421,9 +414,10 @@
                 height: 150px;
                 margin-bottom: 30px;
             }
+            /* AJUSTE CLAVE 2: Escudo más grande en vista móvil */
             .escudo-hsvcl { 
-                width: 100px; 
-                height: 100px; 
+                width: 120px; 
+                height: 120px; 
                 margin: 5px auto 5px;
             }
             .info-block { 
@@ -460,9 +454,10 @@
                 width: 120px; 
                 height: 120px;
              }
+             /* Aseguramos que el escudo mantenga un buen tamaño incluso en los móviles más pequeños */
              .escudo-hsvcl { 
-                width: 90px;
-                height: 90px;
+                width: 100px; /* Tamaño ligeramente más pequeño para móviles muy estrechos */
+                height: 100px;
              }
              .info-item {
                 font-size: 1em; 
