@@ -1,623 +1,621 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event ChocolaMágica de Navisinva! - Hermandad del Carmen</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event ChocolaMágica de Navisinva! - Hermandad del Carmen</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
-    <style>
-        /* ------------------------------------------------------------------ */
-        /* Variables de Color (Basadas en la Imagen) */
-        /* ------------------------------------------------------------------ */
-        :root {
-            --color-dark-blue: #0A6640; /* Fondo principal: Verde Oscuro/Medio */
-            --color-white-snow: #FDFEFE; 
-            --color-red-bright: #E74C3C; 
-            --color-gold-shadow: #FFD700; 
-            --color-green-accent: #27AE60; 
-            --color-title-yellow: #F1C40F; 
-            --color-title-red: #C0392B; 
-            --color-card-bg-new: #FFFDD0; /* Fondo de tarjetas: Crema */
-            --color-dark-red-text: #800020;
-            --color-light-yellow-shadow: #FFFFAA; 
-        }
-        
-        /* ------------------------------------------------------------------ */
-        /* Estilos Base y Tipografía */
-        /* ------------------------------------------------------------------ */
-        body {
-            font-family: 'Montserrat', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--color-dark-blue); 
-            color: var(--color-white-snow);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-        
-        /* ------------------------------------------------------------------ */
-        /* Botón de Música Flotante (Sin cambios) */
-        /* ------------------------------------------------------------------ */
-        #music-toggle {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            background-color: var(--color-red-bright);
-            color: var(--color-white-snow);
-            border: 3px solid var(--color-gold-shadow);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px var(--color-gold-shadow);
-            transition: background-color 0.3s, transform 0.3s;
-            z-index: 10001;
-            font-size: 1.5em;
-        }
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* ------------------------------------------------------------------ */
+        /* Variables de Color (Basadas en la Imagen) */
+        /* ------------------------------------------------------------------ */
+        :root {
+            --color-dark-blue: #0A6640; /* Fondo principal: Verde Oscuro/Medio */
+            --color-white-snow: #FDFEFE; 
+            --color-red-bright: #E74C3C; 
+            --color-gold-shadow: #FFD700; 
+            --color-green-accent: #27AE60; 
+            --color-title-yellow: #F1C40F; 
+            --color-title-red: #C0392B; 
+            --color-card-bg-new: #FFFDD0; /* Fondo de tarjetas: Crema */
+            --color-dark-red-text: #800020;
+            --color-light-yellow-shadow: #FFFFAA; 
+        }
+        
+        /* ------------------------------------------------------------------ */
+        /* Estilos Base y Tipografía */
+        /* ------------------------------------------------------------------ */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--color-dark-blue); /* ESTO DEBE CARGAR AHORA */
+            color: var(--color-white-snow);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* ------------------------------------------------------------------ */
+        /* Botón de Música Flotante (Sin cambios en funcionalidad) */
+        /* ------------------------------------------------------------------ */
+        #music-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: var(--color-red-bright);
+            color: var(--color-white-snow);
+            border: 3px solid var(--color-gold-shadow);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px var(--color-gold-shadow);
+            transition: background-color 0.3s, transform 0.3s;
+            z-index: 10001;
+            font-size: 1.5em;
+        }
 
-        #music-toggle:hover {
-            background-color: #CC2D1F;
-            transform: scale(1.1);
-        }
-        
-        .music-playing {
-            animation: pulse 1s infinite;
-        }
+        #music-toggle:hover {
+            background-color: #CC2D1F;
+            transform: scale(1.1);
+        }
+        
+        .music-playing {
+            animation: pulse 1s infinite;
+        }
 
-        @keyframes pulse {
-            0% { box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 0 0 rgba(255, 215, 0, 0.7); }
-            70% { box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 0 10px rgba(255, 215, 0, 0); }
-            100% { box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 0 0 rgba(255, 215, 0, 0); }
-        }
-        
-        #audio-navidad {
-            display: none;
-        }
+        @keyframes pulse {
+            0% { box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 0 0 rgba(255, 215, 0, 0.7); }
+            70% { box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 0 10px rgba(255, 215, 0, 0); }
+            100% { box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 0 0 rgba(255, 215, 0, 0); }
+        }
+        
+        #audio-navidad {
+            display: none;
+        }
 
-        /* ------------------------------------------------------------------ */
-        /* Efecto de Estrellas/Nieve (Sin cambios) */
-        /* ------------------------------------------------------------------ */
-        .star-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9999;
-        }
-        
-        .star { 
-            position: absolute;
-            width: 15px; 
-            height: 15px;
-            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 67% 57%, 78% 91%, 50% 70%, 22% 91%, 33% 57%, 2% 35%, 39% 35%);
-            background: var(--color-gold-shadow);
-            opacity: 0;
-            box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.8), 0 0 5px 1px var(--color-white-snow); 
-            animation: fall linear infinite, twinkle ease-in-out infinite;
-        }
-        
-        @keyframes twinkle {
-            0%, 100% { opacity: 0; }
-            50% { opacity: 1; }
-            75% { opacity: 0.5; }
-        }
-        
-        @keyframes fall {
-            0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(100vh) translateX(5vw) rotate(360deg); opacity: 0; } 
-        }
+        /* ------------------------------------------------------------------ */
+        /* Efecto de Estrellas/Nieve (Sin cambios en funcionalidad) */
+        /* ------------------------------------------------------------------ */
+        .star-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        
+        .star { 
+            position: absolute;
+            width: 15px; 
+            height: 15px;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 67% 57%, 78% 91%, 50% 70%, 22% 91%, 33% 57%, 2% 35%, 39% 35%);
+            background: var(--color-gold-shadow);
+            opacity: 0;
+            box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.8), 0 0 5px 1px var(--color-white-snow); 
+            animation: fall linear infinite, twinkle ease-in-out infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+            75% { opacity: 0.5; }
+        }
+        
+        @keyframes fall {
+            0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(100vh) translateX(5vw) rotate(360deg); opacity: 0; } 
+        }
 
-        .star:nth-child(2n) { background: var(--color-white-snow); width: 12px; height: 12px; animation-duration: 8s, 2.5s; }
-        .star:nth-child(3n) { background: var(--color-gold-shadow); width: 18px; height: 18px; animation-duration: 12s, 4s; }
-        .star:nth-child(1) { left: 1%; animation-delay: 0s, 1s; } .star:nth-child(5) { left: 16%; animation-delay: 3s, 1.5s; } .star:nth-child(10) { left: 36%; animation-delay: 6s, 3s; }
-        .star:nth-child(15) { left: 56%; animation-delay: 12s, 1.8s; } .star:nth-child(20) { left: 76%; animation-delay: 9s, 2.2s; } .star:nth-child(25) { left: 96%; animation-delay: 10s, 2.8s; }
-        .star:nth-child(30) { left: 50%; animation-delay: 20s, 1.1s; } .star:nth-child(35) { left: 94%; animation-delay: 9s, 1.7s; }
+        .star:nth-child(2n) { background: var(--color-white-snow); width: 12px; height: 12px; animation-duration: 8s, 2.5s; }
+        .star:nth-child(3n) { background: var(--color-gold-shadow); width: 18px; height: 18px; animation-duration: 12s, 4s; }
+        .star:nth-child(1) { left: 1%; animation-delay: 0s, 1s; } .star:nth-child(5) { left: 16%; animation-delay: 3s, 1.5s; } .star:nth-child(10) { left: 36%; animation-delay: 6s, 3s; }
+        .star:nth-child(15) { left: 56%; animation-delay: 12s, 1.8s; } .star:nth-child(20) { left: 76%; animation-delay: 9s, 2.2s; } .star:nth-child(25) { left: 96%; animation-delay: 10s, 2.8s; }
+        .star:nth-child(30) { left: 50%; animation-delay: 20s, 1.1s; } .star:nth-child(35) { left: 94%; animation-delay: 9s, 1.7s; }
 
-        /* ------------------------------------------------------------------ */
-        /* Estilos del Hero */
-        /* ------------------------------------------------------------------ */
-        .hero-container {
-            position: relative;
-            background-color: var(--color-dark-blue);
-            min-height: 80vh;
-            overflow: hidden;
-            padding-bottom: 50px; 
-        }
-        
-        .hero-container::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 200px; 
-            z-index: 10;
-            background: linear-gradient(to top, var(--color-white-snow) 0%, transparent 100%);
-            clip-path: polygon(0 40%, 10% 50%, 20% 45%, 30% 55%, 40% 40%, 50% 60%, 60% 45%, 70% 55%, 80% 40%, 90% 60%, 100% 50%, 100% 100%, 0 100%);
-        }
+        /* ------------------------------------------------------------------ */
+        /* Estilos del Hero */
+        /* ------------------------------------------------------------------ */
+        .hero-container {
+            position: relative;
+            background-color: var(--color-dark-blue);
+            min-height: 80vh;
+            overflow: hidden;
+            padding-bottom: 50px; 
+        }
+        
+        .hero-container::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 200px; 
+            z-index: 10;
+            background: linear-gradient(to top, var(--color-white-snow) 0%, transparent 100%);
+            clip-path: polygon(0 40%, 10% 50%, 20% 45%, 30% 55%, 40% 40%, 50% 60%, 60% 45%, 70% 55%, 80% 40%, 90% 60%, 100% 50%, 100% 100%, 0 100%);
+        }
 
-        .hero-content {
-            position: relative;
-            z-index: 20;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 80px 20px 100px;
-        }
+        .hero-content {
+            position: relative;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 80px 20px 100px;
+        }
 
-        /* TÍTULO principal (Sin cambios) */
-        .main-title {
-            font-family: 'Luckiest Guy', cursive;
-            font-size: 6em;
-            line-height: 1;
-            margin: 0;
-            padding: 10px 20px;
-            color: var(--color-title-yellow);
-            font-weight: 900; 
-            text-shadow: 
-                -5px 5px 0 var(--color-title-red), 
-                -10px 10px 0 rgba(0, 0, 0, 0.3), 
-                0 0 30px var(--color-light-yellow-shadow); 
-            animation: bounce-title 1.5s ease-in-out infinite alternate;
-        }
+        /* TÍTULO principal */
+        .main-title {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 6em;
+            line-height: 1;
+            margin: 0;
+            padding: 10px 20px;
+            color: var(--color-title-yellow);
+            font-weight: 900; 
+            text-shadow: 
+                -5px 5px 0 var(--color-title-red), 
+                -10px 10px 0 rgba(0, 0, 0, 0.3), 
+                0 0 30px var(--color-light-yellow-shadow); 
+            animation: bounce-title 1.5s ease-in-out infinite alternate;
+        }
 
-        @keyframes bounce-title {
-            0% { transform: translateY(0) scale(1); }
-            100% { transform: translateY(-5px) scale(1.02); }
-        }
+        @keyframes bounce-title {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-5px) scale(1.02); }
+        }
 
-        /* Texto de la hermandad (Grueso con contorno blanco) - Sin cambios */
-        .small-text {
-            font-size: 3em;
-            font-weight: 700; 
-            margin: 5px 0 20px;
-            color: var(--color-red-bright); 
-            text-shadow: 
-                -1px -1px 0 var(--color-white-snow), 
-                1px -1px 0 var(--color-white-snow), 
-                -1px 1px 0 var(--color-white-snow), 
-                1px 1px 0 var(--color-white-snow),
-                2px 2px 2px rgba(0, 0, 0, 0.5); 
-        }
+        /* Texto de la hermandad (Grueso con contorno blanco) */
+        .small-text {
+            font-size: 3em;
+            font-weight: 700; 
+            margin: 5px 0 20px;
+            color: var(--color-red-bright); 
+            text-shadow: 
+                -1px -1px 0 var(--color-white-snow), 
+                1px -1px 0 var(--color-white-snow), 
+                -1px 1px 0 var(--color-white-snow), 
+                1px 1px 0 var(--color-white-snow),
+                2px 2px 2px rgba(0, 0, 0, 0.5); 
+        }
 
-        /* CORONA DE ADVIENTO (Sin cambios) */
-        .adviento-corona {
-            width: 200px; 
-            height: 200px;
-            margin: 20px auto 40px; 
-            background-image: url('https://edwinhsvcl14-maker.github.io/edwinbernabe/corona_adviento.png'); 
-            background-size: cover;
-            background-position: center;
-            border-radius: 50%;
-            box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.4),
-                        0 0 20px 8px rgba(255, 165, 0, 0.6); 
-            animation: pulse-shine 2s infinite alternate; 
-            position: relative;
-            z-index: 25;
-        }
+        /* CORONA DE ADVIENTO: Ruta de ejemplo local */
+        .adviento-corona {
+            width: 200px; 
+            height: 200px;
+            margin: 20px auto 40px; 
+            background-image: url('./img/corona_adviento.png'); 
+            background-size: cover;
+            background-position: center;
+            border-radius: 50%;
+            box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.4),
+                        0 0 20px 8px rgba(255, 165, 0, 0.6); 
+            animation: pulse-shine 2s infinite alternate; 
+            position: relative;
+            z-index: 25;
+        }
 
-        /* ESCUDO DE LA HERMANDAD (Ajuste para Desktop: 3 veces más grande) */
-        .escudo-hsvcl {
-            /* 90px * 3 = 270px */
-            width: 270px; 
-            height: 270px; 
-            margin: 10px auto 10px; 
-            background-image: url('https://edwinhsvcl14-maker.github.io/asistencias/logo_hermandad.png'); 
-            background-size: cover;
-            background-position: center;
-            border-radius: 50%;
-            position: relative;
-            z-index: 25;
-        }
-
-
-        @keyframes pulse-shine {
-            0% {
-                box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.4),
-                            0 0 20px 8px rgba(255, 165, 0, 0.6);
-                transform: scale(1);
-            }
-            100% {
-                box-shadow: 0 0 15px 8px rgba(255, 255, 255, 0.8),
-                            0 0 40px 15px rgba(255, 165, 0, 1);
-                transform: scale(1.03);
-            }
-        }
-        
-        /* Bloque de Información Central (Sin cambios) */
-        .info-block {
-            background-color: var(--color-white-snow);
-            color: var(--color-red-bright);
-            padding: 15px 40px;
-            border-radius: 15px;
-            border: 5px solid var(--color-red-bright);
-            box-shadow: 0 0 25px rgba(255, 255, 255, 0.8), 0 10px 15px rgba(0, 0, 0, 0.5);
-            margin-top: 20px;
-            text-align: center;
-            max-width: 500px; 
-            width: 90%; 
-            margin-left: auto;
-            margin-right: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 5px; 
-        }
-        
-        .info-item {
-            display: flex;
-            align-items: center; 
-            justify-content: center; 
-            font-size: 1.2em; 
-            font-weight: 700;
-        }
-
-        .info-item .icon {
-            font-size: 1.2em; 
-            margin-right: 10px;
-            color: var(--color-red-bright);
-        }
-
-        .info-item p {
-            margin: 0; 
-            color: var(--color-dark-blue);
-        }
-
-        /* Estilo del CTA Button (Sin cambios) */
-        .cta-button {
-            background-color: var(--color-red-bright);
-            color: var(--color-white-snow);
-            padding: 10px 25px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 1.2em;
-            transition: background-color 0.3s, transform 0.2s;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
-            display: inline-block;
-            text-transform: uppercase;
-            border: 3px solid var(--color-gold-shadow);
-        }
-
-        .cta-button:hover {
-            background-color: #CC2D1F;
-            transform: scale(1.05);
-        }
-
-        /* ------------------------------------------------------------------ */
-        /* Adornos Navideños Flotantes (Sin cambios) */
-        /* ------------------------------------------------------------------ */
-        .navidad-deco {
-            position: fixed;
-            color: var(--color-gold-shadow);
-            z-index: 10000;
-            pointer-events: none;
-            opacity: 0;
-            animation: fadeIn 1s forwards, floatDeco 15s linear infinite;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-        }
-        .navidad-deco:nth-child(even) {
-            color: var(--color-red-bright);
-        }
-        @keyframes fadeIn {
-            0% { opacity: 0; transform: translateY(-50px); }
-            100% { opacity: 0.9; transform: translateY(0); }
-        }
-        @keyframes floatDeco {
-            0% { transform: translateY(0) rotate(0deg); }
-            100% { transform: translateY(100vh) rotate(360deg); }
-        }
-        /* ------------------------------------------------------------------ */
+        /* ESCUDO DE LA HERMANDAD: Ruta de ejemplo local */
+        .escudo-hsvcl {
+            width: 270px; 
+            height: 270px; 
+            margin: 10px auto 10px; 
+            background-image: url('./img/logo_hermandad.png'); 
+            background-size: cover;
+            background-position: center;
+            border-radius: 50%;
+            position: relative;
+            z-index: 25;
+        }
 
 
-        /* Sección de Tarjetas Destacadas y Footer */
-        .featured-section {
-            background-color: var(--color-green-accent);
-            padding: 80px 40px;
-            text-align: center;
-            color: var(--color-dark-blue);
-            border-top: 15px solid var(--color-red-bright); 
-        }
-        
-        .featured-section h2 {
-            font-family: 'Luckiest Guy', cursive;
-            font-size: 3em;
-            color: var(--color-red-bright); 
-            margin-bottom: 50px;
-            text-shadow: 3px 3px 0 var(--color-white-snow); 
-        }
-        .card-container {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
-        }
-        
-        /* Modificaciones de la tarjeta (fondo crema, texto rojo) - Sin cambios */
-        .card {
-            background-color: var(--color-card-bg-new); 
-            border-radius: 20px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-            width: 300px;
-            padding: 25px;
-            text-align: center;
-            border: 4px solid var(--color-red-bright);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            color: var(--color-red-bright); 
-        }
-        
-        .card p, .card h3 {
-             color: var(--color-red-bright); 
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
-            border-color: var(--color-gold-shadow);
-        }
-        .card .icon-container {
-            font-size: 3em;
-            color: var(--color-red-bright); 
-            margin-bottom: 15px;
-        }
-        /* ================================================ */
-        
-        
-        .footer-section {
-            background-color: var(--color-dark-blue);
-            padding: 50px 40px;
-            text-align: center;
-            color: var(--color-white-snow);
-        }
-        .map-wrapper {
-            max-width: 960px;
-            margin: 0 auto;
-        }
-        .map-wrapper iframe {
-            width: 100%;
-            height: 400px;
-            border: 5px solid var(--color-red-bright);
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            margin-top: 20px;
-        }
+        @keyframes pulse-shine {
+            0% {
+                box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.4),
+                            0 0 20px 8px rgba(255, 165, 0, 0.6);
+                transform: scale(1);
+            }
+            100% {
+                box-shadow: 0 0 15px 8px rgba(255, 255, 255, 0.8),
+                            0 0 40px 15px rgba(255, 165, 0, 1);
+                transform: scale(1.03);
+            }
+        }
+        
+        /* Bloque de Información Central */
+        .info-block {
+            background-color: var(--color-white-snow);
+            color: var(--color-red-bright);
+            padding: 15px 40px;
+            border-radius: 15px;
+            border: 5px solid var(--color-red-bright);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.8), 0 10px 15px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+            text-align: center;
+            max-width: 500px; 
+            width: 90%; 
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 5px; 
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center; 
+            justify-content: center; 
+            font-size: 1.2em; 
+            font-weight: 700;
+        }
 
-        /* ================================================================== */
-        /* --- RESPONSIVE MEJORADO (Móviles y Tabletas) --- */
-        /* ================================================================== */
-        
-        @media (max-width: 768px) {
-            .main-title { 
-                font-size: 3.5em; 
-                text-shadow: -2px 2px 0 var(--color-title-red), -4px 4px 0 rgba(0, 0, 0, 0.3); 
-            }
-            .small-text { 
-                font-size: 1.4em; 
-                text-shadow: 
-                    -1px -1px 0 var(--color-white-snow), 
-                    1px -1px 0 var(--color-white-snow), 
-                    -1px 1px 0 var(--color-white-snow), 
-                    1px 1px 0 var(--color-white-snow); 
-            }
-            .adviento-corona {
-                width: 150px; 
-                height: 150px;
-                margin-bottom: 30px;
-            }
-            /* AJUSTE CLAVE 2: Escudo más grande en vista móvil (120px * 1.7 = 204px) */
-            .escudo-hsvcl { 
-                width: 200px; 
-                height: 200px; 
-                margin: 5px auto 5px;
-            }
-            .info-block { 
-                padding: 10px 20px; 
-                border-width: 3px; 
-                max-width: 90%; 
-            }
-            .card { 
-                width: 100%; 
-            }
-            #music-toggle {
-                width: 50px; 
-                height: 50px;
-                font-size: 1.2em;
-                bottom: 15px;
-                right: 15px;
-            }
-            
-            .featured-section h2 {
-                color: var(--color-red-bright); 
-                text-shadow: 2px 2px 0 var(--color-white-snow); 
-            }
-        }
-        
-        @media (max-width: 500px) {
-             .main-title { 
-                font-size: 2.8em; 
-                padding: 5px 10px;
-             }
-             .small-text {
-                font-size: 1.1em; 
-             }
-             .adviento-corona {
-                width: 120px; 
-                height: 120px;
-             }
-             /* Ajuste para móviles muy estrechos (100px * 1.7 = 170px) */
-             .escudo-hsvcl { 
-                width: 170px; 
-                height: 170px;
-             }
-             .info-item {
-                font-size: 1em; 
-             }
-             .info-item .icon {
-                font-size: 1.1em;
-                margin-right: 8px;
-             }
-             
-             .featured-section h2 {
-                font-size: 2em;
-                color: var(--color-red-bright); 
-                text-shadow: 2px 2px 0 var(--color-white-snow); 
-            }
-        }
-    </style>
+        .info-item .icon {
+            font-size: 1.2em; 
+            margin-right: 10px;
+            color: var(--color-red-bright);
+        }
+
+        .info-item p {
+            margin: 0; 
+            color: var(--color-dark-blue);
+        }
+
+        /* Estilo del CTA Button */
+        .cta-button {
+            background-color: var(--color-red-bright);
+            color: var(--color-white-snow);
+            padding: 10px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.2em;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+            display: inline-block;
+            text-transform: uppercase;
+            border: 3px solid var(--color-gold-shadow);
+        }
+
+        .cta-button:hover {
+            background-color: #CC2D1F;
+            transform: scale(1.05);
+        }
+
+        /* ------------------------------------------------------------------ */
+        /* Adornos Navideños Flotantes */
+        /* ------------------------------------------------------------------ */
+        .navidad-deco {
+            position: fixed;
+            color: var(--color-gold-shadow);
+            z-index: 10000;
+            pointer-events: none;
+            opacity: 0;
+            animation: fadeIn 1s forwards, floatDeco 15s linear infinite;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+        .navidad-deco:nth-child(even) {
+            color: var(--color-red-bright);
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(-50px); }
+            100% { opacity: 0.9; transform: translateY(0); }
+        }
+        @keyframes floatDeco {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(360deg); }
+        }
+        /* ------------------------------------------------------------------ */
+
+
+        /* Sección de Tarjetas Destacadas y Footer */
+        .featured-section {
+            background-color: var(--color-green-accent);
+            padding: 80px 40px;
+            text-align: center;
+            color: var(--color-dark-blue);
+            border-top: 15px solid var(--color-red-bright); 
+        }
+        
+        .featured-section h2 {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 3em;
+            color: var(--color-red-bright); 
+            margin-bottom: 50px;
+            text-shadow: 3px 3px 0 var(--color-white-snow); 
+        }
+        .card-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        /* Modificaciones de la tarjeta (fondo crema, texto rojo) */
+        .card {
+            background-color: var(--color-card-bg-new); 
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            width: 300px;
+            padding: 25px;
+            text-align: center;
+            border: 4px solid var(--color-red-bright);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            color: var(--color-red-bright); 
+        }
+        
+        .card p, .card h3 {
+             color: var(--color-red-bright); 
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            border-color: var(--color-gold-shadow);
+        }
+        .card .icon-container {
+            font-size: 3em;
+            color: var(--color-red-bright); 
+            margin-bottom: 15px;
+        }
+        
+        
+        .footer-section {
+            background-color: var(--color-dark-blue);
+            padding: 50px 40px;
+            text-align: center;
+            color: var(--color-white-snow);
+        }
+        .map-wrapper {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+        .map-wrapper iframe {
+            width: 100%;
+            height: 400px;
+            border: 5px solid var(--color-red-bright);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+        }
+
+        /* ================================================================== */
+        /* --- RESPONSIVE MEJORADO (Móviles y Tabletas) --- */
+        /* ================================================================== */
+        
+        @media (max-width: 768px) {
+            .main-title { 
+                font-size: 3.5em; 
+                text-shadow: -2px 2px 0 var(--color-title-red), -4px 4px 0 rgba(0, 0, 0, 0.3); 
+            }
+            .small-text { 
+                font-size: 1.4em; 
+                text-shadow: 
+                    -1px -1px 0 var(--color-white-snow), 
+                    1px -1px 0 var(--color-white-snow), 
+                    -1px 1px 0 var(--color-white-snow), 
+                    1px 1px 0 var(--color-white-snow); 
+            }
+            .adviento-corona {
+                width: 150px; 
+                height: 150px;
+                margin-bottom: 30px;
+            }
+            .escudo-hsvcl { 
+                width: 200px; 
+                height: 200px; 
+                margin: 5px auto 5px;
+            }
+            .info-block { 
+                padding: 10px 20px; 
+                border-width: 3px; 
+                max-width: 90%; 
+            }
+            .card { 
+                width: 100%; 
+            }
+            #music-toggle {
+                width: 50px; 
+                height: 50px;
+                font-size: 1.2em;
+                bottom: 15px;
+                right: 15px;
+            }
+            
+            .featured-section h2 {
+                color: var(--color-red-bright); 
+                text-shadow: 2px 2px 0 var(--color-white-snow); 
+            }
+        }
+        
+        @media (max-width: 500px) {
+             .main-title { 
+                font-size: 2.8em; 
+                padding: 5px 10px;
+             }
+             .small-text {
+                font-size: 1.1em; 
+             }
+             .adviento-corona {
+                width: 120px; 
+                height: 120px;
+             }
+             .escudo-hsvcl { 
+                width: 170px; 
+                height: 170px;
+             }
+             .info-item {
+                font-size: 1em; 
+             }
+             .info-item .icon {
+                font-size: 1.1em;
+                margin-right: 8px;
+             }
+             
+             .featured-section h2 {
+                font-size: 2em;
+                color: var(--color-red-bright); 
+                text-shadow: 2px 2px 0 var(--color-white-snow); 
+            }
+        }
+    </style>
 </head>
 <body>
-    
-    <div class="star-container">
-        <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
-        <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
-        <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
-        <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
-        <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
-        <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
-        <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
-    </div>
+    
+    <div class="star-container">
+        <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+        <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+        <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+        <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+        <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+        <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+        <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+    </div>
 
-    <section class="hero-container">
-        
-        <div class="hero-content">
-             <div class="small-text">Hermandad de la Santísima Virgen del Carmen de Lima</div>
-             
-             <div class="escudo-hsvcl" title="Escudo HSVCL Grande"></div>
+    <section class="hero-container">
+        
+        <div class="hero-content">
+             <div class="small-text">Hermandad de la Santísima Virgen del Carmen de Lima</div>
+             
+             <div class="escudo-hsvcl" title="Escudo HSVCL Grande"></div>
 
-            <h1 class="main-title">
-                Gran Chocolatada Navideña <br>2025 <i class="fas fa-bell hero-bell"></i>
-            </h1>
-        
-            <div class="adviento-corona" title="Corona de Adviento Brillante"></div>
-            
-            <div class="info-block">
-                <div class="info-item">
-                    <span class="icon">📅</span> 
-                    <p>Sábado 20 de Diciembre | 9:00 AM</p>
-                </div>
-                <div class="info-item">
-                    <span class="icon">📍</span> 
-                    <p>Local Institucional: Jr. Junín 1145, Lima</p>
-                </div>
-            </div>
-            
-            <a href="#featured" class="cta-button" style="margin-top: 20px;">Ver Detalles</a>
-        </div>
-    </section>
+            <h1 class="main-title">
+                Gran Chocolatada Navideña <br>2025 <i class="fas fa-bell hero-bell"></i>
+            </h1>
+        
+            <div class="adviento-corona" title="Corona de Adviento Brillante"></div>
+            
+            <div class="info-block">
+                <div class="info-item">
+                    <span class="icon">📅</span> 
+                    <p>Sábado 20 de Diciembre | 9:00 AM</p>
+                </div>
+                <div class="info-item">
+                    <span class="icon">📍</span> 
+                    <p>Local Institucional: Jr. Junín 1145, Lima</p>
+                </div>
+            </div>
+            
+            <a href="#featured" class="cta-button" style="margin-top: 20px;">Ver Detalles</a>
+        </div>
+    </section>
 
-    <section id="featured" class="featured-section">
-        <h2>Detalles de Nuestra Gran Celebración</h2>
-        <div class="card-container">
-            <div class="card">
-                 <div class="icon-container">☕</div>
-                <h3>Chocolatada Carmelitana</h3>
-                <p>Compartiremos la tradicional y deliciosa chocolatada, acompañada de panetón y dulces. Un encuentro para fortalecer nuestros lazos de hermandad.</p>
-                <a href="#" class="cta-button" style="padding: 8px 15px; font-size: 0.9em;">Leer más</a>
-            </div>
+    <section id="featured" class="featured-section">
+        <h2>Detalles de Nuestra Gran Celebración</h2>
+        <div class="card-container">
+            <div class="card">
+                 <div class="icon-container">☕</div>
+                <h3>Chocolatada Carmelitana</h3>
+                <p>Compartiremos la tradicional y deliciosa chocolatada, acompañada de panetón y dulces. Un encuentro para fortalecer nuestros lazos de hermandad.</p>
+                <a href="#" class="cta-button" style="padding: 8px 15px; font-size: 0.9em;">Leer más</a>
+            </div>
 
-            <div class="card">
-                <div class="icon-container">🙏</div>
-                <h3>El Verdadero Significado: Navidad</h3>
-                <p>"Estimados Hermanos y Hermanas, celebramos esta Noche Santa con profunda alegría el nacimiento de Nuestro Señor Jesucristo, la fuente de nuestra fe, cuya venida magnifica el 'Sí' de la Virgen María, nuestra amada y Santa Madre. Para nuestra Hermandad, la Navidad es un llamado a la unidad, invitándonos a renovar nuestro compromiso de servicio y caridad, que son el cimiento de nuestra misión. Que el Niño Dios, protegido bajo el Escapulario del Carmen, ilumine nuestros pasos y fortalezca los lazos de fe y amor que nos unen. ¡Feliz Navidad a todos!".</p>
-                
+            <div class="card">
+                <div class="icon-container">🙏</div>
+                <h3>El Verdadero Significado: Navidad</h3>
+                <p>"Estimados Hermanos y Hermanas, celebramos esta Noche Santa con profunda alegría el nacimiento de Nuestro Señor Jesucristo, la fuente de nuestra fe, cuya venida magnifica el 'Sí' de la Virgen María, nuestra amada y Santa Madre. Para nuestra Hermandad, la Navidad es un llamado a la unidad, invitándonos a renovar nuestro compromiso de servicio y caridad, que son el cimiento de nuestra misión. Que el Niño Dios, protegido bajo el Escapulario del Carmen, ilumine nuestros pasos y fortalezca los lazos de fe y amor que nos unen. ¡Feliz Navidad a todos!".</p>
+                
 <h3>Hermano Presidente</h3>
-                <h3>Vicente Dominguez Solano</h3>
-            </div>
+                <h3>Vicente Dominguez Solano</h3>
+            </div>
 
-             <div class="card">
-                <div class="icon-container">🎁</div>
-                <h3>Apoyo y Colaboración</h3>
-                <p>Si deseas colaborar con donaciones de juguetes, panetones o insumos para nuestra Chocolatada, contacta con nuestra hermana Carmen Rosa Gutiérrez Vargas (Presidenta del Consejo de Disciplina, Teléfono: 932 910 728) o con nuestro Hermano Vicente Dominguez Solano (Presidente HSVCL, Teléfono: 993 901 466).</p>
-                <p>Horario de atención para donaciones: 7:00 PM a 10:00 PM (Lunes a Viernes)</p>
-            </div>
+             <div class="card">
+                 <div class="icon-container">🎁</div>
+                <h3>Apoyo y Colaboración</h3>
+                <p>Si deseas colaborar con donaciones de juguetes, panetones o insumos para nuestra Chocolatada, contacta con nuestra hermana Carmen Rosa Gutiérrez Vargas (Presidenta del Consejo de Disciplina, Teléfono: 932 910 728) o con nuestro Hermano Vicente Dominguez Solano (Presidente HSVCL, Teléfono: 993 901 466).</p>
+                <p>Horario de atención para donaciones: 7:00 PM a 10:00 PM (Lunes a Viernes)</p>
+            </div>
 
-            
-        </div>
-    </section>
+            
+        </div>
+    </section>
 
-    <section class="footer-section">
-        <h2 style="font-size: 2.5em; text-shadow: 2px 2px 0 var(--color-red-bright);">¡Visítanos! (Mapa)</h2>
-        <div class="map-wrapper">
-            <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3902.1352467554034!2d-77.0252112851865!3d-12.04368939145618!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c5c93d93d395%3A0x6739b61d4a572a1!2sJr.%20Jun%C3%ADn%201145%2C%20Cercado%20de%20Lima%2015001!5e0!3m2!1ses-419!2spe!4v1670876400000!5m2!1ses-419!2spe" 
-                allowfullscreen="" 
-                loading="lazy" 
-                referrerpolicy="no-referrer-when-downgrade"
-                title="Ubicación de la Hermandad - Jr. Junín 1145">
-            </iframe>
-        </div>
-        
-        <p style="margin-top: 30px; font-size: 1.1em; color: rgba(255, 255, 255, 0.7);">
-            © 2025 Hermandad de la Santísima Virgen del Carmen de Lima. Todos los derechos reservados.
-        </p>
-    </section>
-    
-    <audio id="audio-navidad" loop>
-        <source src="https://edwinhsvcl14-maker.github.io/edwinbernabe/Ven_A_Cantar.mp3" type="audio/mpeg"> 
-        Tu navegador no soporta el audio.
-    </audio>
+    <section class="footer-section">
+        <h2 style="font-size: 2.5em; text-shadow: 2px 2px 0 var(--color-red-bright);">¡Visítanos! (Mapa)</h2>
+        <div class="map-wrapper">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d117.84!2d-77.02705!3d-12.0463!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c56d773173d1%3A0x8e8a71d604e389b0!2sJr.%20Jun%C3%ADn%201145%2C%20Lima!5e0!3m2!1ses-419!2spe!4v1703000000000!5m2!1ses-419!2spe" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade"
+                title="Ubicación de la Hermandad - Jr. Junín 1145">
+            </iframe>
+        </div>
+        
+        <p style="margin-top: 30px; font-size: 1.1em; color: rgba(255, 255, 255, 0.7);">
+            © 2025 Hermandad de la Santísima Virgen del Carmen de Lima. Todos los derechos reservados.
+        </p>
+    </section>
+    
+    <audio id="audio-navidad" loop>
+        <source src="./audio/Ven_A_Cantar.mp3" type="audio/mpeg"> 
+        Tu navegador no soporta el audio.
+    </audio>
 
-    <div id="music-toggle" title="Reproducir/Pausar Música">
-        <i class="fas fa-play" id="music-icon"></i>
-    </div>
+    <div id="music-toggle" title="Reproducir/Pausar Música">
+        <i class="fas fa-play" id="music-icon"></i>
+    </div>
 
-    <script>
-        // Lógica para la música flotante
-        document.addEventListener('DOMContentLoaded', () => {
-            const audio = document.getElementById('audio-navidad');
-            const toggleButton = document.getElementById('music-toggle');
-            const icon = document.getElementById('music-icon');
+    <script>
+        // Lógica para la música flotante
+        document.addEventListener('DOMContentLoaded', () => {
+            const audio = document.getElementById('audio-navidad');
+            const toggleButton = document.getElementById('music-toggle');
+            const icon = document.getElementById('music-icon');
 
-            toggleButton.addEventListener('click', () => {
-                if (audio.paused) {
-                    // Intenta reproducir el audio
-                    audio.play().then(() => {
-                        icon.className = 'fas fa-pause';
-                        toggleButton.classList.add('music-playing');
-                        toggleButton.title = 'Pausar Música';
-                    }).catch(error => {
-                        // Muestra un mensaje si la reproducción automática falla (típico en móviles)
-                        alert("El navegador requiere interacción para reproducir el audio.");
-                        console.error("Error de reproducción:", error);
-                    });
-                } else {
-                    // Pausa el audio
-                    audio.pause();
-                    icon.className = 'fas fa-play';
-                    toggleButton.classList.remove('music-playing');
-                    toggleButton.title = 'Reproducir Música';
-                }
-            });
-            
-            // Lógica de Adornos Flotantes (ya existente)
-            const body = document.body;
-            const numDecorations = 50; 
-            const decorations = ['<i class="fas fa-snowflake"></i>', '🔔', '⭐'];
+            toggleButton.addEventListener('click', () => {
+                if (audio.paused) {
+                    // Intenta reproducir el audio
+                    audio.play().then(() => {
+                        icon.className = 'fas fa-pause';
+                        toggleButton.classList.add('music-playing');
+                        toggleButton.title = 'Pausar Música';
+                    }).catch(error => {
+                        // Muestra un mensaje si la reproducción automática falla (típico en móviles)
+                        alert("El navegador requiere interacción para reproducir el audio.");
+                        console.error("Error de reproducción:", error);
+                    });
+                } else {
+                    // Pausa el audio
+                    audio.pause();
+                    icon.className = 'fas fa-play';
+                    toggleButton.classList.remove('music-playing');
+                    toggleButton.title = 'Reproducir Música';
+                }
+            });
+            
+            // Lógica de Adornos Flotantes (ya existente)
+            const body = document.body;
+            const numDecorations = 50; 
+            const decorations = ['<i class="fas fa-snowflake"></i>', '🔔', '⭐'];
 
-            for (let i = 0; i < numDecorations; i++) {
-                const deco = document.createElement('div');
-                deco.innerHTML = decorations[Math.floor(Math.random() * decorations.length)];
-                deco.classList.add('navidad-deco');
-                
-                deco.style.left = `${Math.random() * 100}vw`;
-                deco.style.top = `${Math.random() * 100}vh`;
-                deco.style.fontSize = `${1 + Math.random() * 1.5}em`;
-                deco.style.animationDelay = `${Math.random() * 15}s`;
-                
-                body.appendChild(deco);
-            }
-        });
-    </script>
+            for (let i = 0; i < numDecorations; i++) {
+                const deco = document.createElement('div');
+                deco.innerHTML = decorations[Math.floor(Math.random() * decorations.length)];
+                deco.classList.add('navidad-deco');
+                
+                deco.style.left = `${Math.random() * 100}vw`;
+                deco.style.top = `${Math.random() * 100}vh`;
+                deco.style.fontSize = `${1 + Math.random() * 1.5}em`;
+                deco.style.animationDelay = `${Math.random() * 15}s`;
+                
+                body.appendChild(deco);
+            }
+        });
+    </script>
 
 </body>
 </html>
