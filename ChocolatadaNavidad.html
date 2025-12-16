@@ -12,16 +12,18 @@
         /* Variables de Color (Basadas en la Imagen) */
         /* ------------------------------------------------------------------ */
         :root {
-            --color-dark-blue: #0f2323; /* Azul muy oscuro / Fondo Noche */
+            /* CAMBIO CLAVE 1: De #0f2323 (Casi negro) a un verde intermedio */
+            --color-dark-blue: #0A6640; /* Verde Oscuro/Medio para el fondo principal */
+            
             --color-white-snow: #FDFEFE; /* Blanco Nieve */
-            --color-red-bright: #E74C3C; /* Rojo Cereza Brillante (Santa/CTA y AHORA: Texto Hermandad) */
+            --color-red-bright: #E74C3C; /* Rojo Cereza Brillante */
             --color-gold-shadow: #FFD700; /* Dorado para Sombra/Acento */
-            --color-green-accent: #27AE60; /* Verde Pino para Acentos */
+            --color-green-accent: #27AE60; /* Verde Pino para Acentos (Mantiene el fondo de featured) */
             --color-title-yellow: #F1C40F; /* Amarillo Limón del título */
             --color-title-red: #C0392B; /* Rojo de profundidad del título */
-            --color-card-bg-new: #FFFDD0; /* NUEVO: Amarillo Claro / Crema para tarjetas */
-            --color-dark-red-text: #800020; /* Vinotinto / Borgoña Profundo (Ya no se usa directamente) */
-            --color-light-yellow-shadow: #FFFFAA; /* Sombra amarilla clara para el título */
+            --color-card-bg-new: #FFFDD0; /* Amarillo Claro / Crema para tarjetas */
+            --color-dark-red-text: #800020;
+            --color-light-yellow-shadow: #FFFFAA; 
         }
         
         /* ------------------------------------------------------------------ */
@@ -31,7 +33,8 @@
             font-family: 'Montserrat', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: var(--color-dark-blue);
+            /* Se aplica el nuevo color aquí */
+            background-color: var(--color-dark-blue); 
             color: var(--color-white-snow);
             line-height: 1.6;
             overflow-x: hidden;
@@ -123,10 +126,11 @@
         .star:nth-child(30) { left: 50%; animation-delay: 20s, 1.1s; } .star:nth-child(35) { left: 94%; animation-delay: 9s, 1.7s; }
 
         /* ------------------------------------------------------------------ */
-        /* Estilos del Hero (Sin cambios) */
+        /* Estilos del Hero */
         /* ------------------------------------------------------------------ */
         .hero-container {
             position: relative;
+            /* Se aplica el nuevo color aquí */
             background-color: var(--color-dark-blue);
             min-height: 80vh;
             overflow: hidden;
@@ -156,7 +160,7 @@
             padding: 80px 20px 100px;
         }
 
-        /* TÍTULO principal */
+        /* TÍTULO principal (Sin cambios) */
         .main-title {
             font-family: 'Luckiest Guy', cursive;
             font-size: 6em;
@@ -183,7 +187,13 @@
             font-weight: 700; 
             margin: 5px 0 20px;
             color: var(--color-red-bright); 
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); 
+            /* CAMBIO CLAVE 2: Contorno/sombra blanca al texto rojo */
+            text-shadow: 
+                -1px -1px 0 var(--color-white-snow), 
+                1px -1px 0 var(--color-white-snow), 
+                -1px 1px 0 var(--color-white-snow), 
+                1px 1px 0 var(--color-white-snow),
+                2px 2px 2px rgba(0, 0, 0, 0.5); /* Sombra suave para profundidad */
         }
 
         /* CORONA DE ADVIENTO (Sin cambios) */
@@ -202,7 +212,7 @@
             z-index: 25;
         }
 
-        /* escudo-hsvcl (Pequeño y sin efectos - Versión de escritorio) */
+        /* escudo-hsvcl (Sin cambios) */
         .escudo-hsvcl {
             width: 65px; 
             height: 65px; 
@@ -316,6 +326,7 @@
 
         /* Sección de Tarjetas Destacadas y Footer */
         .featured-section {
+            /* Mantiene el color original que te gustó */
             background-color: var(--color-green-accent);
             padding: 80px 40px;
             text-align: center;
@@ -323,13 +334,12 @@
             border-top: 15px solid var(--color-red-bright); 
         }
         
-        /* APLICACIÓN DE CAMBIO: Texto Rojo (Sombra Blanca para Contraste) */
         .featured-section h2 {
             font-family: 'Luckiest Guy', cursive;
             font-size: 3em;
-            color: var(--color-red-bright); /* ¡NUEVO COLOR DE LETRA: ROJO! */
+            color: var(--color-red-bright); 
             margin-bottom: 50px;
-            text-shadow: 3px 3px 0 var(--color-white-snow); /* Sombra ajustada a BLANCO para evitar el descuadre */
+            text-shadow: 3px 3px 0 var(--color-white-snow); 
         }
         .card-container {
             display: flex;
@@ -338,9 +348,9 @@
             flex-wrap: wrap;
         }
         
-        /* === MODIFICACIONES SOLICITADAS A LA TARJETA === */
+        /* Modificaciones de la tarjeta (fondo crema, texto rojo) - Sin cambios */
         .card {
-            background-color: var(--color-card-bg-new); /* <-- CAMBIO: Fondo Amarillo/Crema */
+            background-color: var(--color-card-bg-new); 
             border-radius: 20px;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
             width: 300px;
@@ -348,11 +358,11 @@
             text-align: center;
             border: 4px solid var(--color-red-bright);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            color: var(--color-red-bright); /* <-- CAMBIO: Texto principal de la tarjeta a Rojo */
+            color: var(--color-red-bright); 
         }
         
         .card p, .card h3 {
-             color: var(--color-red-bright); /* Asegura que el texto y títulos sean rojos */
+             color: var(--color-red-bright); 
         }
         
         .card:hover {
@@ -362,13 +372,14 @@
         }
         .card .icon-container {
             font-size: 3em;
-            color: var(--color-red-bright); /* <-- CAMBIO: Iconos a Rojo */
+            color: var(--color-red-bright); 
             margin-bottom: 15px;
         }
         /* ================================================ */
         
         
         .footer-section {
+            /* Mantiene el color del fondo principal */
             background-color: var(--color-dark-blue);
             padding: 50px 40px;
             text-align: center;
@@ -398,16 +409,21 @@
             }
             .small-text { 
                 font-size: 1.4em; 
+                /* Se mantiene el contorno blanco en móviles */
+                text-shadow: 
+                    -1px -1px 0 var(--color-white-snow), 
+                    1px -1px 0 var(--color-white-snow), 
+                    -1px 1px 0 var(--color-white-snow), 
+                    1px 1px 0 var(--color-white-snow); 
             }
             .adviento-corona {
                 width: 150px; 
                 height: 150px;
                 margin-bottom: 30px;
             }
-             /* CAMBIO CLAVE: Escudo con el doble de tamaño (100px) para vista móvil */
             .escudo-hsvcl { 
-                width: 100px; /* Tamaño duplicado para móvil */
-                height: 100px; /* Tamaño duplicado para móvil */
+                width: 100px; 
+                height: 100px; 
                 margin: 5px auto 5px;
             }
             .info-block { 
@@ -426,10 +442,9 @@
                 right: 15px;
             }
             
-            /* APLICACIÓN DE CAMBIO EN MEDIA QUERY: Texto Rojo (Sombra Blanca para Contraste) */
             .featured-section h2 {
-                color: var(--color-red-bright); /* Rojo */
-                text-shadow: 2px 2px 0 var(--color-white-snow); /* Sombra Blanca */
+                color: var(--color-red-bright); 
+                text-shadow: 2px 2px 0 var(--color-white-snow); 
             }
         }
         
@@ -445,7 +460,6 @@
                 width: 120px; 
                 height: 120px;
              }
-             /* Aseguramos que el escudo mantenga un buen tamaño incluso en los móviles más pequeños */
              .escudo-hsvcl { 
                 width: 90px;
                 height: 90px;
@@ -458,11 +472,10 @@
                 margin-right: 8px;
              }
              
-             /* APLICACIÓN DE CAMBIO EN MEDIA QUERY: Texto Rojo (Sombra Blanca para Contraste) */
              .featured-section h2 {
                 font-size: 2em;
-                color: var(--color-red-bright); /* Rojo */
-                text-shadow: 2px 2px 0 var(--color-white-snow); /* Sombra Blanca */
+                color: var(--color-red-bright); 
+                text-shadow: 2px 2px 0 var(--color-white-snow); 
             }
         }
     </style>
