@@ -198,4 +198,414 @@
             box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.4),
                         0 0 20px 8px rgba(255, 165, 0, 0.6); 
             animation: pulse-shine 2s infinite alternate; 
-            position
+            position: relative;
+            z-index: 25;
+        }
+
+        /* escudo-hsvcl (Pequeño y sin efectos - Versión de escritorio) */
+        .escudo-hsvcl {
+            width: 65px; 
+            height: 65px; 
+            margin: 10px auto 10px; 
+            background-image: url('https://edwinhsvcl14-maker.github.io/asistencias/logo_hermandad.png'); 
+            background-size: cover;
+            background-position: center;
+            border-radius: 50%;
+            position: relative;
+            z-index: 25;
+        }
+
+
+        @keyframes pulse-shine {
+            0% {
+                box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.4),
+                            0 0 20px 8px rgba(255, 165, 0, 0.6);
+                transform: scale(1);
+            }
+            100% {
+                box-shadow: 0 0 15px 8px rgba(255, 255, 255, 0.8),
+                            0 0 40px 15px rgba(255, 165, 0, 1);
+                transform: scale(1.03);
+            }
+        }
+        
+        /* Bloque de Información Central (Sin cambios) */
+        .info-block {
+            background-color: var(--color-white-snow);
+            color: var(--color-red-bright);
+            padding: 15px 40px;
+            border-radius: 15px;
+            border: 5px solid var(--color-red-bright);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.8), 0 10px 15px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+            text-align: center;
+            max-width: 500px; 
+            width: 90%; 
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 5px; 
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center; 
+            justify-content: center; 
+            font-size: 1.2em; 
+            font-weight: 700;
+        }
+
+        .info-item .icon {
+            font-size: 1.2em; 
+            margin-right: 10px;
+            color: var(--color-red-bright);
+        }
+
+        .info-item p {
+            margin: 0; 
+            color: var(--color-dark-blue);
+        }
+
+        /* Estilo del CTA Button (Sin cambios) */
+        .cta-button {
+            background-color: var(--color-red-bright);
+            color: var(--color-white-snow);
+            padding: 10px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.2em;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+            display: inline-block;
+            text-transform: uppercase;
+            border: 3px solid var(--color-gold-shadow);
+        }
+
+        .cta-button:hover {
+            background-color: #CC2D1F;
+            transform: scale(1.05);
+        }
+
+        /* ------------------------------------------------------------------ */
+        /* Adornos Navideños Flotantes (Sin cambios) */
+        /* ------------------------------------------------------------------ */
+        .navidad-deco {
+            position: fixed;
+            color: var(--color-gold-shadow);
+            z-index: 10000;
+            pointer-events: none;
+            opacity: 0;
+            animation: fadeIn 1s forwards, floatDeco 15s linear infinite;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+        .navidad-deco:nth-child(even) {
+            color: var(--color-red-bright);
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(-50px); }
+            100% { opacity: 0.9; transform: translateY(0); }
+        }
+        @keyframes floatDeco {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(360deg); }
+        }
+        /* ------------------------------------------------------------------ */
+
+
+        /* Sección de Tarjetas Destacadas y Footer */
+        .featured-section {
+            background-color: var(--color-green-accent);
+            padding: 80px 40px;
+            text-align: center;
+            color: var(--color-dark-blue);
+            border-top: 15px solid var(--color-red-bright); 
+        }
+        
+        /* ** SOLUCIÓN AL ESTILO DEL TÍTULO DESTACADO: Texto Rojo con Borde/Stroke Blanco ** */
+        .featured-section h2 {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 3em;
+            color: var(--color-red-bright); /* Color de relleno: ROJO */
+            margin-bottom: 50px;
+            /* Usamos -webkit-text-stroke para un borde de texto más estable */
+            -webkit-text-stroke: 2px var(--color-white-snow);
+            -webkit-text-fill-color: var(--color-red-bright); /* Mantiene el color de relleno rojo */
+            text-shadow: none; /* Aseguramos que no interfiera el shadow */
+        }
+        .card-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .card {
+            background-color: var(--color-card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            width: 300px;
+            padding: 25px;
+            text-align: center;
+            border: 4px solid var(--color-red-bright);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            color: var(--color-dark-blue);
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            border-color: var(--color-gold-shadow);
+        }
+        .card .icon-container {
+            font-size: 3em;
+            color: var(--color-green-accent);
+            margin-bottom: 15px;
+        }
+        .footer-section {
+            background-color: var(--color-dark-blue);
+            padding: 50px 40px;
+            text-align: center;
+            color: var(--color-white-snow);
+        }
+        .map-wrapper {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+        .map-wrapper iframe {
+            width: 100%;
+            height: 400px;
+            border: 5px solid var(--color-red-bright);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+        }
+
+        /* ================================================================== */
+        /* --- RESPONSIVE MEJORADO (Móviles y Tabletas) --- */
+        /* ================================================================== */
+        
+        @media (max-width: 768px) {
+            .main-title { 
+                font-size: 3.5em; 
+                text-shadow: -2px 2px 0 var(--color-title-red), -4px 4px 0 rgba(0, 0, 0, 0.3); 
+            }
+            .small-text { 
+                font-size: 1.4em; 
+            }
+            .adviento-corona {
+                width: 150px; 
+                height: 150px;
+                margin-bottom: 30px;
+            }
+             /* CAMBIO CLAVE: Escudo con el doble de tamaño (100px) para vista móvil */
+            .escudo-hsvcl { 
+                width: 100px; /* Tamaño duplicado para móvil */
+                height: 100px; /* Tamaño duplicado para móvil */
+                margin: 5px auto 5px;
+            }
+            .info-block { 
+                padding: 10px 20px; 
+                border-width: 3px; 
+                max-width: 90%; 
+            }
+            .card { 
+                width: 100%; 
+            }
+            #music-toggle {
+                width: 50px; 
+                height: 50px;
+                font-size: 1.2em;
+                bottom: 15px;
+                right: 15px;
+            }
+            
+            /* ** SOLUCIÓN EN MEDIA QUERY: Borde blanco más delgado ** */
+            .featured-section h2 {
+                color: var(--color-red-bright); /* Rojo */
+                -webkit-text-stroke: 1.5px var(--color-white-snow); /* Borde blanco más delgado */
+                -webkit-text-fill-color: var(--color-red-bright);
+                text-shadow: none;
+            }
+        }
+        
+        @media (max-width: 500px) {
+             .main-title { 
+                font-size: 2.8em; 
+                padding: 5px 10px;
+             }
+             .small-text {
+                font-size: 1.1em; 
+             }
+             .adviento-corona {
+                width: 120px; 
+                height: 120px;
+             }
+             /* Aseguramos que el escudo mantenga un buen tamaño incluso en los móviles más pequeños */
+             .escudo-hsvcl { 
+                width: 90px;
+                height: 90px;
+             }
+             .info-item {
+                font-size: 1em; 
+             }
+             .info-item .icon {
+                font-size: 1.1em;
+                margin-right: 8px;
+             }
+             
+             /* ** SOLUCIÓN EN MEDIA QUERY: Borde blanco aún más delgado ** */
+             .featured-section h2 {
+                font-size: 2em;
+                color: var(--color-red-bright); /* Rojo */
+                -webkit-text-stroke: 1px var(--color-white-snow); /* Borde blanco aún más delgado */
+                -webkit-text-fill-color: var(--color-red-bright);
+                text-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="star-container">
+        <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+        <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+        <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+        <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+        <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+        <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+        <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+    </div>
+
+    <section class="hero-container">
+        
+        <div class="hero-content">
+             <div class="small-text">Hermandad de la Santísima Virgen del Carmen de Lima</div>
+             
+             <div class="escudo-hsvcl" title="Escudo HSVCL"></div>
+
+            <h1 class="main-title">
+                Gran Chocolatada Navideña <br>2025 <i class="fas fa-bell hero-bell"></i>
+            </h1>
+        
+            <div class="adviento-corona" title="Corona de Adviento Brillante"></div>
+            
+            <div class="info-block">
+                <div class="info-item">
+                    <span class="icon">📅</span> 
+                    <p>Sábado 20 de Diciembre | 9:00 AM</p>
+                </div>
+                <div class="info-item">
+                    <span class="icon">📍</span> 
+                    <p>Local Institucional: Jr. Junín 1145, Lima</p>
+                </div>
+            </div>
+            
+            <a href="#featured" class="cta-button" style="margin-top: 20px;">Ver Detalles</a>
+        </div>
+    </section>
+
+    <section id="featured" class="featured-section">
+        <h2>Detalles de Nuestra Gran Celebración</h2>
+        <div class="card-container">
+            <div class="card">
+                 <div class="icon-container">☕</div>
+                <h3>Chocolatada Carmelitana</h3>
+                <p>Compartiremos la tradicional y deliciosa chocolatada, acompañada de panetón y dulces. Un encuentro para fortalecer nuestros lazos de hermandad.</p>
+                <a href="#" class="cta-button" style="padding: 8px 15px; font-size: 0.9em;">Leer más</a>
+            </div>
+
+            <div class="card">
+                <div class="icon-container">🙏</div>
+                <h3>El Verdadero Significado: Navidad</h3>
+                <p>"Estimados Hermanos y Hermanas, celebramos esta Noche Santa con profunda alegría el nacimiento de Nuestro Señor Jesucristo, la fuente de nuestra fe, cuya venida magnifica el 'Sí' de la Virgen María, nuestra amada y Santa Madre. Para nuestra Hermandad, la Navidad es un llamado a la unidad, invitándonos a renovar nuestro compromiso de servicio y caridad, que son el cimiento de nuestra misión. Que el Niño Dios, protegido bajo el Escapulario del Carmen, ilumine nuestros pasos y fortalezca los lazos de fe y amor que nos unen. ¡Feliz Navidad a todos!".</p>
+                
+<h3>Hermano Presidente</h3>
+                <h3>Vicente Dominguez Solano</h3>
+            </div>
+
+             <div class="card">
+                <div class="icon-container">🎁</div>
+                <h3>Apoyo y Colaboración</h3>
+                <p>Si deseas colaborar con donaciones de juguetes, panetones o insumos para nuestra Chocolatada, contacta con nuestra hermana Carmen Rosa Gutiérrez Vargas (Presidenta del Consejo de Disciplina, Teléfono: 932 910 728) o con nuestro Hermano Vicente Dominguez Solano (Presidente HSVCL, Teléfono: 993 901 466).</p>
+                <p>Horario de atención para donaciones: 7:00 PM a 10:00 PM (Lunes a Viernes)</p>
+            </div>
+
+            
+        </div>
+    </section>
+
+    <section class="footer-section">
+        <h2 style="font-size: 2.5em; text-shadow: 2px 2px 0 var(--color-red-bright);">¡Visítanos! (Mapa)</h2>
+        <div class="map-wrapper">
+                        <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3902.503463765187!2d-77.0270001!3d-12.0084518!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c5ff68f44b0f%3A0x6d91295b9c0376d!2sJr.%20Jun%C3%ADn%201145%2C%20Lima%2015001!5e0!3m2!1sen!2spe!4v1702758800000!5m2!1sen!2spe" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade"
+                title="Ubicación de la Hermandad - Jr. Junín 1145">
+            </iframe>
+        </div>
+        
+        <p style="margin-top: 30px; font-size: 1.1em; color: rgba(255, 255, 255, 0.7);">
+            © 2025 Hermandad de la Santísima Virgen del Carmen de Lima. Todos los derechos reservados.
+        </p>
+    </section>
+    
+    <audio id="audio-navidad" loop>
+        <source src="https://edwinhsvcl14-maker.github.io/edwinbernabe/Ven_A_Cantar.mp3" type="audio/mpeg"> 
+        Tu navegador no soporta el audio.
+    </audio>
+
+    <div id="music-toggle" title="Reproducir/Pausar Música">
+        <i class="fas fa-play" id="music-icon"></i>
+    </div>
+
+    <script>
+        // Lógica para la música flotante
+        document.addEventListener('DOMContentLoaded', () => {
+            const audio = document.getElementById('audio-navidad');
+            const toggleButton = document.getElementById('music-toggle');
+            const icon = document.getElementById('music-icon');
+
+            toggleButton.addEventListener('click', () => {
+                if (audio.paused) {
+                    // Intenta reproducir el audio
+                    audio.play().then(() => {
+                        icon.className = 'fas fa-pause';
+                        toggleButton.classList.add('music-playing');
+                        toggleButton.title = 'Pausar Música';
+                    }).catch(error => {
+                        // Muestra un mensaje si la reproducción automática falla (típico en móviles)
+                        console.error("Error de reproducción:", error);
+                    });
+                } else {
+                    // Pausa el audio
+                    audio.pause();
+                    icon.className = 'fas fa-play';
+                    toggleButton.classList.remove('music-playing');
+                    toggleButton.title = 'Reproducir Música';
+                }
+            });
+            
+            // Lógica de Adornos Flotantes (ya existente)
+            const body = document.body;
+            const numDecorations = 50; 
+            const decorations = ['<i class="fas fa-snowflake"></i>', '🔔', '⭐'];
+
+            for (let i = 0; i < numDecorations; i++) {
+                const deco = document.createElement('div');
+                deco.innerHTML = decorations[Math.floor(Math.random() * decorations.length)];
+                deco.classList.add('navidad-deco');
+                
+                deco.style.left = `${Math.random() * 100}vw`;
+                deco.style.top = `${Math.random() * 100}vh`;
+                deco.style.fontSize = `${1 + Math.random() * 1.5}em`;
+                deco.style.animationDelay = `${Math.random() * 15}s`;
+                
+                body.appendChild(deco);
+            }
+        });
+    </script>
+
+</body>
+</html>
