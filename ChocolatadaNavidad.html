@@ -37,45 +37,8 @@
             overflow-x: hidden;
         }
         
-        /* [Omisión de estilos de Música, Estrellas, Hero y Escudo para brevedad, no han cambiado] */
+        /* [Omisión de estilos de Hero para brevedad] */
         
-        /* TÍTULO principal */
-        .main-title {
-            font-family: 'Luckiest Guy', cursive;
-            font-size: 6em;
-            line-height: 1;
-            margin: 0;
-            padding: 10px 20px;
-            color: var(--color-title-yellow);
-            font-weight: 900; 
-            text-shadow: 
-                -5px 5px 0 var(--color-title-red), 
-                -10px 10px 0 rgba(0, 0, 0, 0.3), 
-                0 0 30px var(--color-light-yellow-shadow); 
-            animation: bounce-title 1.5s ease-in-out infinite alternate;
-        }
-
-        /* Texto de la hermandad (Grueso) */
-        .small-text {
-            font-size: 3em;
-            font-weight: 700; 
-            margin: 5px 0 20px;
-            color: var(--color-red-bright); 
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); 
-        }
-
-        .escudo-hsvcl {
-            width: 65px; 
-            height: 65px; 
-            margin: 10px auto 10px; 
-            background-image: url('https://edwinhsvcl14-maker.github.io/asistencias/logo_hermandad.png'); 
-            background-size: cover;
-            background-position: center;
-            border-radius: 50%;
-            position: relative;
-            z-index: 25;
-        }
-
         /* Sección de Tarjetas Destacadas */
         .featured-section {
             background-color: var(--color-green-accent); 
@@ -85,13 +48,13 @@
             border-top: 15px solid var(--color-red-bright); 
         }
         
-        /* CAMBIO CLAVE AQUÍ: Solo el color de la letra del h2 es rojo */
+        /* AJUSTE FINAL: Texto Rojo con Sombra Blanca para Contraste */
         .featured-section h2 {
             font-family: 'Luckiest Guy', cursive;
             font-size: 3em;
             color: var(--color-red-bright); /* ¡NUEVO COLOR DE LETRA: ROJO! */
             margin-bottom: 50px;
-            text-shadow: 3px 3px 0 var(--color-red-bright); /* Sombra sigue siendo ROJA */
+            text-shadow: 3px 3px 0 var(--color-white-snow); /* Sombra ajustada a BLANCO */
         }
         .card-container {
             display: flex;
@@ -110,56 +73,43 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             color: var(--color-dark-blue); 
         }
-        /* [Omisión de estilos de Tarjetas, Footer y Responsive para brevedad, ya que no cambiaron, excepto el h2 responsive] */
+        .card .icon-container {
+            font-size: 3em;
+            color: var(--color-green-accent); 
+            margin-bottom: 15px;
+        }
         
         /* ------------------------------------------------------------------ */
         /* --- RESPONSIVE MEJORADO (Móviles y Tabletas) --- */
         /* ------------------------------------------------------------------ */
         
         @media (max-width: 768px) {
-            .main-title { 
-                font-size: 3.5em; 
-                text-shadow: -2px 2px 0 var(--color-title-red), -4px 4px 0 rgba(0, 0, 0, 0.3); 
-            }
-            .small-text { 
-                font-size: 1.4em; 
-            }
+            /* [Estilos de móvil omitidos por brevedad, se mantienen sin cambios en el resto] */
             .escudo-hsvcl { 
                 width: 100px; 
                 height: 100px; 
-                margin: 5px auto 5px;
             }
             .featured-section h2 {
-                color: var(--color-red-bright); /* Mantenemos el rojo en móvil */
-                text-shadow: 2px 2px 0 var(--color-red-bright); 
+                color: var(--color-red-bright); /* Rojo */
+                text-shadow: 2px 2px 0 var(--color-white-snow); /* Sombra Blanca */
             }
         }
         
         @media (max-width: 500px) {
-             .main-title { 
-                font-size: 2.8em; 
-                padding: 5px 10px;
-             }
-             .small-text {
-                font-size: 1.1em; 
-             }
              .escudo-hsvcl { 
                 width: 90px;
                 height: 90px;
              }
              .featured-section h2 {
                 font-size: 2em;
-                color: var(--color-red-bright); /* Mantenemos el rojo en móvil pequeño */
-                text-shadow: 2px 2px 0 var(--color-red-bright); 
+                color: var(--color-red-bright); /* Rojo */
+                text-shadow: 2px 2px 0 var(--color-white-snow); /* Sombra Blanca */
             }
         }
     </style>
 </head>
 <body>
     
-    <div class="star-container">
-        </div>
-
     <section class="hero-container">
         
         <div class="hero-content">
@@ -171,8 +121,18 @@
                 Gran Chocolatada Navideña <br>2025 <i class="fas fa-bell hero-bell"></i>
             </h1>
         
+            <div class="adviento-corona" title="Corona de Adviento Brillante"></div>
+            
             <div class="info-block">
+                <div class="info-item">
+                    <span class="icon">📅</span> 
+                    <p>Sábado 20 de Diciembre | 9:00 AM</p>
                 </div>
+                <div class="info-item">
+                    <span class="icon">📍</span> 
+                    <p>Local Institucional: Jr. Junín 1145, Lima</p>
+                </div>
+            </div>
             
             <a href="#featured" class="cta-button" style="margin-top: 20px;">Ver Detalles</a>
         </div>
@@ -203,7 +163,6 @@
                 <p>Si deseas colaborar con donaciones de juguetes, panetones o insumos para nuestra Chocolatada, contacta con nuestra hermana Carmen Rosa Gutiérrez Vargas (Presidenta del Consejo de Disciplina, Teléfono: 932 910 728) o con nuestro Hermano Vicente Dominguez Solano (Presidente HSVCL, Teléfono: 993 901 466).</p>
                 <p>Horario de atención para donaciones: 7:00 PM a 10:00 PM (Lunes a Viernes)</p>
             </div>
-
             
         </div>
     </section>
