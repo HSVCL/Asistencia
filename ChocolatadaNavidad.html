@@ -37,7 +37,7 @@
             overflow-x: hidden;
         }
         
-        /* [Omisión de estilos de Música, Estrellas y Hero para brevedad, no han cambiado, salvo las secciones destacadas] */
+        /* [Omisión de estilos de Música, Estrellas y Hero para brevedad, no han cambiado] */
         
         /* TÍTULO principal */
         .main-title {
@@ -82,21 +82,20 @@
             z-index: 25;
         }
 
-
-        /* Sección de Tarjetas Destacadas (CAMBIOS APLICADOS AQUÍ) */
+        /* Sección de Tarjetas Destacadas (RESTAURADA A VERDE) */
         .featured-section {
-            background-color: var(--color-red-bright); /* CAMBIO: Fondo Rojo Brillante */
+            background-color: var(--color-green-accent); /* RESTAURADO: Fondo Verde Pino */
             padding: 80px 40px;
             text-align: center;
-            color: var(--color-white-snow); /* Texto de la sección general en blanco */
-            border-top: 15px solid var(--color-green-accent); /* Borde superior de contraste (Verde) */
+            color: var(--color-dark-blue); /* Texto de la sección general en oscuro */
+            border-top: 15px solid var(--color-red-bright); /* Borde superior en Rojo */
         }
         .featured-section h2 {
             font-family: 'Luckiest Guy', cursive;
             font-size: 3em;
             color: var(--color-white-snow); /* Color del Título en Blanco */
             margin-bottom: 50px;
-            text-shadow: 3px 3px 0 var(--color-white-snow); /* CAMBIO: Sombra del Título en Blanco */
+            text-shadow: 3px 3px 0 var(--color-red-bright); /* RESTAURADO: Sombra del Título en Rojo */
         }
         .card-container {
             display: flex;
@@ -111,7 +110,7 @@
             width: 300px;
             padding: 25px;
             text-align: center;
-            border: 4px solid var(--color-green-accent); /* Borde de tarjeta en Verde */
+            border: 4px solid var(--color-red-bright); /* Borde de tarjeta en Rojo */
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             color: var(--color-dark-blue); /* Texto de la tarjeta oscuro para contraste */
         }
@@ -122,7 +121,7 @@
         }
         .card .icon-container {
             font-size: 3em;
-            color: var(--color-red-bright); /* Iconos en Rojo */
+            color: var(--color-green-accent); /* Iconos en Verde */
             margin-bottom: 15px;
         }
 
@@ -131,21 +130,42 @@
         /* ------------------------------------------------------------------ */
         
         @media (max-width: 768px) {
-            /* [Estilos de móviles anteriores omitidos por brevedad, se mantienen sin cambios] */
+            /* ... estilos de móvil ... */
+            .main-title { 
+                font-size: 3.5em; 
+                text-shadow: -2px 2px 0 var(--color-title-red), -4px 4px 0 rgba(0, 0, 0, 0.3); 
+            }
+            .small-text { 
+                font-size: 1.4em; 
+            }
+            .adviento-corona {
+                width: 150px; 
+                height: 150px;
+                margin-bottom: 30px;
+            }
             .escudo-hsvcl { 
                 width: 100px; 
                 height: 100px; 
                 margin: 5px auto 5px;
             }
-             .small-text { 
-                font-size: 1.4em; 
+            .featured-section h2 {
+                text-shadow: 2px 2px 0 var(--color-red-bright); /* RESTAURADO */
             }
+            /* ... otros estilos de móvil ... */
         }
         
         @media (max-width: 500px) {
-             /* [Estilos de móviles anteriores omitidos por brevedad, se mantienen sin cambios] */
+             /* ... estilos de móvil pequeño ... */
+             .main-title { 
+                font-size: 2.8em; 
+                padding: 5px 10px;
+             }
              .small-text {
                 font-size: 1.1em; 
+             }
+             .adviento-corona {
+                width: 120px; 
+                height: 120px;
              }
              .escudo-hsvcl { 
                 width: 90px;
@@ -153,14 +173,17 @@
              }
              .featured-section h2 {
                 font-size: 2em;
-                text-shadow: 2px 2px 0 var(--color-white-snow); /* Ajuste responsive de la sombra */
+                text-shadow: 2px 2px 0 var(--color-red-bright); /* RESTAURADO */
             }
+            /* ... otros estilos de móvil pequeño ... */
         }
     </style>
-    
-    </head>
+</head>
 <body>
     
+    <div class="star-container">
+        </div>
+
     <section class="hero-container">
         
         <div class="hero-content">
