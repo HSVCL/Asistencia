@@ -19,7 +19,7 @@
             --color-green-accent: #27AE60; /* Verde Pino para Acentos */
             --color-title-yellow: #F1C40F; /* Amarillo Limón del título */
             --color-title-red: #C0392B; /* Rojo de profundidad del título */
-            --color-card-bg: #EAF2F8; /* Gris/Blanco para el fondo de las tarjetas */
+            --color-card-bg-new: #FFFDD0; /* NUEVO: Amarillo Claro / Crema para tarjetas */
             --color-dark-red-text: #800020; /* Vinotinto / Borgoña Profundo (Ya no se usa directamente) */
             --color-light-yellow-shadow: #FFFFAA; /* Sombra amarilla clara para el título */
         }
@@ -337,8 +337,10 @@
             gap: 30px;
             flex-wrap: wrap;
         }
+        
+        /* === MODIFICACIONES SOLICITADAS A LA TARJETA === */
         .card {
-            background-color: var(--color-card-bg);
+            background-color: var(--color-card-bg-new); /* <-- CAMBIO: Fondo Amarillo/Crema */
             border-radius: 20px;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
             width: 300px;
@@ -346,8 +348,13 @@
             text-align: center;
             border: 4px solid var(--color-red-bright);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            color: var(--color-dark-blue);
+            color: var(--color-red-bright); /* <-- CAMBIO: Texto principal de la tarjeta a Rojo */
         }
+        
+        .card p, .card h3 {
+             color: var(--color-red-bright); /* Asegura que el texto y títulos sean rojos */
+        }
+        
         .card:hover {
             transform: translateY(-5px);
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
@@ -355,9 +362,12 @@
         }
         .card .icon-container {
             font-size: 3em;
-            color: var(--color-green-accent);
+            color: var(--color-red-bright); /* <-- CAMBIO: Iconos a Rojo */
             margin-bottom: 15px;
         }
+        /* ================================================ */
+        
+        
         .footer-section {
             background-color: var(--color-dark-blue);
             padding: 50px 40px;
