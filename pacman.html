@@ -5,38 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pac-Man Navideño | La Luz de Adviento</title>
     <style>
-        :root {
-            --noche: #0A192F; --adviento: #6A0573; --oro: #FFD700; --nieve: #F0F8FF; --rojo: #990011;
-        }
-        body {
-            margin: 0; background-color: var(--noche); font-family: sans-serif;
-            color: var(--nieve); display: flex; flex-direction: column; align-items: center;
-            overflow: hidden; touch-action: none;
-        }
-        #game-header {
-            width: 100%; padding: 15px; background: var(--adviento); display: flex;
-            justify-content: space-around; border-bottom: 3px solid var(--oro);
-        }
-        .stat-box { font-size: 1.2rem; font-weight: bold; }
+        :root { --noche: #0A192F; --adviento: #6A0573; --oro: #FFD700; --nieve: #F0F8FF; --rojo: #990011; }
+        body { margin: 0; background-color: var(--noche); font-family: 'Segoe UI', sans-serif; color: var(--nieve); display: flex; flex-direction: column; align-items: center; overflow: hidden; touch-action: none; }
+        #game-header { width: 100%; padding: 10px; background: var(--adviento); display: flex; justify-content: space-around; border-bottom: 3px solid var(--oro); }
+        .stat-box { font-size: 1.1rem; font-weight: bold; }
         .stat-box span { color: var(--oro); }
-        #game-container { position: relative; margin-top: 20px; border: 4px solid var(--adviento); border-radius: 10px; }
-        canvas { display: block; background-color: #000; }
-        .overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(10, 25, 47, 0.95); display: flex; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 100; text-align: center;
-        }
-        h1 { color: var(--oro); font-size: 2.5rem; }
-        .btn {
-            background: var(--adviento); color: white; border: 2px solid var(--oro);
-            padding: 15px 30px; font-size: 1.2rem; border-radius: 50px; cursor: pointer;
-        }
-        #controls { display: grid; grid-template-columns: repeat(3, 60px); gap: 10px; margin-top: 20px; }
-        .ctrl-btn {
-            background: rgba(255,255,255,0.1); border: 1px solid var(--oro);
-            border-radius: 10px; height: 60px; display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; color: var(--oro);
-        }
+        #game-container { position: relative; margin-top: 10px; border: 4px solid var(--adviento); border-radius: 10px; background: #000; }
+        canvas { display: block; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 25, 47, 0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; text-align: center; padding: 20px; box-sizing: border-box; }
+        h1 { color: var(--oro); font-size: 2rem; margin: 10px; }
+        .btn { background: var(--adviento); color: white; border: 2px solid var(--oro); padding: 15px 30px; font-size: 1.2rem; border-radius: 50px; cursor: pointer; font-weight: bold; }
+        #controls { display: grid; grid-template-columns: repeat(3, 65px); gap: 10px; margin-top: 15px; }
+        .ctrl-btn { background: rgba(255,255,255,0.1); border: 2px solid var(--oro); border-radius: 15px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: var(--oro); user-select: none; }
     </style>
 </head>
 <body>
@@ -53,20 +33,21 @@
 
     <div id="menu-screen" class="overlay">
         <h1>CAMINO A BELÉN</h1>
-        <button class="btn" onclick="startGame()">Empezar Misión</button>
+        <p>Recolecta las luces para guiar el camino.</p>
+        <button class="btn" onclick="startGame()">EMPEZAR MISIÓN</button>
     </div>
 
     <div id="msg-screen" class="overlay" style="display: none;">
-        <h1 id="msg-title">¡OOPS!</h1>
-        <p id="msg-body" style="font-size: 1.5rem;"></p>
-        <button class="btn" id="msg-btn">Continuar</button>
+        <h1 id="msg-title"></h1>
+        <p id="msg-body" style="font-size: 1.3rem; margin-bottom: 20px;"></p>
+        <button class="btn" id="msg-btn">CONTINUAR</button>
     </div>
 
     <div id="controls">
-        <div style="grid-column: 2" class="ctrl-btn" onmousedown="setDir(0, -1)">↑</div>
-        <div style="grid-row: 2; grid-column: 1" class="ctrl-btn" onmousedown="setDir(-1, 0)">←</div>
-        <div style="grid-row: 2; grid-column: 2" class="ctrl-btn" onmousedown="setDir(0, 1)">↓</div>
-        <div style="grid-row: 2; grid-column: 3" class="ctrl-btn" onmousedown="setDir(1, 0)">→</div>
+        <div style="grid-column: 2" class="ctrl-btn" ontouchstart="setDir(0, -1)" onmousedown="setDir(0, -1)">↑</div>
+        <div style="grid-row: 2; grid-column: 1" class="ctrl-btn" ontouchstart="setDir(-1, 0)" onmousedown="setDir(-1, 0)">←</div>
+        <div style="grid-row: 2; grid-column: 2" class="ctrl-btn" ontouchstart="setDir(0, 1)" onmousedown="setDir(0, 1)">↓</div>
+        <div style="grid-row: 2; grid-column: 3" class="ctrl-btn" ontouchstart="setDir(1, 0)" onmousedown="setDir(1, 0)">→</div>
     </div>
 
     <script>
@@ -112,26 +93,33 @@
                 ghosts.push({
                     x: 9 * TILE_SIZE, y: 9 * TILE_SIZE,
                     dirX: 0, dirY: 0, color: colors[i],
-                    speed: 1.5 + (level * 0.1), scared: false
+                    speed: 2, scared: false
                 });
             }
         }
 
         function setDir(x, y) { player.nextDirX = x; player.nextDirY = y; }
 
-        function update() {
+        function gameLoop() {
             if(!gameActive) return;
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
 
-            // Jugador
+        function update() {
+            // Lógica Jugador
             if(player.x % TILE_SIZE === 0 && player.y % TILE_SIZE === 0) {
                 const gx = Math.round(player.x / TILE_SIZE);
                 const gy = Math.round(player.y / TILE_SIZE);
+
                 if(map[gy + player.nextDirY] && map[gy + player.nextDirY][gx + player.nextDirX] !== 1) {
                     player.dirX = player.nextDirX; player.dirY = player.nextDirY;
                 }
                 if(map[gy + player.dirY] && map[gy + player.dirY][gx + player.dirX] === 1) {
                     player.dirX = 0; player.dirY = 0;
                 }
+
                 if(map[gy][gx] === 0) { map[gy][gx] = 2; score += 10; checkWin(); }
                 if(map[gy][gx] === 3) { map[gy][gx] = 2; score += 50; player.powerUp = 400; ghosts.forEach(g => g.scared = true); }
                 if(map[gy][gx] === 4) { map[gy][gx] = 2; score += 100; }
@@ -139,61 +127,87 @@
             player.x += player.dirX * player.speed;
             player.y += player.dirY * player.speed;
 
-            // Fantasmas Inteligentes
+            // Túnel lateral
+            if(player.x < 0) player.x = canvas.width - TILE_SIZE;
+            if(player.x >= canvas.width) player.x = 0;
+
+            // Lógica Fantasmas (MOVIMIENTO LIBRE)
             ghosts.forEach(g => {
                 if(g.x % TILE_SIZE === 0 && g.y % TILE_SIZE === 0) {
                     const gx = Math.round(g.x / TILE_SIZE);
                     const gy = Math.round(g.y / TILE_SIZE);
                     const dirs = [[0,1],[0,-1],[1,0],[-1,0]];
                     
-                    let validDirs = dirs.filter(d => map[gy + d[1]] && map[gy + d[1]][gx + d[0]] !== 1);
+                    // Verificamos qué direcciones NO son pared
+                    let validDirs = dirs.filter(d => {
+                        const nextY = gy + d[1];
+                        const nextX = gx + d[0];
+                        return map[nextY] && map[nextY][nextX] !== 1;
+                    });
                     
-                    // IA: Evitar volver atrás a menos que sea necesario
+                    // IA: Intentar no retroceder
                     let smartDirs = validDirs.filter(d => !(d[0] === -g.dirX && d[1] === -g.dirY));
                     let finalDirs = smartDirs.length > 0 ? smartDirs : validDirs;
                     
-                    let choice = finalDirs[Math.floor(Math.random() * finalDirs.length)];
+                    const choice = finalDirs[Math.floor(Math.random() * finalDirs.length)];
                     if(choice) { g.dirX = choice[0]; g.dirY = choice[1]; }
+                    else { g.dirX = 0; g.dirY = 0; } // Por si acaso
                 }
                 g.x += g.dirX * g.speed;
                 g.y += g.dirY * g.speed;
 
-                // Colisión
-                if(Math.hypot(player.x - g.x, player.y - g.y) < TILE_SIZE * 0.8) {
-                    if(g.scared) {
+                // Colisión con Pacman
+                if(Math.hypot(player.x - g.x, player.y - g.y) < TILE_SIZE * 0.7) {
+                    if(g.scared && player.powerUp > 0) {
                         g.x = 9 * TILE_SIZE; g.y = 9 * TILE_SIZE; score += 200; g.scared = false;
                     } else {
                         hitPlayer();
                     }
                 }
             });
+
+            if(player.powerUp > 0) {
+                player.powerUp--;
+                if(player.powerUp === 0) ghosts.forEach(g => g.scared = false);
+            }
             document.getElementById('score-val').innerText = score;
         }
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Dibujar Mapa
             for(let y=0; y < map.length; y++) {
                 for(let x=0; x < map[y].length; x++) {
                     const cell = map[y][x];
-                    if(cell === 1) { ctx.fillStyle = '#10294c'; ctx.fillRect(x*20+2, y*20+2, 16, 16); }
-                    else if(cell === 0) { ctx.fillStyle = '#6A0573'; ctx.fillRect(x*20+8, y*20+6, 4, 10); ctx.fillStyle = '#FFD700'; ctx.fillRect(x*20+9, y*20+2, 2, 4); }
-                    else if(cell === 3) { drawStar(x*20+10, y*20+10, 5, 8, 4, '#FFD700'); }
-                    else if(cell === 4) { ctx.fillStyle = '#004d40'; ctx.beginPath(); ctx.moveTo(x*20+10, y*20+2); ctx.lineTo(x*20+4, y*20+15); ctx.lineTo(x*20+16, y*20+15); ctx.fill(); }
+                    if(cell === 1) {
+                        ctx.fillStyle = '#10294c';
+                        ctx.fillRect(x*TILE_SIZE+1, y*TILE_SIZE+1, TILE_SIZE-2, TILE_SIZE-2);
+                    } else if(cell === 0) {
+                        ctx.fillStyle = '#6A0573'; ctx.fillRect(x*20+8, y*20+6, 4, 10);
+                        ctx.fillStyle = '#FFD700'; ctx.fillRect(x*20+9, y*20+2, 2, 4);
+                    } else if(cell === 3) {
+                        drawStar(x*20+10, y*20+10, 5, 7, 3, '#FFD700');
+                    } else if(cell === 4) {
+                        ctx.fillStyle = '#004d40'; ctx.beginPath();
+                        ctx.moveTo(x*20+10, y*20+2); ctx.lineTo(x*20+4, y*20+15);
+                        ctx.lineTo(x*20+16, y*20+15); ctx.fill();
+                    }
                 }
             }
-            // Player
+            // Dibujar Pacman
             ctx.fillStyle = player.powerUp > 0 ? '#FFF' : '#FFD700';
-            ctx.beginPath(); let a = (Math.sin(Date.now()/100)+1)*0.2;
-            ctx.arc(player.x+10, player.y+10, 9, a*Math.PI, (2-a)*Math.PI);
+            ctx.beginPath();
+            let open = (Math.sin(Date.now()/100)+1)*0.2;
+            ctx.arc(player.x+10, player.y+10, 8, open*Math.PI, (2-open)*Math.PI);
             ctx.lineTo(player.x+10, player.y+10); ctx.fill();
-            // Ghosts
+
+            // Dibujar Fantasmas
             ghosts.forEach(g => {
                 ctx.fillStyle = g.scared ? '#4a69bd' : g.color;
-                ctx.beginPath(); ctx.arc(g.x+10, g.y+10, 9, Math.PI, 0);
-                ctx.lineTo(g.x+19, g.y+19); ctx.lineTo(g.x+1, g.y+19); ctx.fill();
+                ctx.beginPath(); ctx.arc(g.x+10, g.y+10, 8, Math.PI, 0);
+                ctx.lineTo(g.x+18, g.y+18); ctx.lineTo(g.x+2, g.y+18); ctx.fill();
                 ctx.fillStyle = 'white'; ctx.fillRect(g.x+5, g.y+6, 3, 3); ctx.fillRect(g.x+12, g.y+6, 3, 3);
             });
-            if(gameActive) requestAnimationFrame(draw);
         }
 
         function drawStar(cx,cy,s,o,i,c){
@@ -203,46 +217,59 @@
         }
 
         function hitPlayer() {
+            gameActive = false; // Detener el loop inmediatamente
             lives--;
             document.getElementById('lives-val').innerText = lives;
-            gameActive = false;
+
             if(lives > 0) {
-                showStatus("¡TE ATRAPARON!", "Te quedan " + lives + " vidas. ¡Ten cuidado!", "Intentar de nuevo", () => {
-                    player.x = 9 * TILE_SIZE; player.y = 15 * TILE_SIZE;
-                    player.dirX = 0; player.dirY = 0;
-                    ghosts.forEach(g => { g.x = 9 * TILE_SIZE; g.y = 9 * TILE_SIZE; });
-                    gameActive = true; draw();
+                showStatus("¡CUIDADO!", "Un enemigo te ha tocado. Te quedan " + lives + " vidas.", "CONTINUAR", () => {
+                    resetPositions();
+                    gameActive = true;
+                    gameLoop();
                 });
             } else {
-                showStatus("¡GAME OVER!", "Las luces se apagaron por completo.", "Reiniciar Juego", () => location.reload());
+                showStatus("¡GAME OVER!", "Ya no quedan luces navideñas. ¿Quieres reintentar?", "REINICIAR", () => location.reload());
             }
         }
 
+        function resetPositions() {
+            player.x = 9 * TILE_SIZE; player.y = 15 * TILE_SIZE;
+            player.dirX = 0; player.dirY = 0;
+            player.nextDirX = 0; player.nextDirY = 0;
+            ghosts.forEach(g => { g.x = 9 * TILE_SIZE; g.y = 9 * TILE_SIZE; g.dirX = 0; g.dirY = 0; });
+        }
+
         function checkWin() {
-            let rem = 0; map.forEach(r => r.forEach(c => { if(c === 0) rem++; }));
+            let rem = 0;
+            for(let r=0; r<map.length; r++) for(let c=0; c<map[r].length; c++) if(map[r][c] === 0) rem++;
             if(rem === 0) {
+                gameActive = false;
                 level++;
-                showStatus("¡NIVEL " + (level-1) + " COMPLETADO!", "La luz brilla más fuerte.", "Siguiente Nivel", () => {
-                    map = JSON.parse(JSON.stringify(baseMap)); createGhosts();
-                    player.x = 9 * TILE_SIZE; player.y = 15 * TILE_SIZE;
+                showStatus("¡NIVEL SUPERADO!", "¡Has llevado la luz de Navidad más lejos!", "SIGUIENTE NIVEL", () => {
+                    map = JSON.parse(JSON.stringify(baseMap));
+                    resetPositions();
                     document.getElementById('lvl-val').innerText = level;
-                    gameActive = true; draw();
+                    gameActive = true;
+                    gameLoop();
                 });
             }
         }
 
         function showStatus(t, b, bt, a) {
-            document.getElementById('msg-screen').style.display = 'flex';
+            const screen = document.getElementById('msg-screen');
             document.getElementById('msg-title').innerText = t;
             document.getElementById('msg-body').innerText = b;
-            document.getElementById('msg-btn').innerText = bt;
-            document.getElementById('msg-btn').onclick = () => { document.getElementById('msg-screen').style.display = 'none'; a(); };
+            const btn = document.getElementById('msg-btn');
+            btn.innerText = bt;
+            btn.onclick = () => { screen.style.display = 'none'; a(); };
+            screen.style.display = 'flex';
         }
 
         function startGame() {
             document.getElementById('menu-screen').style.display = 'none';
-            createGhosts(); gameActive = true; draw();
-            setInterval(update, 1000/60);
+            createGhosts();
+            gameActive = true;
+            gameLoop();
         }
 
         window.addEventListener('keydown', e => {
