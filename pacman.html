@@ -1,54 +1,353 @@
-// --- DENTRO DE LA FUNCIÓN update() ---
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pac-Man Navideño | La Luz de Adviento</title>
+    <style>
+        :root {
+            --noche: #0A192F;
+            --adviento: #6A0573;
+            --oro: #FFD700;
+            --nieve: #F0F8FF;
+            --rojo: #990011;
+        }
 
-// Lógica de Fantasmas Corregida
-ghosts.forEach(g => {
-    if (g.x % TILE_SIZE === 0 && g.y % TILE_SIZE === 0) {
-        const gx = Math.round(g.x / TILE_SIZE);
-        const gy = Math.round(g.y / TILE_SIZE);
+        body {
+            margin: 0;
+            background-color: var(--noche);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--nieve);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        #game-header {
+            width: 100%;
+            padding: 15px;
+            background: var(--adviento);
+            display: flex;
+            justify-content: space-around;
+            border-bottom: 3px solid var(--oro);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+
+        .stat-box { font-size: 1.2rem; font-weight: bold; }
+        .stat-box span { color: var(--oro); }
+
+        #game-container {
+            position: relative;
+            margin-top: 20px;
+            box-shadow: 0 0 30px rgba(106, 5, 115, 0.5);
+            border: 4px solid var(--adviento);
+            border-radius: 10px;
+        }
+
+        canvas { display: block; background-color: #000; }
+
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 25, 47, 0.95);
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; z-index: 100; text-align: center;
+            padding: 20px;
+        }
+
+        h1 { color: var(--oro); font-size: 3rem; text-shadow: 0 0 20px var(--rojo); margin-bottom: 10px; }
+        p { font-size: 1.2rem; max-width: 500px; line-height: 1.5; }
+
+        .btn {
+            background: var(--adviento); color: white; border: 2px solid var(--oro);
+            padding: 15px 40px; font-size: 1.5rem; border-radius: 50px;
+            cursor: pointer; transition: 0.3s; margin-top: 20px;
+            font-weight: bold; text-transform: uppercase;
+        }
+        .btn:hover { background: var(--rojo); transform: scale(1.05); }
+
+        #controls {
+            display: grid; grid-template-columns: repeat(3, 60px); grid-template-rows: repeat(2, 60px);
+            gap: 10px; margin-top: 20px;
+        }
+        .ctrl-btn {
+            background: rgba(255,255,255,0.1); border: 1px solid var(--oro);
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; color: var(--oro); cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-header">
+        <div class="stat-box">Nivel: <span id="lvl-val">1</span>/10</div>
+        <div class="stat-box">Puntos: <span id="score-val">0</span></div>
+        <div class="stat-box">Vidas: <span id="lives-val">3</span></div>
+    </div>
+
+    <div id="game-container">
+        <canvas id="pacCanvas"></canvas>
+    </div>
+
+    <div id="menu-screen" class="overlay">
+        <h1>CAMINO A BELÉN</h1>
+        <p>Recolecta las velitas, estrellas y arbolitos. ¡Evita a los enemigos!</p>
+        <button class="btn" onclick="startGame()">Empezar Misión</button>
+    </div>
+
+    <div id="msg-screen" class="overlay" style="display: none;">
+        <h1 id="msg-title">¡NIVEL SUPERADO!</h1>
+        <p id="msg-body">Siguiente nivel en camino...</p>
+        <button class="btn" id="msg-btn">Continuar</button>
+    </div>
+
+    <div id="controls">
+        <div style="grid-column: 2" class="ctrl-btn" onmousedown="setDir(0, -1)">↑</div>
+        <div style="grid-row: 2; grid-column: 1" class="ctrl-btn" onmousedown="setDir(-1, 0)">←</div>
+        <div style="grid-row: 2; grid-column: 2" class="ctrl-btn" onmousedown="setDir(0, 1)">↓</div>
+        <div style="grid-row: 2; grid-column: 3" class="ctrl-btn" onmousedown="setDir(1, 0)">→</div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('pacCanvas');
+        const ctx = canvas.getContext('2d');
+        const TILE_SIZE = 20;
         
-        const dirs = [[0, 1], [0, -1], [1, 0], [-1, 0]];
+        let score = 0;
+        let level = 1;
+        let lives = 3;
+        let gameActive = false;
+        let ghosts = [];
         
-        // Filtramos direcciones válidas:
-        // 1. Que estén dentro del mapa.
-        // 2. Que no sean una pared (valor 1).
-        let validDirs = dirs.filter(d => {
-            const nextY = gy + d[1];
-            const nextX = gx + d[0];
-            return map[nextY] !== undefined && 
-                   map[nextY][nextX] !== undefined && 
-                   map[nextY][nextX] !== 1;
+        const baseMap = [
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
+            [1,3,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,3,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,0,1],
+            [1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1],
+            [1,1,1,1,0,1,1,1,2,1,2,1,1,1,0,1,1,1,1],
+            [2,2,2,1,0,1,2,2,2,2,2,2,2,1,0,1,2,2,2],
+            [1,1,1,1,0,1,2,1,1,2,1,1,2,1,0,1,1,1,1],
+            [0,0,0,0,0,2,2,1,2,2,2,1,2,2,0,0,0,0,0],
+            [1,1,1,1,0,1,2,1,1,1,1,1,2,1,0,1,1,1,1],
+            [2,2,2,1,0,1,2,2,2,4,2,2,2,1,0,1,2,2,2],
+            [1,1,1,1,0,1,2,1,1,1,1,1,2,1,0,1,1,1,1],
+            [1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,0,1],
+            [1,3,0,1,0,0,0,0,0,2,0,0,0,0,0,1,0,3,1],
+            [1,1,0,1,0,1,0,1,1,1,1,1,0,1,0,1,0,1,1],
+            [1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+        ];
+
+        let map = JSON.parse(JSON.stringify(baseMap));
+        canvas.width = map[0].length * TILE_SIZE;
+        canvas.height = map.length * TILE_SIZE;
+
+        const player = {
+            x: 9 * TILE_SIZE, y: 15 * TILE_SIZE,
+            dirX: 0, dirY: 0,
+            nextDirX: 0, nextDirY: 0,
+            speed: 2, powerUp: 0
+        };
+
+        function createGhosts() {
+            ghosts = [];
+            const colors = ['#FF0000', '#FFB8FF', '#00FFFF', '#FFB852'];
+            for(let i=0; i < Math.min(level + 1, 4); i++) {
+                ghosts.push({
+                    x: 9 * TILE_SIZE, y: 9 * TILE_SIZE,
+                    dirX: 0, dirY: 0,
+                    color: colors[i],
+                    speed: 1.5 + (level * 0.1),
+                    scared: false
+                });
+            }
+        }
+
+        function setDir(x, y) {
+            player.nextDirX = x; player.nextDirY = y;
+        }
+
+        function update() {
+            if(!gameActive) return;
+
+            // Movimiento Jugador
+            if(player.x % TILE_SIZE === 0 && player.y % TILE_SIZE === 0) {
+                const gridX = Math.round(player.x / TILE_SIZE);
+                const gridY = Math.round(player.y / TILE_SIZE);
+
+                if(map[gridY + player.nextDirY] && map[gridY + player.nextDirY][gridX + player.nextDirX] !== 1) {
+                    player.dirX = player.nextDirX;
+                    player.dirY = player.nextDirY;
+                }
+                if(map[gridY + player.dirY] && map[gridY + player.dirY][gridX + player.dirX] === 1) {
+                    player.dirX = 0; player.dirY = 0;
+                }
+
+                const cell = map[gridY][gridX];
+                if(cell === 0) { map[gridY][gridX] = 2; score += 10; checkWin(); }
+                if(cell === 3) { map[gridY][gridX] = 2; score += 50; player.powerUp = 400; ghosts.forEach(g => g.scared = true); }
+                if(cell === 4) { map[gridY][gridX] = 2; score += 100; }
+            }
+
+            player.x += player.dirX * player.speed;
+            player.y += player.dirY * player.speed;
+
+            // Túnel Jugador
+            if(player.x < -TILE_SIZE/2) player.x = canvas.width + TILE_SIZE/2;
+            if(player.x > canvas.width + TILE_SIZE/2) player.x = -TILE_SIZE/2;
+
+            if(player.powerUp > 0) {
+                player.powerUp--;
+                if(player.powerUp === 0) ghosts.forEach(g => g.scared = false);
+            }
+
+            // Movimiento Fantasmas (CORREGIDO)
+            ghosts.forEach(g => {
+                if(Math.abs(g.x % TILE_SIZE) < g.speed && Math.abs(g.y % TILE_SIZE) < g.speed) {
+                    g.x = Math.round(g.x / TILE_SIZE) * TILE_SIZE;
+                    g.y = Math.round(g.y / TILE_SIZE) * TILE_SIZE;
+                    
+                    const gx = Math.round(g.x / TILE_SIZE);
+                    const gy = Math.round(g.y / TILE_SIZE);
+                    const dirs = [[0,1],[0,-1],[1,0],[-1,0]];
+                    
+                    let validDirs = dirs.filter(d => {
+                        const nextY = gy + d[1];
+                        const nextX = gx + d[0];
+                        return map[nextY] && map[nextY][nextX] !== 1;
+                    });
+
+                    if(validDirs.length > 0) {
+                        // Evitar retroceso inmediato si hay más opciones
+                        let filtered = validDirs.filter(d => !(d[0] === -g.dirX && d[1] === -g.dirY));
+                        let choice = (filtered.length > 0) ? filtered[Math.floor(Math.random() * filtered.length)] : validDirs[Math.floor(Math.random() * validDirs.length)];
+                        g.dirX = choice[0]; g.dirY = choice[1];
+                    }
+                }
+                
+                g.x += g.dirX * g.speed;
+                g.y += g.dirY * g.speed;
+
+                // Túnel Fantasmas
+                if(g.x < -TILE_SIZE) g.x = canvas.width;
+                if(g.x > canvas.width) g.x = -TILE_SIZE;
+
+                // Colisión
+                let dist = Math.hypot(player.x - g.x, player.y - g.y);
+                if(dist < TILE_SIZE * 0.8) {
+                    if(g.scared) {
+                        g.x = 9 * TILE_SIZE; g.y = 9 * TILE_SIZE;
+                        score += 200; g.scared = false;
+                    } else {
+                        resetPlayer();
+                    }
+                }
+            });
+
+            document.getElementById('score-val').innerText = score;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for(let y=0; y < map.length; y++) {
+                for(let x=0; x < map[y].length; x++) {
+                    const cell = map[y][x];
+                    if(cell === 1) {
+                        ctx.fillStyle = '#10294c';
+                        ctx.fillRect(x*TILE_SIZE+2, y*TILE_SIZE+2, TILE_SIZE-4, TILE_SIZE-4);
+                    } else if(cell === 0) {
+                        ctx.fillStyle = '#6A0573'; ctx.fillRect(x*TILE_SIZE+8, y*TILE_SIZE+6, 4, 10);
+                        ctx.fillStyle = '#FFD700'; ctx.fillRect(x*TILE_SIZE+9, y*TILE_SIZE+2, 2, 4);
+                    } else if(cell === 3) {
+                        drawStar(x*TILE_SIZE+10, y*TILE_SIZE+10, 5, 8, 4, '#FFD700');
+                    } else if(cell === 4) {
+                        ctx.fillStyle = '#004d40'; ctx.beginPath();
+                        ctx.moveTo(x*TILE_SIZE+10, y*TILE_SIZE+2); ctx.lineTo(x*TILE_SIZE+4, y*TILE_SIZE+15);
+                        ctx.lineTo(x*TILE_SIZE+16, y*TILE_SIZE+15); ctx.fill();
+                    }
+                }
+            }
+
+            // Jugador
+            ctx.fillStyle = player.powerUp > 0 ? '#FFF' : '#FFD700';
+            ctx.beginPath();
+            let angle = (Math.sin(Date.now() / 100) + 1) * 0.2;
+            ctx.arc(player.x + 10, player.y + 10, 9, angle * Math.PI, (2 - angle) * Math.PI);
+            ctx.lineTo(player.x + 10, player.y + 10); ctx.fill();
+
+            // Fantasmas
+            ghosts.forEach(g => {
+                ctx.fillStyle = g.scared ? '#4a69bd' : g.color;
+                ctx.beginPath(); ctx.arc(g.x+10, g.y+10, 9, Math.PI, 0);
+                ctx.lineTo(g.x+19, g.y+19); ctx.lineTo(g.x+1, g.y+19); ctx.fill();
+                ctx.fillStyle = 'white'; ctx.fillRect(g.x+5, g.y+6, 3, 3); ctx.fillRect(g.x+12, g.y+6, 3, 3);
+            });
+
+            if(gameActive) requestAnimationFrame(draw);
+        }
+
+        function drawStar(cx, cy, spikes, outer, inner, color) {
+            let rot = Math.PI/2*3, x=cx, y=cy, step=Math.PI/spikes;
+            ctx.beginPath(); ctx.moveTo(cx, cy-outer);
+            for(let i=0;i<spikes;i++){
+                x=cx+Math.cos(rot)*outer; y=cy+Math.sin(rot)*outer; ctx.lineTo(x,y); rot+=step;
+                x=cx+Math.cos(rot)*inner; y=cy+Math.sin(rot)*inner; ctx.lineTo(x,y); rot+=step;
+            }
+            ctx.closePath(); ctx.fillStyle=color; ctx.fill();
+        }
+
+        function resetPlayer() {
+            lives--; document.getElementById('lives-val').innerText = lives;
+            if(lives <= 0) gameOver(false);
+            else { player.x = 9 * TILE_SIZE; player.y = 15 * TILE_SIZE; player.dirX = 0; player.dirY = 0; }
+        }
+
+        function checkWin() {
+            let rem = 0; map.forEach(r => r.forEach(c => { if(c === 0) rem++; }));
+            if(rem === 0) {
+                if(level < 10) {
+                    level++;
+                    showStatus("¡NIVEL SUPERADO!", "La luz de Belén brilla más fuerte.", "Siguiente", () => {
+                        map = JSON.parse(JSON.stringify(baseMap));
+                        createGhosts(); player.x = 9 * TILE_SIZE; player.y = 15 * TILE_SIZE;
+                        document.getElementById('lvl-val').innerText = level;
+                        gameActive = true; draw();
+                    });
+                } else gameOver(true);
+            }
+        }
+
+        function showStatus(t, b, bt, a) {
+            gameActive = false;
+            document.getElementById('msg-screen').style.display = 'flex';
+            document.getElementById('msg-title').innerText = t;
+            document.getElementById('msg-body').innerText = b;
+            document.getElementById('msg-btn').innerText = bt;
+            document.getElementById('msg-btn').onclick = () => { document.getElementById('msg-screen').style.display = 'none'; a(); };
+        }
+
+        function gameOver(win) {
+            showStatus(win ? "¡FELIZ NAVIDAD!" : "FIN DEL JUEGO", win ? "Has completado el camino." : "Se apagó la luz.", "Reiniciar", () => location.reload());
+        }
+
+        function startGame() {
+            document.getElementById('menu-screen').style.display = 'none';
+            createGhosts(); gameActive = true; draw();
+            setInterval(update, 1000/60);
+        }
+
+        window.addEventListener('keydown', e => {
+            if(e.key === 'ArrowUp') setDir(0, -1);
+            if(e.key === 'ArrowDown') setDir(0, 1);
+            if(e.key === 'ArrowLeft') setDir(-1, 0);
+            if(e.key === 'ArrowRight') setDir(1, 0);
         });
-
-        if (validDirs.length > 0) {
-            // Evitar que el fantasma se dé la vuelta 180 grados de golpe (opcional, hace el movimiento más natural)
-            let filteredDirs = validDirs.filter(d => !(d[0] === -g.dirX && d[1] === -g.dirY));
-            let finalDirs = filteredDirs.length > 0 ? filteredDirs : validDirs;
-            
-            let choice = finalDirs[Math.floor(Math.random() * finalDirs.length)];
-            g.dirX = choice[0]; 
-            g.dirY = choice[1];
-        }
-    }
-    
-    // Aplicar movimiento
-    g.x += g.dirX * g.speed;
-    g.y += g.dirY * g.speed;
-
-    // --- TELETRANSPORTE LATERAL (Túneles) ---
-    // Si salen por la izquierda, aparecen por la derecha y viceversa
-    if (g.x < -TILE_SIZE) g.x = canvas.width;
-    if (g.x > canvas.width) g.x = -TILE_SIZE;
-
-    // Colisión con jugador
-    let dist = Math.hypot(player.x - g.x, player.y - g.y);
-    if (dist < TILE_SIZE * 0.8) { // Ajuste de colisión ligeramente más permisivo
-        if (g.scared) {
-            g.x = 9 * TILE_SIZE; 
-            g.y = 9 * TILE_SIZE;
-            score += 200;
-            g.scared = false;
-        } else {
-            resetPlayer();
-        }
-    }
-});
+    </script>
+</body>
+</html>
