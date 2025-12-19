@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pac-Man Navideño | Laberinto Cerrado</title>
+    <title>Pac-Man Navideño | 5 Niveles Garantizados</title>
     <style>
         :root { --noche: #0A192F; --adviento: #6A0573; --oro: #FFD700; }
         body { margin: 0; background: var(--noche); font-family: sans-serif; color: white; display: flex; flex-direction: column; align-items: center; overflow: hidden; touch-action: none; }
         #header { width: 100%; padding: 10px; background: var(--adviento); display: flex; justify-content: space-around; border-bottom: 3px solid var(--oro); font-weight: bold; }
-        #canvas-wrap { margin-top: 10px; border: 4px solid var(--adviento); background: #000; line-height: 0; }
+        #canvas-wrap { margin-top: 10px; border: 4px solid var(--adviento); background: #000; }
         canvas { display: block; }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; text-align: center; }
         .btn { background: var(--adviento); color: white; border: 2px solid var(--oro); padding: 15px 35px; border-radius: 50px; font-size: 1.2rem; cursor: pointer; margin-top: 20px; font-weight: bold; }
@@ -30,13 +30,12 @@
 
     <div id="scr-start" class="overlay">
         <h1 style="color:var(--oro)">BELÉN QUEST</h1>
-        <p>Laberinto sellado - 5 Niveles de dificultad</p>
         <button class="btn" onclick="startGame()">EMPEZAR</button>
     </div>
 
     <div id="scr-msg" class="overlay" style="display:none">
         <h1 id="msg-t" style="color:var(--oro)"></h1>
-        <p id="msg-b"></p>
+        <p id="msg-b" style="padding: 0 20px;"></p>
         <button id="msg-btn" class="btn">CONTINUAR</button>
     </div>
 
@@ -54,7 +53,6 @@
         let score=0, level=1, lives=3, active=false, power=0;
         let map=[], ghosts=[], pacman={};
 
-        // Laberinto corregido: Los bordes laterales (fila 9) ahora son paredes (1)
         const layout = [
             [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
             [1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
@@ -65,7 +63,7 @@
             [1,1,1,1,0,1,1,1,2,1,2,1,1,1,0,1,1,1,1],
             [1,2,2,1,0,1,2,2,2,2,2,2,2,1,0,1,2,2,1],
             [1,1,1,1,0,1,2,1,1,2,1,1,2,1,0,1,1,1,1],
-            [1,1,1,1,0,2,2,1,2,2,2,1,2,2,0,1,1,1,1], // Salidas laterales cerradas
+            [1,1,1,1,0,2,2,1,2,2,2,1,2,2,0,1,1,1,1],
             [1,1,1,1,0,1,2,1,1,1,1,1,2,1,0,1,1,1,1],
             [1,2,2,1,0,1,2,2,2,2,2,2,2,1,0,1,2,2,1],
             [1,1,1,1,0,1,2,1,1,1,1,1,2,1,0,1,1,1,1],
@@ -79,13 +77,21 @@
 
         function setD(x,y) { if(active) { pacman.nDx=x; pacman.nDy=y; } }
 
-        function reset(full) {
-            if(full) map = JSON.parse(JSON.stringify(layout));
+        function prepareLevel(fullReset) {
+            active = false; // Pausar todo
+            if(fullReset) map = JSON.parse(JSON.stringify(layout));
+            
+            // Reset pacman
             pacman = { x:9*T, y:15*T, dx:0, dy:0, nDx:0, nDy:0, s:2 };
+            
+            // Reset fantasmas con velocidad basada en nivel
             const colors = ['#F00','#F0F','#0FF','#FB0'];
-            // Velocidad de fantasmas según nivel (1 a 5)
-            const speed = 1.2 + (level * 0.3); 
-            ghosts = colors.map(c => ({ x:9*T, y:9*T, dx:0, dy:0, col:c, s:speed }));
+            const speed = 1.25 + (level * 0.25); 
+            ghosts = colors.map(c => ({
+                x: 9 * T, y: 9 * T,
+                dx: (Math.random() > 0.5 ? 1 : -1), // Iniciar con dirección forzada
+                dy: 0, col: c, s: speed
+            }));
             power = 0;
         }
 
@@ -97,9 +103,9 @@
         }
 
         function update() {
-            // Lógica Pacman alineada a la rejilla
+            // Pacman
             if(pacman.x % T === 0 && pacman.y % T === 0) {
-                let gx = pacman.x/T, gy = pacman.y/T;
+                let gx = Math.round(pacman.x/T), gy = Math.round(pacman.y/T);
                 if(map[gy+pacman.nDy] && map[gy+pacman.nDy][gx+pacman.nDx]!==1) {
                     pacman.dx=pacman.nDx; pacman.dy=pacman.nDy;
                 }
@@ -109,24 +115,20 @@
                 if(map[gy][gx]===0) { map[gy][gx]=2; score+=10; checkWin(); }
                 if(map[gy][gx]===3) { map[gy][gx]=2; power=450; score+=50; }
             }
-            pacman.x += pacman.dx*pacman.s; 
-            pacman.y += pacman.dy*pacman.s;
+            pacman.x += pacman.dx*pacman.s; pacman.y += pacman.dy*pacman.s;
 
-            // Lógica Fantasmas corregida
+            // Fantasmas
             ghosts.forEach(g => {
                 if(Math.abs(g.x % T) < g.s && Math.abs(g.y % T) < g.s) {
                     g.x = Math.round(g.x/T)*T; g.y = Math.round(g.y/T)*T;
                     let gx=g.x/T, gy=g.y/T;
-                    let dirs = [[0,1],[0,-1],[1,0],[-1,0]].filter(d => 
-                        map[gy+d[1]] && map[gy+d[1]][gx+d[0]]!==1
-                    );
+                    let dirs = [[0,1],[0,-1],[1,0],[-1,0]].filter(d => map[gy+d[1]] && map[gy+d[1]][gx+d[0]]!==1);
                     let fw = dirs.filter(d => !(d[0]===-g.dx && d[1]===-g.dy));
                     let sel = (fw.length > 0 ? fw : dirs)[Math.floor(Math.random()*(fw.length||dirs.length))];
                     if(sel) { g.dx=sel[0]; g.dy=sel[1]; }
                 }
                 g.x += g.dx*g.s; g.y += g.dy*g.s;
 
-                // Colisión simplificada
                 if(Math.hypot(pacman.x-g.x, pacman.y-g.y) < T*0.7) {
                     if(power>0) { g.x=9*T; g.y=9*T; score+=200; }
                     else { fail(); }
@@ -140,9 +142,13 @@
             active = false; lives--;
             document.getElementById('vds').innerText = lives;
             if(lives>0) {
-                msg("¡REINTENTAR!", "Cuidado con los fantasmas.", "CONTINUAR", () => { reset(false); active=true; mainLoop(); });
+                msg("¡OH NO!", "Te quedan " + lives + " vidas.", "REINTENTAR", () => { 
+                    prepareLevel(false); 
+                    active=true; 
+                    mainLoop(); 
+                });
             } else {
-                msg("FIN DEL JUEGO", "Puntos logrados: "+score, "REINICIAR", () => location.reload());
+                msg("FIN DEL JUEGO", "Puntos: "+score, "INICIO", () => location.reload());
             }
         }
 
@@ -152,9 +158,14 @@
                 active = false;
                 if(level < 5) {
                     level++;
-                    msg("¡NIVEL " + (level-1) + " SUPERADO!", "Preparando Nivel " + level, "SIGUIENTE", () => { reset(true); document.getElementById('lvl').innerText=level; active=true; mainLoop(); });
+                    msg("NIVEL "+(level-1)+" LISTO", "Entrando al Nivel "+level, "CONTINUAR", () => { 
+                        prepareLevel(true); 
+                        document.getElementById('lvl').innerText=level; 
+                        active=true; 
+                        mainLoop(); 
+                    });
                 } else {
-                    msg("¡VICTORIA TOTAL!", "Has completado los 5 niveles.", "JUGAR DE NUEVO", () => location.reload());
+                    msg("¡VICTORIA!", "Superaste los 5 niveles.", "FIN", () => location.reload());
                 }
             }
         }
@@ -163,36 +174,25 @@
             document.getElementById('msg-t').innerText=t;
             document.getElementById('msg-b').innerText=b;
             const bE = document.getElementById('msg-btn');
-            bE.innerText=btn;
             bE.onclick = () => { document.getElementById('scr-msg').style.display='none'; act(); };
             document.getElementById('scr-msg').style.display='flex';
         }
 
         function draw() {
             ctx.clearRect(0,0,cvs.width,cvs.height);
-            for(let y=0;y<map.length;y++) {
-                for(let x=0;x<map[y].length;x++) {
-                    if(map[y][x]===1) { 
-                        ctx.fillStyle='#10294c'; ctx.fillRect(x*T+1,y*T+1,T-2,T-2); 
-                    }
-                    else if(map[y][x]===0) { 
-                        ctx.fillStyle='#FFD700'; ctx.beginPath(); ctx.arc(x*T+T/2,y*T+T/2,2,0,7); ctx.fill(); 
-                    }
-                    else if(map[y][x]===3) { 
-                        ctx.fillStyle='#FFF'; ctx.beginPath(); ctx.arc(x*T+T/2,y*T+T/2,5,0,7); ctx.fill(); 
-                    }
+            for(let y=0;y<map.length;y++){
+                for(let x=0;x<map[y].length;x++){
+                    if(map[y][x]===1){ ctx.fillStyle='#10294c'; ctx.fillRect(x*T+1,y*T+1,T-2,T-2); }
+                    else if(map[y][x]===0){ ctx.fillStyle='#FFD700'; ctx.beginPath(); ctx.arc(x*T+T/2,y*T+T/2,2,0,7); ctx.fill(); }
+                    else if(map[y][x]===3){ ctx.fillStyle='#FFF'; ctx.beginPath(); ctx.arc(x*T+T/2,y*T+T/2,5,0,7); ctx.fill(); }
                 }
             }
-            // Dibujar Pacman
-            ctx.fillStyle = power>0 ? (Date.now()%200<100?'#FFF':'#FFD700') : '#FFD700';
-            ctx.beginPath(); 
-            let a = (Math.sin(Date.now()/100)+1)*0.2;
+            ctx.fillStyle = power>0?'#FFF':'#FFD700';
+            ctx.beginPath(); let a = (Math.sin(Date.now()/100)+1)*0.2;
             ctx.arc(pacman.x+T/2, pacman.y+T/2, 8, a*Math.PI, (2-a)*Math.PI);
             ctx.lineTo(pacman.x+T/2, pacman.y+T/2); ctx.fill();
-
-            // Dibujar Fantasmas
             ghosts.forEach(g => {
-                ctx.fillStyle = power>0 ? '#44F' : g.col;
+                ctx.fillStyle = power>0?'#44F':g.col;
                 ctx.beginPath(); ctx.arc(g.x+T/2, g.y+T/2, 8, Math.PI, 0);
                 ctx.lineTo(g.x+18, g.y+18); ctx.lineTo(g.x+2, g.y+18); ctx.fill();
             });
@@ -201,15 +201,10 @@
         function startGame() {
             document.getElementById('scr-start').style.display='none';
             cvs.width=19*T; cvs.height=19*T;
-            reset(true);
+            prepareLevel(true);
             active=true;
             mainLoop();
         }
-
-        window.addEventListener('keydown', e => {
-            if(e.key==='ArrowUp') setD(0,-1); if(e.key==='ArrowDown') setD(0,1);
-            if(e.key==='ArrowLeft') setD(-1,0); if(e.key==='ArrowRight') setD(1,0);
-        });
     </script>
 </body>
 </html>
