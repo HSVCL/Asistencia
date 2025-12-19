@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pac-Man Navideño | Música de Fondo</title>
+    <title>Pac-Man Navideño | Final Fix</title>
     <style>
         :root { --noche: #0A192F; --adviento: #6A0573; --oro: #FFD700; }
         body { margin: 0; background: var(--noche); font-family: sans-serif; color: white; display: flex; flex-direction: column; align-items: center; overflow: hidden; touch-action: none; }
-        #header { width: 100%; padding: 10px; background: var(--adviento); display: flex; justify-content: space-around; border-bottom: 3px solid var(--oro); font-weight: bold; font-size: 0.9rem; }
-        #canvas-wrap { margin-top: 10px; border: 4px solid var(--adviento); background: #000; box-shadow: 0 0 15px rgba(0,0,0,0.5); }
+        #header { width: 100%; padding: 10px; background: var(--adviento); display: flex; justify-content: space-around; border-bottom: 3px solid var(--oro); font-weight: bold; }
+        #canvas-wrap { margin-top: 10px; border: 4px solid var(--adviento); background: #000; }
         canvas { display: block; }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 25, 47, 0.98); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; text-align: center; }
         .btn { background: var(--adviento); color: white; border: 2px solid var(--oro); padding: 15px 35px; border-radius: 50px; font-size: 1.2rem; cursor: pointer; margin-top: 20px; font-weight: bold; }
-        #controls { display: grid; grid-template-columns: repeat(3, 75px); gap: 12px; margin-top: 20px; padding-bottom: 20px; }
-        .ctrl-btn { background: rgba(255,255,255,0.1); border: 2px solid var(--oro); border-radius: 15px; height: 65px; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--oro); user-select: none; }
+        #controls { display: grid; grid-template-columns: repeat(3, 75px); gap: 12px; margin-top: 15px; padding-bottom: 10px; }
+        .ctrl-btn { background: rgba(255,255,255,0.1); border: 2px solid var(--oro); border-radius: 15px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--oro); user-select: none; -webkit-tap-highlight-color: transparent; }
     </style>
 </head>
 <body>
@@ -30,8 +30,8 @@
 
     <div id="scr-start" class="overlay">
         <h1 style="color:var(--oro)">BELÉN QUEST</h1>
-        <p>¡Con Música y 11 Fantasmas!</p>
-        <button class="btn" onclick="startGame()">¡EMPEZAR!</button>
+        <p>Música y controles corregidos</p>
+        <button class="btn" onclick="startGame()">¡JUGAR!</button>
     </div>
 
     <div id="scr-msg" class="overlay" style="display:none">
@@ -41,135 +41,129 @@
     </div>
 
     <div id="controls">
-        <div style="grid-column:2" class="ctrl-btn" ontouchstart="setD(0,-1)">↑</div>
-        <div style="grid-row:2;grid-column:1" class="ctrl-btn" ontouchstart="setD(-1,0)">←</div>
-        <div style="grid-row:2;grid-column:2" class="ctrl-btn" ontouchstart="setD(0,1)">↓</div>
-        <div style="grid-row:2;grid-column:3" class="ctrl-btn" ontouchstart="setD(1,0)">→</div>
+        <div style="grid-column:2" class="ctrl-btn" onpointerdown="setD(0,-1)">↑</div>
+        <div style="grid-row:2;grid-column:1" class="ctrl-btn" onpointerdown="setD(-1,0)">←</div>
+        <div style="grid-row:2;grid-column:2" class="ctrl-btn" onpointerdown="setD(0,1)">↓</div>
+        <div style="grid-row:2;grid-column:3" class="ctrl-btn" onpointerdown="setD(1,0)">→</div>
     </div>
 
     <script>
-        // --- MOTOR DE AUDIO AVANZADO ---
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        let bgmInterval;
-
-        function playTone(freq, type, duration, vol, startTime = 0) {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = type;
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime + startTime);
-            gain.gain.setValueAtTime(vol, audioCtx.currentTime + startTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + startTime + duration);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start(audioCtx.currentTime + startTime);
-            osc.stop(audioCtx.currentTime + startTime + duration);
-        }
-
-        const sound = {
-            waka: () => playTone(600, 'triangle', 0.05, 0.05),
-            power: () => playTone(800, 'sine', 0.3, 0.1),
-            die: () => [400, 300, 200].forEach((f, i) => playTone(f, 'sawtooth', 0.3, 0.1, i * 0.1)),
-            win: () => [523, 659, 783, 1046].forEach((f, i) => playTone(f, 'square', 0.2, 0.1, i * 0.1)),
-            // Música de fondo: Melodía navideña simple (Jingle Bells)
-            playBGM: () => {
-                if (bgmInterval) clearInterval(bgmInterval);
-                const notes = [659, 659, 659, 659, 659, 659, 659, 783, 523, 587, 659];
-                let step = 0;
-                bgmInterval = setInterval(() => {
-                    if (!active) return;
-                    playTone(notes[step % notes.length], 'sine', 0.2, 0.03);
-                    step++;
-                }, 400);
-            }
-        };
-
-        // --- LÓGICA DEL JUEGO ---
         const cvs = document.getElementById('gCanvas');
         const ctx = cvs.getContext('2d');
-        const T = 20; 
-        let score=0, level=1, lives=3, active=false, power=0;
+        const T = 20;
+        let score=0, level=1, lives=3, active=false, power=0, bgmOn=false;
         let map=[], ghosts=[], pacman={};
 
+        // Audio simplificado para no bloquear el hilo principal
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function beep(f, t, d, v) {
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.type = t; o.frequency.value = f;
+            g.gain.setValueAtTime(v, audioCtx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + d);
+            o.connect(g); g.connect(audioCtx.destination);
+            o.start(); o.stop(audioCtx.currentTime + d);
+        }
+
         const layout = [
-            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
-            [1,3,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,3,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,0,1],[1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1],
-            [1,1,1,1,0,1,1,1,2,1,2,1,1,1,0,1,1,1,1],[1,2,2,1,0,1,2,2,2,2,2,2,2,1,0,1,2,2,1],
-            [1,1,1,1,0,1,2,1,1,2,1,1,2,1,0,1,1,1,1],[1,1,1,1,0,2,2,1,2,2,2,1,2,2,0,1,1,1,1],
-            [1,1,1,1,0,1,2,1,1,1,1,1,2,1,0,1,1,1,1],[1,2,2,1,0,1,2,2,2,2,2,2,2,1,0,1,2,2,1],
-            [1,1,1,1,0,1,2,1,1,1,1,1,2,1,0,1,1,1,1],[1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
-            [1,0,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,0,1],[1,3,0,1,0,0,0,0,0,2,0,0,0,0,0,1,0,3,1],
-            [1,1,0,1,0,1,0,1,1,1,1,1,0,1,0,1,0,1,1],[1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
+            [1,3,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,3,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,0,1],
+            [1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1],
+            [1,1,1,1,0,1,1,1,2,1,2,1,1,1,0,1,1,1,1],
+            [1,2,2,1,0,1,2,2,2,2,2,2,2,1,0,1,2,2,1],
+            [1,1,1,1,0,1,2,1,1,2,1,1,2,1,0,1,1,1,1],
+            [1,1,1,1,0,2,2,1,2,2,2,1,2,2,0,1,1,1,1],
+            [1,1,1,1,0,1,2,1,1,1,1,1,2,1,0,1,1,1,1],
+            [1,2,2,1,0,1,2,2,2,2,2,2,2,1,0,1,2,2,1],
+            [1,1,1,1,0,1,2,1,1,1,1,1,2,1,0,1,1,1,1],
+            [1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,0,1],
+            [1,3,0,1,0,0,0,0,0,2,0,0,0,0,0,1,0,3,1],
+            [1,1,0,1,0,1,0,1,1,1,1,1,0,1,0,1,0,1,1],
+            [1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1],
             [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
         ];
 
-        function setD(x,y) { pacman.nextDx = x; pacman.nextDy = y; }
-
-        function initLevel(resetMap) {
-            if(resetMap) map = JSON.parse(JSON.stringify(layout));
-            pacman = { x:9*T, y:15*T, dx:0, dy:0, nextDx:0, nextDy:0, s:2 };
-            const numG = 1 + (level * 2);
-            const colors = ['#F00','#0FF','#F0F','#FB0','#FFF','#0F0','#F99','#99F','#FF0','#F0A','#A0F'];
-            ghosts = [];
-            for(let i=0; i<numG; i++) ghosts.push({ x:9*T, y:9*T, dx:(i%2?1:-1), dy:0, col:colors[i%colors.length], s:2 });
-            power = 0;
-            document.getElementById('lvl').innerText = level;
-            document.getElementById('vds').innerText = lives;
+        function setD(x,y) { 
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            pacman.nextDx = x; pacman.nextDy = y; 
         }
 
-        function update() {
-            if(!active) return;
-            if(pacman.x % T === 0 && pacman.y % T === 0) {
-                let gx = pacman.x / T, gy = pacman.y / T;
-                if(map[gy+pacman.nextDy] && map[gy+pacman.nextDy][gx+pacman.nextDx]!==1) { pacman.dx=pacman.nextDx; pacman.dy=pacman.nextDy; }
-                if(map[gy+pacman.dy] && map[gy+pacman.dy][gx+pacman.dx]===1) { pacman.dx=0; pacman.dy=0; }
-                if(map[gy][gx] === 0) { map[gy][gx] = 2; score += 10; sound.waka(); checkWin(); }
-                if(map[gy][gx] === 3) { map[gy][gx] = 2; power = 400; score += 50; sound.power(); }
-            }
-            pacman.x += pacman.dx * pacman.s; pacman.y += pacman.dy * pacman.s;
-            ghosts.forEach(g => {
-                if(g.x % T === 0 && g.y % T === 0) {
-                    let gx = g.x/T, gy = g.y/T;
-                    let dirs = [[0,1],[0,-1],[1,0],[-1,0]].filter(d => map[gy+d[1]] && map[gy+d[1]][gx+d[0]] !== 1);
-                    let fw = dirs.filter(d => !(d[0]===-g.dx && d[1]===-g.dy));
-                    let sel = (fw.length > 0 ? fw : dirs)[Math.floor(Math.random()*(fw.length||dirs.length))];
-                    if(sel) { g.dx = sel[0]; g.dy = sel[1]; }
-                }
-                g.x += g.dx * g.s; g.y += g.dy * g.s;
-                if(Math.hypot(pacman.x-g.x, pacman.y-g.y) < 15) {
-                    if(power > 0) { g.x = 9*T; g.y = 9*T; score += 200; sound.waka(); }
-                    else { die(); }
-                }
-            });
-            if(power > 0) power--;
+        function initLevel(full) {
+            if(full) map = JSON.parse(JSON.stringify(layout));
+            pacman = { x:9*T, y:15*T, dx:0, dy:0, nextDx:0, nextDy:0, s:2 };
+            const nG = 1 + (level * 2);
+            const cols = ['#F00','#0FF','#F0F','#FB0','#FFF','#0F0','#F99','#99F','#FF0','#F0A','#A0F'];
+            ghosts = [];
+            for(let i=0; i<nG; i++) ghosts.push({ x:9*T, y:9*T, dx:(i%2?1:-1), dy:0, col:cols[i%cols.length], s:2 });
+            power = 0;
+            document.getElementById('lvl').innerText = level;
             document.getElementById('pts').innerText = score;
         }
 
-        function checkWin() {
-            let dots = 0; map.forEach(r => r.forEach(c => { if(c === 0) dots++; }));
-            if(dots === 0) {
-                active = false; sound.win();
-                if(level < 5) {
-                    level++;
-                    showMsg("¡NIVEL SUPERADO!", "Entrando al nivel " + level, "VAMOS", () => { initLevel(true); active=true; });
-                } else {
-                    showMsg("¡FELIZ NAVIDAD!", "Has ganado los 5 niveles.", "VOLVER", () => location.reload());
+        function gameStep() {
+            if(!active) return;
+
+            // LÓGICA PACMAN
+            if(pacman.x % T === 0 && pacman.y % T === 0) {
+                let gx = pacman.x/T, gy = pacman.y/T;
+                if(map[gy+pacman.nextDy] && map[gy+pacman.nextDy][gx+pacman.nextDx]!==1) {
+                    pacman.dx = pacman.nextDx; pacman.dy = pacman.nextDy;
                 }
+                if(map[gy+pacman.dy] && map[gy+pacman.dy][gx+pacman.dx]===1) {
+                    pacman.dx = 0; pacman.dy = 0;
+                }
+                if(map[gy][gx] === 0) { map[gy][gx]=2; score+=10; beep(600,'triangle',0.05,0.05); checkWin(); }
+                if(map[gy][gx] === 3) { map[gy][gx]=2; power=400; score+=50; beep(800,'sine',0.2,0.1); }
+            }
+            pacman.x += pacman.dx * pacman.s; pacman.y += pacman.dy * pacman.s;
+
+            // LÓGICA FANTASMAS
+            ghosts.forEach(g => {
+                if(g.x % T === 0 && g.y % T === 0) {
+                    let gx=g.x/T, gy=g.y/T;
+                    let dirs = [[0,1],[0,-1],[1,0],[-1,0]].filter(d => map[gy+d[1]] && map[gy+d[1]][gx+d[0]] !== 1);
+                    let fw = dirs.filter(d => !(d[0]===-g.dx && d[1]===-g.dy));
+                    let sel = (fw.length > 0 ? fw : dirs)[Math.floor(Math.random()*(fw.length||dirs.length))];
+                    if(sel) { g.dx=sel[0]; g.dy=sel[1]; }
+                }
+                g.x += g.dx * g.s; g.y += g.dy * g.s;
+                if(Math.hypot(pacman.x-g.x, pacman.y-g.y) < 15) {
+                    if(power>0) { g.x=9*T; g.y=9*T; score+=200; } else { die(); }
+                }
+            });
+            if(power > 0) power--;
+            
+            // MUSICA (Jingle Bells simple)
+            if(active && Date.now() % 400 < 20 && !bgmOn) {
+                const notes = [659, 659, 659, 659, 659, 659, 659, 783, 523, 587, 659];
+                let n = notes[Math.floor(Date.now()/400) % notes.length];
+                beep(n, 'sine', 0.1, 0.02);
             }
         }
 
         function die() {
-            active = false; sound.die(); lives--;
-            if(lives > 0) {
-                showMsg("¡TE ATRAPARON!", "Vidas: " + lives, "REINTENTAR", () => { initLevel(false); active=true; });
-            } else {
-                showMsg("FIN DEL JUEGO", "Puntos: " + score, "REINICIAR", () => location.reload());
+            active = false; beep(200,'sawtooth',0.5,0.1); lives--;
+            document.getElementById('vds').innerText = lives;
+            if(lives > 0) showMsg("¡UPS!", "Vidas: "+lives, "REINTENTAR", () => { initLevel(false); active=true; });
+            else showMsg("FIN", "Puntos: "+score, "INICIO", () => location.reload());
+        }
+
+        function checkWin() {
+            let dots = 0; map.forEach(r => r.forEach(c => { if(c===0) dots++; }));
+            if(dots === 0) {
+                active = false; beep(1000,'square',0.5,0.1);
+                if(level < 5) { level++; showMsg("NIVEL "+(level-1), "Más fantasmas ahora.", "SIGUIENTE", () => { initLevel(true); active=true; }); }
+                else showMsg("¡VICTORIA!", "Feliz Navidad", "REINICIAR", () => location.reload());
             }
         }
 
         function showMsg(t, b, btn, act) {
-            document.getElementById('msg-t').innerText = t;
-            document.getElementById('msg-b').innerText = b;
+            document.getElementById('msg-t').innerText = t; document.getElementById('msg-b').innerText = b;
             const bE = document.getElementById('msg-btn');
             bE.onclick = () => { document.getElementById('scr-msg').style.display='none'; act(); };
             document.getElementById('scr-msg').style.display='flex';
@@ -184,28 +178,30 @@
                     else if(map[y][x]===3) { ctx.fillStyle='#FFF'; ctx.beginPath(); ctx.arc(x*T+T/2,y*T+T/2,5,0,7); ctx.fill(); }
                 }
             }
-            ctx.fillStyle = power > 0 ? (Date.now()%200<100?'#FFF':'#FFD700') : '#FFD700';
+            ctx.fillStyle = power>0 ? (Date.now()%200<100?'#FFF':'#FFD700') : '#FFD700';
             ctx.beginPath(); let a = (Math.sin(Date.now()/100)+1)*0.2;
             ctx.arc(pacman.x+T/2, pacman.y+T/2, 8, a*Math.PI, (2-a)*Math.PI);
             ctx.lineTo(pacman.x+T/2, pacman.y+T/2); ctx.fill();
             ghosts.forEach(g => {
-                ctx.fillStyle = power > 0 ? '#44F' : g.col;
+                ctx.fillStyle = power>0 ? '#44F' : g.col;
                 ctx.beginPath(); ctx.arc(g.x+T/2, g.y+T/2, 8, Math.PI, 0);
                 ctx.lineTo(g.x+18, g.y+18); ctx.lineTo(g.x+2, g.y+18); ctx.fill();
             });
+            if(active) gameStep();
             requestAnimationFrame(draw);
         }
 
         function startGame() {
-            if(audioCtx.state === 'suspended') audioCtx.resume();
+            audioCtx.resume();
             document.getElementById('scr-start').style.display = 'none';
             cvs.width = 19 * T; cvs.height = 19 * T;
-            initLevel(true);
-            active = true;
-            sound.playBGM(); // Inicia la música
-            setInterval(update, 1000/60);
-            draw();
+            initLevel(true); active = true; draw();
         }
+
+        window.addEventListener('keydown', e => {
+            if(e.key==='ArrowUp') setD(0,-1); if(e.key==='ArrowDown') setD(0,1);
+            if(e.key==='ArrowLeft') setD(-1,0); if(e.key==='ArrowRight') setD(1,0);
+        });
     </script>
 </body>
 </html>
