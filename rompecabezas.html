@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Puzle Navideño | Corrección de Piezas</title>
+    <title>Puzle Navideño | Pro</title>
     <style>
         :root { --noche: #0A192F; --adviento: #6A0573; --oro: #FFD700; --verde: #2ECC71; --rojo: #E74C3C; }
         
@@ -18,7 +18,7 @@
             position: fixed; top: 10px; left: 10px; z-index: 5000;
             background: var(--rojo); color: white; border: 2px solid var(--oro);
             width: 45px; height: 45px; border-radius: 50%; font-size: 24px;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center;
         }
 
         #header { 
@@ -74,7 +74,7 @@
 
     <div id="header">
         <div>NIVEL: <span id="lvl">1</span>/5</div>
-        <div><span id="placed">0</span> / <span id="total">0</span></div>
+        <div>PIEZAS: <span id="placed">0</span> / <span id="total">0</span></div>
     </div>
 
     <div id="drop-zone">
@@ -85,7 +85,7 @@
 
     <div id="scr-start" class="overlay">
         <h1 style="color:var(--oro)">PUZLE NAVIDEÑO</h1>
-        <p>Arrastra las piezas a su lugar correcto</p>
+        <p>¡Arma la imagen con música festiva!</p>
         <button class="btn" onclick="init()">¡JUGAR!</button>
     </div>
 
@@ -100,21 +100,53 @@
         let level = 1, size = 3, placedCount = 0;
         const dropZone = document.getElementById('drop-zone');
         const piecesContainer = document.getElementById('pieces-container');
+        
+        // --- MOTOR DE AUDIO (Música de Adivina/Intruso) ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let melodyPart = 0;
+        const jingleBells = [
+            {f:659, d:0.2}, {f:659, d:0.2}, {f:659, d:0.4},
+            {f:659, d:0.2}, {f:659, d:0.2}, {f:659, d:0.4},
+            {f:659, d:0.2}, {f:783, d:0.2}, {f:523, d:0.2}, {f:587, d:0.2}, {f:659, d:0.8}
+        ];
 
-        function sfx(f, d) {
+        function playNote(freq, dur) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + dur);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + dur);
+        }
+
+        function playMusic() {
+            if (placedCount < size * size) {
+                const note = jingleBells[melodyPart];
+                playNote(note.f, note.d);
+                melodyPart = (melodyPart + 1) % jingleBells.length;
+                setTimeout(playMusic, note.d * 1200);
+            }
+        }
+
+        function sfx(f, d, type='sine') {
             try {
                 const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-                o.frequency.value = f; g.gain.value = 0.05;
+                o.type = type; o.frequency.value = f; g.gain.value = 0.05;
                 o.connect(g); g.connect(audioCtx.destination);
                 o.start(); o.stop(audioCtx.currentTime + d);
             } catch(e){}
         }
 
+        // --- LÓGICA DEL JUEGO ---
         function init() {
             if(audioCtx.state === 'suspended') audioCtx.resume();
             document.getElementById('scr-start').style.display = 'none';
             loadLevel();
+            playMusic();
         }
 
         function loadLevel() {
@@ -157,7 +189,6 @@
                 piecesContainer.appendChild(piece);
             }
             
-            // Mezclar piezas
             const pArr = Array.from(piecesContainer.children);
             pArr.sort(() => Math.random() - 0.5).forEach(p => piecesContainer.appendChild(p));
         }
@@ -172,6 +203,7 @@
                 ox = e.clientX - r.left;
                 oy = e.clientY - r.top;
                 p.classList.add('dragging');
+                sfx(400, 0.05);
                 moveAt(e);
             };
 
@@ -194,11 +226,7 @@
                 p.classList.remove('dragging');
                 p.releasePointerCapture(e.pointerId);
                 
-                // Limpiar estilos de posición fija inmediatamente
-                p.style.position = '';
-                p.style.left = '';
-                p.style.top = '';
-
+                p.style.position = ''; p.style.left = ''; p.style.top = '';
                 document.querySelectorAll('.slot').forEach(s => s.classList.remove('valid', 'invalid'));
 
                 p.hidden = true;
@@ -212,14 +240,14 @@
                         p.style.border = 'none'; p.onpointerdown = null;
                         placedCount++;
                         document.getElementById('placed').innerText = placedCount;
-                        sfx(600, 0.1); checkWin();
+                        sfx(880, 0.2, 'square'); 
+                        checkWin();
                         return;
                     }
                 }
                 
-                // Si falla, regresa al contenedor
                 piecesContainer.appendChild(p);
-                sfx(150, 0.1);
+                sfx(150, 0.1, 'sawtooth');
             };
 
             function moveAt(e) {
@@ -230,11 +258,12 @@
 
         function checkWin() {
             if (placedCount === size * size) {
+                sfx(1200, 0.5, 'sine');
                 setTimeout(() => {
                     if (level < 5) {
-                        msg("¡GENIAL!", `Nivel ${level} completo.`, "SIGUIENTE", () => { level++; loadLevel(); });
+                        msg("¡EXCELENTE!", `Nivel ${level} superado.`, "SIGUIENTE", () => { level++; loadLevel(); playMusic(); });
                     } else {
-                        msg("¡CAMPEÓN!", "Puzles terminados.", "SALIR", () => { window.location.href = 'https://hsvcl.github.io/Asistencia/Index_Juego.html'; });
+                        msg("¡FELIZ NAVIDAD!", "Has completado todos los puzles.", "SALIR", () => { window.location.href = 'https://hsvcl.github.io/Asistencia/Index_Juego.html'; });
                     }
                 }, 500);
             }
