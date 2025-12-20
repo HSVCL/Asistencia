@@ -6,63 +6,117 @@
     <title>Puzle Navideño PRO | Guía Visual</title>
     <style>
         :root { --noche: #0A192F; --adviento: #6A0573; --oro: #FFD700; --verde: #2ECC71; --rojo: #E74C3C; }
-        body { margin: 0; background: var(--noche); font-family: sans-serif; color: white; display: flex; flex-direction: column; align-items: center; min-height: 100vh; touch-action: none; overflow: hidden; }
         
-        /* BOTÓN DE REGRESO SIEMPRE VISIBLE */
+        body { 
+            margin: 0; 
+            background: var(--noche); 
+            font-family: sans-serif; 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            height: 100vh; 
+            height: -webkit-fill-available;
+            touch-action: none; 
+            overflow: hidden; 
+        }
+
         #btn-fixed-return {
             position: fixed;
             top: 10px;
             left: 10px;
-            z-index: 1000; /* Por encima de todo */
+            z-index: 1000;
             background: var(--rojo);
             color: white;
             border: 2px solid var(--oro);
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
-            font-size: 20px;
-            font-weight: bold;
+            font-size: 24px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
         }
 
-        #header { width: 100%; padding: 15px; padding-left: 60px; /* Espacio para el botón */ background: var(--adviento); display: flex; justify-content: space-around; border-bottom: 3px solid var(--oro); font-weight: bold; box-sizing: border-box; z-index: 20; }
-        
+        #header { 
+            width: 100%; 
+            padding: 10px; 
+            padding-left: 65px; 
+            background: var(--adviento); 
+            display: flex; 
+            justify-content: space-around; 
+            border-bottom: 3px solid var(--oro); 
+            font-weight: bold; 
+            font-size: 0.9rem;
+            box-sizing: border-box; 
+            z-index: 20; 
+        }
+
+        /* TABLERO RESPONSIVE */
         #drop-zone { 
-            margin: 20px auto; width: 300px; height: 300px; 
-            display: grid; gap: 2px; border: 4px solid var(--adviento);
-            background-size: cover; background-position: center;
+            margin: 15px auto; 
+            width: 85vw; 
+            height: 85vw; 
+            max-width: 320px; 
+            max-height: 320px;
+            display: grid; 
+            gap: 2px; 
+            border: 4px solid var(--adviento);
+            background: rgba(255,255,255,0.05);
             position: relative; 
+            flex-shrink: 0;
         }
         
         #guide-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-size: 300px 300px; opacity: 0.2; pointer-events: none;
+            background-size: 100% 100%; opacity: 0.25; pointer-events: none;
         }
 
-        .slot { width: 100%; height: 100%; border: 1px solid rgba(255,255,255,0.1); box-sizing: border-box; transition: background 0.2s; }
-        .slot.valid { background: rgba(46, 204, 113, 0.5) !important; border: 2px solid var(--verde); }
-        .slot.invalid { background: rgba(231, 76, 60, 0.5) !important; border: 2px solid var(--rojo); }
+        .slot { width: 100%; height: 100%; border: 1px solid rgba(255,255,255,0.1); box-sizing: border-box; }
+        .slot.valid { background: rgba(46, 204, 113, 0.4) !important; border: 2px solid var(--verde); }
+        .slot.invalid { background: rgba(231, 76, 60, 0.4) !important; border: 2px solid var(--rojo); }
 
+        /* CONTENEDOR DE PIEZAS CON SCROLL */
         #pieces-container { 
-            margin-top: 15px; width: 95%; max-width: 400px; min-height: 100px;
-            display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
-            padding: 15px; border: 2px solid var(--adviento); background: rgba(0,0,0,0.4); border-radius: 10px;
+            flex: 1;
+            width: 90%; 
+            margin-bottom: 10px;
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            align-content: flex-start;
+            gap: 10px; 
+            padding: 15px; 
+            border: 2px solid var(--adviento); 
+            background: rgba(0,0,0,0.4); 
+            border-radius: 15px;
+            overflow-y: auto; /* Permite scroll si hay muchas piezas */
+            -webkit-overflow-scrolling: touch;
         }
 
         .piece { 
-            width: 70px; height: 70px; cursor: grab;
-            border: 1px solid var(--oro); border-radius: 4px;
-            background-repeat: no-repeat; touch-action: none; z-index: 5;
+            width: 60px; height: 60px; /* Tamaño base para móviles */
+            cursor: grab;
+            border: 1px solid var(--oro); 
+            border-radius: 5px;
+            background-repeat: no-repeat; 
+            touch-action: none; 
+            z-index: 5;
+            flex-shrink: 0;
         }
         
-        .piece.dragging { cursor: grabbing; z-index: 1000; opacity: 0.9; pointer-events: none; position: fixed; transform: scale(1.1); }
+        .piece.dragging { 
+            z-index: 1000; 
+            opacity: 0.9; 
+            pointer-events: none; 
+            position: fixed; 
+            transform: scale(1.2); 
+        }
 
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 25, 47, 0.98); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; text-align: center; }
-        .btn { background: var(--adviento); color: white; border: 2px solid var(--oro); padding: 12px 25px; border-radius: 50px; font-size: 1.1rem; cursor: pointer; margin-top: 15px; font-weight: bold; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 25, 47, 0.98); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; text-align: center; padding: 20px; box-sizing: border-box; }
+        .btn { background: var(--adviento); color: white; border: 2px solid var(--oro); padding: 15px 30px; border-radius: 50px; font-size: 1.1rem; cursor: pointer; margin-top: 15px; font-weight: bold; width: 80%; max-width: 250px; }
     </style>
 </head>
 <body>
@@ -71,7 +125,7 @@
 
     <div id="header">
         <div>NIVEL: <span id="lvl">1</span>/5</div>
-        <div>PIEZAS: <span id="placed">0</span>/<span id="total">0</span></div>
+        <div><span id="placed">0</span> / <span id="total">0</span> PIEZAS</div>
     </div>
 
     <div id="drop-zone">
@@ -81,8 +135,8 @@
     <div id="pieces-container"></div>
 
     <div id="scr-start" class="overlay">
-        <h1 style="color:var(--oro)">PUZLE INTERACTIVO</h1>
-        <p>Usa la guía transparente para armarlo</p>
+        <h1 style="color:var(--oro)">PUZLE NAVAL</h1>
+        <p>Arrastra las piezas a su lugar.<br>¡Guíate por la imagen del fondo!</p>
         <button class="btn" onclick="init()">¡JUGAR!</button>
     </div>
 
@@ -101,10 +155,12 @@
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
         function sfx(f, d) {
-            const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-            o.frequency.value = f; g.gain.value = 0.05;
-            o.connect(g); g.connect(audioCtx.destination);
-            o.start(); o.stop(audioCtx.currentTime + d);
+            try {
+                const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+                o.frequency.value = f; g.gain.value = 0.05;
+                o.connect(g); g.connect(audioCtx.destination);
+                o.start(); o.stop(audioCtx.currentTime + d);
+            } catch(e){}
         }
 
         function init() {
@@ -121,34 +177,50 @@
             document.getElementById('lvl').innerText = level;
             document.getElementById('total').innerText = totalPieces;
             document.getElementById('placed').innerText = "0";
+            
+            dropZone.innerHTML = '<div id="guide-overlay"></div>';
+            const newGuide = document.getElementById('guide-overlay');
+            newGuide.style.backgroundImage = `url(${IMG_URL})`;
+            
             dropZone.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
-            const oldSlots = dropZone.querySelectorAll('.slot');
-            oldSlots.forEach(s => s.remove());
-            const tileSize = 300 / size;
+            piecesContainer.innerHTML = '';
+            
+            // Calculamos el tamaño de la pieza basado en el contenedor (320px max)
+            const boardSize = Math.min(window.innerWidth * 0.85, 320);
+            const tileSize = boardSize / size;
+
             const pieces = [];
             for (let i = 0; i < totalPieces; i++) {
                 const slot = document.createElement('div');
                 slot.classList.add('slot');
                 slot.dataset.index = i;
                 dropZone.appendChild(slot);
+
                 const piece = document.createElement('div');
                 piece.classList.add('piece');
-                piece.style.width = `${tileSize - 4}px`;
-                piece.style.height = `${tileSize - 4}px`;
+                // Ajuste visual para que quepan en el contenedor de abajo
+                piece.style.width = `calc(85vw / ${size + 1})`; 
+                piece.style.height = `calc(85vw / ${size + 1})`;
+                piece.style.maxWidth = "70px";
+                piece.style.maxHeight = "70px";
+                
                 piece.style.backgroundImage = `url(${IMG_URL})`;
-                piece.style.backgroundSize = "300px 300px";
+                piece.style.backgroundSize = `${boardSize}px ${boardSize}px`;
+                
                 let r = Math.floor(i / size);
                 let c = i % size;
                 piece.style.backgroundPosition = `-${c * tileSize}px -${r * tileSize}px`;
                 piece.dataset.index = i;
-                addDragLogic(piece);
+                
+                addDragLogic(piece, tileSize);
                 pieces.push(piece);
             }
             pieces.sort(() => Math.random() - 0.5).forEach(p => piecesContainer.appendChild(p));
         }
 
-        function addDragLogic(piece) {
+        function addDragLogic(piece, tileSize) {
             let offsetX, offsetY;
+            
             piece.onpointerdown = function(e) {
                 piece.setPointerCapture(e.pointerId);
                 const rect = piece.getBoundingClientRect();
@@ -157,6 +229,7 @@
                 piece.classList.add('dragging');
                 updatePosition(e);
             };
+
             piece.onpointermove = function(e) {
                 if (!piece.classList.contains('dragging')) return;
                 updatePosition(e);
@@ -166,19 +239,26 @@
                     elemBelow.classList.add(elemBelow.dataset.index === piece.dataset.index ? 'valid' : 'invalid');
                 }
             };
+
             piece.onpointerup = function(e) {
                 if (!piece.classList.contains('dragging')) return;
                 piece.classList.remove('dragging');
                 piece.style.position = 'static';
                 document.querySelectorAll('.slot').forEach(s => s.classList.remove('valid', 'invalid'));
+
                 piece.style.display = 'none';
                 let elemBelow = document.elementFromPoint(e.clientX, e.clientY);
                 piece.style.display = 'block';
+
                 if (elemBelow && elemBelow.classList.contains('slot')) {
                     if (elemBelow.dataset.index === piece.dataset.index && !elemBelow.hasChildNodes()) {
                         elemBelow.appendChild(piece);
-                        piece.style.width = '100%'; piece.style.height = '100%';
-                        piece.style.border = 'none'; piece.onpointerdown = null;
+                        piece.style.width = '100%'; 
+                        piece.style.height = '100%';
+                        piece.style.maxWidth = "100%";
+                        piece.style.maxHeight = "100%";
+                        piece.style.border = 'none'; 
+                        piece.onpointerdown = null;
                         placedCount++;
                         document.getElementById('placed').innerText = placedCount;
                         sfx(600, 0.1); checkWin();
@@ -188,6 +268,7 @@
                 piecesContainer.appendChild(piece);
                 sfx(150, 0.1);
             };
+
             function updatePosition(e) {
                 piece.style.left = (e.clientX - offsetX) + 'px';
                 piece.style.top = (e.clientY - offsetY) + 'px';
@@ -198,9 +279,9 @@
             if (placedCount === size * size) {
                 setTimeout(() => {
                     if (level < 5) {
-                        msg("¡PERFECTO!", `Nivel ${level} listo.`, "SIGUIENTE", () => { level++; loadLevel(); });
+                        msg("¡EXCELENTE!", `Nivel ${level} superado.`, "SIGUIENTE", () => { level++; loadLevel(); });
                     } else {
-                        msg("¡GRAN TRABAJO!", "Puzles terminados.", "REGRESAR", () => { window.location.href = 'https://hsvcl.github.io/Asistencia/Index_Juego.html'; });
+                        msg("¡VICTORIA TOTAL!", "Eres un maestro de los puzles.", "MENÚ PRINCIPAL", () => { window.location.href = 'https://hsvcl.github.io/Asistencia/Index_Juego.html'; });
                     }
                 }, 400);
             }
