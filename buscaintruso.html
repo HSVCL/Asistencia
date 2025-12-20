@@ -5,18 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Busca al Intruso Navideño</title>
     <style>
-        :root { --noche: #0A192F; --adviento: #6A0573; --oro: #FFD700; }
-        body { margin: 0; background: var(--noche); font-family: sans-serif; color: white; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow: hidden; touch-action: manipulation; }
-        #header { width: 100%; padding: 15px; background: var(--adviento); display: flex; justify-content: space-around; border-bottom: 3px solid var(--oro); font-weight: bold; box-sizing: border-box; }
-        #game-grid { margin: 20px auto; width: 90vw; max-width: 400px; display: grid; gap: 10px; justify-content: center; }
-        .tile { aspect-ratio: 1/1; background: white; border: 3px solid var(--oro); border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        :root { --noche: #0A192F; --adviento: #6A0573; --oro: #FFD700; --rojo: #E74C3C; }
+        
+        body { 
+            margin: 0; background: var(--noche); font-family: sans-serif; color: white; 
+            display: flex; flex-direction: column; align-items: center; 
+            min-height: 100vh; overflow: hidden; touch-action: manipulation; 
+        }
+
+        /* BOTÓN DE REGRESO SIEMPRE VISIBLE */
+        #btn-fixed-return {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 2000; /* Por encima de los overlays */
+            background: var(--rojo);
+            color: white;
+            border: 2px solid var(--oro);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        #header { 
+            width: 100%; 
+            padding: 15px; 
+            padding-left: 65px; /* Espacio para que el botón no tape el texto */
+            background: var(--adviento); 
+            display: flex; 
+            justify-content: space-around; 
+            border-bottom: 3px solid var(--oro); 
+            font-weight: bold; 
+            box-sizing: border-box; 
+        }
+
+        #game-grid { 
+            margin: 20px auto; 
+            width: 90vw; 
+            max-width: 400px; 
+            display: grid; 
+            gap: 10px; 
+            justify-content: center; 
+        }
+
+        .tile { 
+            aspect-ratio: 1/1; 
+            background: white; 
+            border: 3px solid var(--oro); 
+            border-radius: 12px; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            transition: 0.2s; 
+        }
+
         .tile:active { transform: scale(0.95); background: #eee; }
         .tile img { width: 80%; height: 80%; object-fit: contain; pointer-events: none; }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 25, 47, 0.98); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; text-align: center; padding: 20px; box-sizing: border-box; }
-        .btn { background: var(--adviento); color: white; border: 2px solid var(--oro); padding: 12px 25px; border-radius: 50px; font-size: 1.1rem; cursor: pointer; margin-top: 15px; font-weight: bold; }
+
+        .overlay { 
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(10, 25, 47, 0.98); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 999; 
+            text-align: center; 
+            padding: 20px; 
+            box-sizing: border-box; 
+        }
+
+        .btn { 
+            background: var(--adviento); 
+            color: white; 
+            border: 2px solid var(--oro); 
+            padding: 12px 25px; 
+            border-radius: 50px; 
+            font-size: 1.1rem; 
+            cursor: pointer; 
+            margin-top: 15px; 
+            font-weight: bold; 
+        }
     </style>
 </head>
 <body>
+
+    <button id="btn-fixed-return" onclick="window.location.href='https://hsvcl.github.io/Asistencia/Index_Juego.html'">←</button>
 
     <div id="header">
         <div>NIVEL: <span id="lvl">1</span>/5</div>
@@ -29,7 +112,6 @@
         <h1 style="color:var(--oro)">¿QUIÉN ES DIFERENTE?</h1>
         <p>Toca al personaje que no se repite.<br>¡Ojo! Los fallos quitan tiempo.</p>
         <button class="btn" onclick="init()">¡JUGAR!</button>
-         <button class="btn" onclick="window.location.href='https://hsvcl.github.io/Asistencia/Index_Juego.html'">REGRESAR</button>
     </div>
 
     <div id="scr-msg" class="overlay" style="display:none">
@@ -49,7 +131,6 @@
             } catch(e){}
         }
 
-        // --- IMÁGENES ---
         const IMG_COMUN = 'https://hsvcl.github.io/Asistencia/arbol1.png';
         const IMG_INTRUSO = 'https://hsvcl.github.io/Asistencia/arbol2.png';
 
@@ -57,13 +138,10 @@
 
         function init() {
             if(audioCtx.state === 'suspended') audioCtx.resume();
-            
-            // RESET TOTAL
             level = 1;
             clearInterval(timerInterval);
             document.getElementById('scr-start').style.display = 'none';
             document.getElementById('scr-msg').style.display = 'none';
-            
             loadLevel();
             startTimer();
         }
@@ -83,7 +161,11 @@
             document.getElementById('lvl').innerText = level;
 
             const config = [
-                {c: 2, r: 2, t: 20}, {c: 3, r: 2, t: 18}, {c: 3, r: 3, t: 15}, {c: 4, r: 3, t: 12}, {c: 4, r: 4, t: 10}
+                {c: 2, r: 2, t: 20}, 
+                {c: 3, r: 2, t: 18}, 
+                {c: 3, r: 3, t: 15}, 
+                {c: 4, r: 3, t: 12}, 
+                {c: 4, r: 4, t: 10}
             ];
             
             let current = config[level - 1];
@@ -104,7 +186,11 @@
                     tile.onclick = () => { sfx(800, 0.1, 'sine'); nextLevel(); };
                 } else {
                     img.src = IMG_COMUN;
-                    tile.onclick = () => { sfx(150, 0.1, 'sawtooth'); timeLeft -= 2; document.getElementById('timer').innerText = timeLeft; };
+                    tile.onclick = () => { 
+                        sfx(150, 0.1, 'sawtooth'); 
+                        timeLeft -= 2; 
+                        document.getElementById('timer').innerText = Math.max(0, timeLeft); 
+                    };
                 }
                 tile.appendChild(img);
                 grid.appendChild(tile);
