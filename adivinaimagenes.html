@@ -5,20 +5,124 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Memoria Arcade Navideña</title>
     <style>
-        :root { --noche: #0A192F; --adviento: #6A0573; --oro: #FFD700; }
-        body { margin: 0; background: var(--noche); font-family: sans-serif; color: white; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; }
-        #header { width: 100%; padding: 15px; background: var(--adviento); display: flex; justify-content: space-around; border-bottom: 3px solid var(--oro); font-weight: bold; box-sizing: border-box; }
-        #game-board { margin: 20px auto; width: 95vw; max-width: 400px; display: grid; gap: 10px; justify-content: center; }
-        .card { aspect-ratio: 1/1; cursor: pointer; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        :root { --noche: #0A192F; --adviento: #6A0573; --oro: #FFD700; --rojo: #E74C3C; }
+        
+        body { 
+            margin: 0; background: var(--noche); font-family: sans-serif; color: white; 
+            display: flex; flex-direction: column; align-items: center; 
+            min-height: 100vh; overflow-x: hidden; 
+        }
+
+        /* BOTÓN DE REGRESO UNIVERSAL */
+        #btn-fixed-return {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 2000;
+            background: var(--rojo);
+            color: white;
+            border: 2px solid var(--oro);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        #header { 
+            width: 100%; 
+            padding: 15px; 
+            padding-left: 65px; 
+            background: var(--adviento); 
+            display: flex; 
+            justify-content: space-around; 
+            border-bottom: 3px solid var(--oro); 
+            font-weight: bold; 
+            box-sizing: border-box; 
+        }
+
+        #game-board { 
+            margin: 20px auto; 
+            width: 95vw; 
+            max-width: 400px; 
+            display: grid; 
+            gap: 10px; 
+            justify-content: center; 
+        }
+
+        .card { 
+            aspect-ratio: 1/1; 
+            cursor: pointer; 
+            position: relative; 
+            transform-style: preserve-3d; 
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+
         .card.flipped { transform: rotateY(180deg); }
-        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 12px; border: 3px solid var(--oro); box-sizing: border-box; }
-        .card-back { background: var(--adviento); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--oro); box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
-        .card-front { transform: rotateY(180deg); background-size: cover; background-position: center; background-color: white; }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 25, 47, 0.98); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; text-align: center; }
-        .btn { background: var(--adviento); color: white; border: 2px solid var(--oro); padding: 12px 25px; border-radius: 50px; font-size: 1.1rem; cursor: pointer; margin-top: 15px; font-weight: bold; }
+
+        .card-front, .card-back { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            backface-visibility: hidden; 
+            border-radius: 12px; 
+            border: 3px solid var(--oro); 
+            box-sizing: border-box; 
+        }
+
+        .card-back { 
+            background: var(--adviento); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 2rem; 
+            color: var(--oro); 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3); 
+        }
+
+        .card-front { 
+            transform: rotateY(180deg); 
+            background-size: 70%; 
+            background-repeat: no-repeat;
+            background-position: center; 
+            background-color: white; 
+        }
+
+        .overlay { 
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(10, 25, 47, 0.98); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 999; 
+            text-align: center; 
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .btn { 
+            background: var(--adviento); 
+            color: white; 
+            border: 2px solid var(--oro); 
+            padding: 12px 25px; 
+            border-radius: 50px; 
+            font-size: 1.1rem; 
+            cursor: pointer; 
+            margin-top: 15px; 
+            font-weight: bold; 
+        }
     </style>
 </head>
 <body>
+
+    <button id="btn-fixed-return" onclick="window.location.href='https://hsvcl.github.io/Asistencia/Index_Juego.html'">←</button>
 
     <div id="header">
         <div>NIVEL: <span id="lvl">1</span>/5</div>
@@ -29,10 +133,8 @@
 
     <div id="scr-start" class="overlay">
         <h1 style="color:var(--oro)">MEMORIA ARCADE</h1>
-        <p>¡Busca los pares con sonido retro!</p>
+        <p>¡Encuentra todas las parejas!</p>
         <button class="btn" onclick="startGame()">¡JUGAR!</button>
-        <button class="btn" onclick="window.location.href='https://hsvcl.github.io/Asistencia/Index_Juego.html'">REGRESAR</button>
-
     </div>
 
     <div id="scr-msg" class="overlay" style="display:none">
@@ -42,35 +144,32 @@
     </div>
 
     <script>
-        // MOTOR DE AUDIO RETRO (SINTETIZADOR OSCILADOR)
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
         function playTone(freq, duration, type = 'square', vol = 0.1) {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = type;
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + duration);
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e){}
         }
 
         const sounds = {
-            start: () => {
-                [440, 554, 659, 880].forEach((f, i) => setTimeout(() => playTone(f, 0.4, 'sine'), i * 150));
-            },
+            start: () => [440, 554, 659, 880].forEach((f, i) => setTimeout(() => playTone(f, 0.4, 'sine'), i * 150)),
             flip: () => playTone(600, 0.1, 'triangle'),
             match: () => {
                 playTone(800, 0.2, 'square');
                 setTimeout(() => playTone(1200, 0.3, 'square'), 100);
             },
             error: () => playTone(150, 0.3, 'sawtooth'),
-            win: () => {
-                [523, 659, 783, 1046].forEach((f, i) => setTimeout(() => playTone(f, 0.5, 'square'), i * 100));
-            }
+            win: () => [523, 659, 783, 1046].forEach((f, i) => setTimeout(() => playTone(f, 0.5, 'square'), i * 100))
         };
 
         const COLECCION_IMAGENES = [
@@ -81,9 +180,7 @@
             'https://cdn-icons-png.flaticon.com/512/2311/2311565.png',
             'https://cdn-icons-png.flaticon.com/512/2311/2311526.png',
             'https://cdn-icons-png.flaticon.com/512/2311/2311521.png',
-            'https://cdn-icons-png.flaticon.com/512/2311/2311551.png',
-            'https://cdn-icons-png.flaticon.com/512/4117/4117079.png',
-            'https://cdn-icons-png.flaticon.com/512/1047/1047640.png'
+            'https://cdn-icons-png.flaticon.com/512/2311/2311551.png'
         ];
         
         let level = 1, tries = 0, flippedCards = [], matchedPairs = 0;
@@ -148,7 +245,7 @@
                         if (level < 5) {
                             msg("¡BIEN HECHO!", `Nivel ${level} superado.`, "SIGUIENTE", () => { level++; loadLevel(); });
                         } else {
-                            msg("¡ERES UN CRACK!", "¡Juego completado!", "REINICIAR", () => location.reload());
+                            msg("¡ERES UN CRACK!", "¡Juego completado!", "REINICIAR", () => { level=1; loadLevel(); });
                         }
                     }, 600);
                 }
