@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Puzle Navideño PRO | Fix Final</title>
+    <title>Puzle Navideño | Corrección de Piezas</title>
     <style>
         :root { --noche: #0A192F; --adviento: #6A0573; --oro: #FFD700; --verde: #2ECC71; --rojo: #E74C3C; }
         
@@ -15,7 +15,7 @@
         }
 
         #btn-fixed-return {
-            position: fixed; top: 10px; left: 10px; z-index: 2000;
+            position: fixed; top: 10px; left: 10px; z-index: 5000;
             background: var(--rojo); color: white; border: 2px solid var(--oro);
             width: 45px; height: 45px; border-radius: 50%; font-size: 24px;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
@@ -39,7 +39,7 @@
             background-size: 100% 100%; opacity: 0.25; pointer-events: none; z-index: 1;
         }
 
-        .slot { width: 100%; height: 100%; border: 1px solid rgba(255,255,255,0.1); box-sizing: border-box; z-index: 2; position: relative; }
+        .slot { width: 100%; height: 100%; border: 1px solid rgba(255,255,255,0.1); box-sizing: border-box; z-index: 2; }
         .slot.valid { background: rgba(46, 204, 113, 0.4) !important; outline: 2px solid var(--verde); }
         .slot.invalid { background: rgba(231, 76, 60, 0.4) !important; outline: 2px solid var(--rojo); }
 
@@ -59,8 +59,9 @@
         }
         
         .piece.dragging { 
-            z-index: 3000 !important; opacity: 0.9; pointer-events: none; 
-            position: fixed; transform: scale(1.1); 
+            z-index: 4000 !important; opacity: 0.9; 
+            position: fixed !important; transform: scale(1.1); 
+            pointer-events: none;
         }
 
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 25, 47, 0.98); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; text-align: center; padding: 20px; box-sizing: border-box; }
@@ -73,7 +74,7 @@
 
     <div id="header">
         <div>NIVEL: <span id="lvl">1</span>/5</div>
-        <div><span id="placed">0</span> / <span id="total">0</span> PIEZAS</div>
+        <div><span id="placed">0</span> / <span id="total">0</span></div>
     </div>
 
     <div id="drop-zone">
@@ -84,7 +85,7 @@
 
     <div id="scr-start" class="overlay">
         <h1 style="color:var(--oro)">PUZLE NAVAL</h1>
-        <p>¡Completa los 5 niveles!</p>
+        <p>Arrastra las piezas a su lugar correcto</p>
         <button class="btn" onclick="init()">¡JUGAR!</button>
     </div>
 
@@ -124,7 +125,6 @@
             document.getElementById('total').innerText = totalPieces;
             document.getElementById('placed').innerText = "0";
             
-            // Limpiar tablero
             dropZone.innerHTML = '<div id="guide-overlay"></div>';
             const guide = document.getElementById('guide-overlay');
             guide.style.backgroundImage = `url(${IMG_URL})`;
@@ -135,7 +135,6 @@
             const boardSize = Math.min(window.innerWidth * 0.85, 320);
             const tileSize = boardSize / size;
 
-            const pieces = [];
             for (let i = 0; i < totalPieces; i++) {
                 const slot = document.createElement('div');
                 slot.classList.add('slot');
@@ -144,8 +143,8 @@
 
                 const piece = document.createElement('div');
                 piece.classList.add('piece');
-                piece.style.width = `calc(${boardSize}px / ${size + 0.5})`; 
-                piece.style.height = `calc(${boardSize}px / ${size + 0.5})`;
+                piece.style.width = `calc(${boardSize}px / ${size + 0.8})`; 
+                piece.style.height = `calc(${boardSize}px / ${size + 0.8})`;
                 piece.style.backgroundImage = `url(${IMG_URL})`;
                 piece.style.backgroundSize = `${boardSize}px ${boardSize}px`;
                 
@@ -155,82 +154,87 @@
                 piece.dataset.index = i;
                 
                 addDragLogic(piece);
-                pieces.push(piece);
+                piecesContainer.appendChild(piece);
             }
-            pieces.sort(() => Math.random() - 0.5).forEach(p => piecesContainer.appendChild(p));
+            
+            // Mezclar piezas
+            const pArr = Array.from(piecesContainer.children);
+            pArr.sort(() => Math.random() - 0.5).forEach(p => piecesContainer.appendChild(p));
         }
 
-        function addDragLogic(piece) {
-            let offsetX, offsetY;
+        function addDragLogic(p) {
+            let ox, oy;
             
-            piece.onpointerdown = function(e) {
-                piece.setPointerCapture(e.pointerId);
-                const rect = piece.getBoundingClientRect();
-                offsetX = e.clientX - rect.left;
-                offsetY = e.clientY - rect.top;
-                piece.classList.add('dragging');
-                updatePosition(e);
+            p.onpointerdown = (e) => {
+                e.preventDefault();
+                p.setPointerCapture(e.pointerId);
+                const r = p.getBoundingClientRect();
+                ox = e.clientX - r.left;
+                oy = e.clientY - r.top;
+                p.classList.add('dragging');
+                moveAt(e);
             };
 
-            piece.onpointermove = function(e) {
-                if (!piece.classList.contains('dragging')) return;
-                updatePosition(e);
+            p.onpointermove = (e) => {
+                if (!p.classList.contains('dragging')) return;
+                moveAt(e);
                 
-                // Feedback visual de validez
                 document.querySelectorAll('.slot').forEach(s => s.classList.remove('valid', 'invalid'));
-                piece.hidden = true; // Ocultar temporalmente para ver qué hay debajo
-                let elemBelow = document.elementFromPoint(e.clientX, e.clientY);
-                piece.hidden = false;
+                p.hidden = true;
+                let eb = document.elementFromPoint(e.clientX, e.clientY);
+                p.hidden = false;
 
-                if (elemBelow && elemBelow.classList.contains('slot')) {
-                    elemBelow.classList.add(elemBelow.dataset.index === piece.dataset.index ? 'valid' : 'invalid');
+                if (eb && eb.classList.contains('slot')) {
+                    eb.classList.add(eb.dataset.index === p.dataset.index ? 'valid' : 'invalid');
                 }
             };
 
-            piece.onpointerup = function(e) {
-                if (!piece.classList.contains('dragging')) return;
-                piece.classList.remove('dragging');
-                piece.style.position = 'static';
+            p.onpointerup = (e) => {
+                if (!p.classList.contains('dragging')) return;
+                p.classList.remove('dragging');
+                p.releasePointerCapture(e.pointerId);
                 
+                // Limpiar estilos de posición fija inmediatamente
+                p.style.position = '';
+                p.style.left = '';
+                p.style.top = '';
+
                 document.querySelectorAll('.slot').forEach(s => s.classList.remove('valid', 'invalid'));
 
-                piece.hidden = true;
-                let elemBelow = document.elementFromPoint(e.clientX, e.clientY);
-                piece.hidden = false;
+                p.hidden = true;
+                let eb = document.elementFromPoint(e.clientX, e.clientY);
+                p.hidden = false;
 
-                if (elemBelow && elemBelow.classList.contains('slot')) {
-                    // Solo encaja si es el slot correcto Y está vacío
-                    if (elemBelow.dataset.index === piece.dataset.index && !elemBelow.hasChildNodes()) {
-                        elemBelow.appendChild(piece);
-                        piece.style.width = '100%'; piece.style.height = '100%';
-                        piece.style.border = 'none'; piece.onpointerdown = null;
+                if (eb && eb.classList.contains('slot')) {
+                    if (eb.dataset.index === p.dataset.index && !eb.hasChildNodes()) {
+                        eb.appendChild(p);
+                        p.style.width = '100%'; p.style.height = '100%';
+                        p.style.border = 'none'; p.onpointerdown = null;
                         placedCount++;
                         document.getElementById('placed').innerText = placedCount;
-                        sfx(600, 0.1); 
-                        checkWin();
+                        sfx(600, 0.1); checkWin();
                         return;
                     }
                 }
                 
-                // Si no encaja, vuelve al contenedor
-                piecesContainer.appendChild(piece);
+                // Si falla, regresa al contenedor
+                piecesContainer.appendChild(p);
                 sfx(150, 0.1);
             };
 
-            function updatePosition(e) {
-                piece.style.left = (e.clientX - offsetX) + 'px';
-                piece.style.top = (e.clientY - offsetY) + 'px';
+            function moveAt(e) {
+                p.style.left = (e.clientX - ox) + 'px';
+                p.style.top = (e.clientY - oy) + 'px';
             }
         }
 
         function checkWin() {
-            const total = size * size;
-            if (placedCount === total) {
+            if (placedCount === size * size) {
                 setTimeout(() => {
                     if (level < 5) {
-                        msg("¡PERFECTO!", `Nivel ${level} superado.`, "SIGUIENTE", () => { level++; loadLevel(); });
+                        msg("¡GENIAL!", `Nivel ${level} completo.`, "SIGUIENTE", () => { level++; loadLevel(); });
                     } else {
-                        msg("¡VICTORIA TOTAL!", "Eres un maestro de los puzles.", "MENÚ", () => { window.location.href = 'https://hsvcl.github.io/Asistencia/Index_Juego.html'; });
+                        msg("¡CAMPEÓN!", "Puzles terminados.", "SALIR", () => { window.location.href = 'https://hsvcl.github.io/Asistencia/Index_Juego.html'; });
                     }
                 }, 500);
             }
