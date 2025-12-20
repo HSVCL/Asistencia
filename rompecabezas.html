@@ -8,9 +8,29 @@
         :root { --noche: #0A192F; --adviento: #6A0573; --oro: #FFD700; --verde: #2ECC71; --rojo: #E74C3C; }
         body { margin: 0; background: var(--noche); font-family: sans-serif; color: white; display: flex; flex-direction: column; align-items: center; min-height: 100vh; touch-action: none; overflow: hidden; }
         
-        #header { width: 100%; padding: 15px; background: var(--adviento); display: flex; justify-content: space-around; border-bottom: 3px solid var(--oro); font-weight: bold; box-sizing: border-box; z-index: 20; }
+        /* BOTÓN DE REGRESO SIEMPRE VISIBLE */
+        #btn-fixed-return {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1000; /* Por encima de todo */
+            background: var(--rojo);
+            color: white;
+            border: 2px solid var(--oro);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        #header { width: 100%; padding: 15px; padding-left: 60px; /* Espacio para el botón */ background: var(--adviento); display: flex; justify-content: space-around; border-bottom: 3px solid var(--oro); font-weight: bold; box-sizing: border-box; z-index: 20; }
         
-        /* Contenedor con la imagen de guía transparente */
         #drop-zone { 
             margin: 20px auto; width: 300px; height: 300px; 
             display: grid; gap: 2px; border: 4px solid var(--adviento);
@@ -18,7 +38,6 @@
             position: relative; 
         }
         
-        /* Capa de guía transparente */
         #guide-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-size: 300px 300px; opacity: 0.2; pointer-events: none;
@@ -48,6 +67,8 @@
 </head>
 <body>
 
+    <button id="btn-fixed-return" onclick="window.location.href='https://hsvcl.github.io/Asistencia/Index_Juego.html'">←</button>
+
     <div id="header">
         <div>NIVEL: <span id="lvl">1</span>/5</div>
         <div>PIEZAS: <span id="placed">0</span>/<span id="total">0</span></div>
@@ -63,7 +84,6 @@
         <h1 style="color:var(--oro)">PUZLE INTERACTIVO</h1>
         <p>Usa la guía transparente para armarlo</p>
         <button class="btn" onclick="init()">¡JUGAR!</button>
-         <button class="btn" onclick="window.location.href='https://hsvcl.github.io/Asistencia/Index_Juego.html'">REGRESAR</button>
     </div>
 
     <div id="scr-msg" class="overlay" style="display:none">
@@ -73,9 +93,7 @@
     </div>
 
     <script>
-        // URL DE TU IMAGEN
         const IMG_URL = 'https://hsvcl.github.io/Asistencia/rompecabezas.png';
-        
         let level = 1, size = 3, placedCount = 0;
         const dropZone = document.getElementById('drop-zone');
         const guideOverlay = document.getElementById('guide-overlay');
@@ -103,44 +121,34 @@
             document.getElementById('lvl').innerText = level;
             document.getElementById('total').innerText = totalPieces;
             document.getElementById('placed').innerText = "0";
-
             dropZone.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
-            
-            // Limpiar slots antiguos manteniendo la capa de guía
             const oldSlots = dropZone.querySelectorAll('.slot');
             oldSlots.forEach(s => s.remove());
-
             const tileSize = 300 / size;
             const pieces = [];
-
             for (let i = 0; i < totalPieces; i++) {
                 const slot = document.createElement('div');
                 slot.classList.add('slot');
                 slot.dataset.index = i;
                 dropZone.appendChild(slot);
-
                 const piece = document.createElement('div');
                 piece.classList.add('piece');
                 piece.style.width = `${tileSize - 4}px`;
                 piece.style.height = `${tileSize - 4}px`;
                 piece.style.backgroundImage = `url(${IMG_URL})`;
                 piece.style.backgroundSize = "300px 300px";
-                
                 let r = Math.floor(i / size);
                 let c = i % size;
                 piece.style.backgroundPosition = `-${c * tileSize}px -${r * tileSize}px`;
                 piece.dataset.index = i;
-                
                 addDragLogic(piece);
                 pieces.push(piece);
             }
-
             pieces.sort(() => Math.random() - 0.5).forEach(p => piecesContainer.appendChild(p));
         }
 
         function addDragLogic(piece) {
             let offsetX, offsetY;
-
             piece.onpointerdown = function(e) {
                 piece.setPointerCapture(e.pointerId);
                 const rect = piece.getBoundingClientRect();
@@ -149,36 +157,23 @@
                 piece.classList.add('dragging');
                 updatePosition(e);
             };
-
             piece.onpointermove = function(e) {
                 if (!piece.classList.contains('dragging')) return;
                 updatePosition(e);
-
-                // Limpiar estados previos de los huecos
                 document.querySelectorAll('.slot').forEach(s => s.classList.remove('valid', 'invalid'));
-
-                // Detectar qué hay debajo
                 let elemBelow = document.elementFromPoint(e.clientX, e.clientY);
                 if (elemBelow && elemBelow.classList.contains('slot')) {
-                    if (elemBelow.dataset.index === piece.dataset.index) {
-                        elemBelow.classList.add('valid');
-                    } else {
-                        elemBelow.classList.add('invalid');
-                    }
+                    elemBelow.classList.add(elemBelow.dataset.index === piece.dataset.index ? 'valid' : 'invalid');
                 }
             };
-
             piece.onpointerup = function(e) {
                 if (!piece.classList.contains('dragging')) return;
                 piece.classList.remove('dragging');
                 piece.style.position = 'static';
-                
                 document.querySelectorAll('.slot').forEach(s => s.classList.remove('valid', 'invalid'));
-
                 piece.style.display = 'none';
                 let elemBelow = document.elementFromPoint(e.clientX, e.clientY);
                 piece.style.display = 'block';
-
                 if (elemBelow && elemBelow.classList.contains('slot')) {
                     if (elemBelow.dataset.index === piece.dataset.index && !elemBelow.hasChildNodes()) {
                         elemBelow.appendChild(piece);
@@ -193,7 +188,6 @@
                 piecesContainer.appendChild(piece);
                 sfx(150, 0.1);
             };
-
             function updatePosition(e) {
                 piece.style.left = (e.clientX - offsetX) + 'px';
                 piece.style.top = (e.clientY - offsetY) + 'px';
@@ -204,11 +198,9 @@
             if (placedCount === size * size) {
                 setTimeout(() => {
                     if (level < 5) {
-                        msg("¡PERFECTO!", `Imagen nivel ${level} completada.`, "SIGUIENTE NIVEL", () => {
-                            level++; loadLevel();
-                        });
+                        msg("¡PERFECTO!", `Nivel ${level} listo.`, "SIGUIENTE", () => { level++; loadLevel(); });
                     } else {
-                        msg("¡MAESTRO ARTESANO!", "Has completado la colección de puzles.", "VOLVER A JUGAR", () => location.reload());
+                        msg("¡GRAN TRABAJO!", "Puzles terminados.", "REGRESAR", () => { window.location.href = 'https://hsvcl.github.io/Asistencia/Index_Juego.html'; });
                     }
                 }, 400);
             }
