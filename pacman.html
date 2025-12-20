@@ -5,40 +5,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pac-Man Navideño | Final Fix</title>
     <style>
-        :root { --noche: #0A192F; --adviento: #6A0573; --oro: #FFD700; }
-        body { margin: 0; background: var(--noche); font-family: sans-serif; color: white; display: flex; flex-direction: column; align-items: center; overflow: hidden; touch-action: none; }
-        #header { width: 100%; padding: 10px; background: var(--adviento); display: flex; justify-content: space-around; border-bottom: 3px solid var(--oro); font-weight: bold; }
-        #canvas-wrap { margin-top: 10px; border: 4px solid var(--adviento); background: #000; }
-        canvas { display: block; }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 25, 47, 0.98); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; text-align: center; }
-        .btn { background: var(--adviento); color: white; border: 2px solid var(--oro); padding: 15px 35px; border-radius: 50px; font-size: 1.2rem; cursor: pointer; margin-top: 20px; font-weight: bold; }
-        #controls { display: grid; grid-template-columns: repeat(3, 75px); gap: 12px; margin-top: 15px; padding-bottom: 10px; }
-        .ctrl-btn { background: rgba(255,255,255,0.1); border: 2px solid var(--oro); border-radius: 15px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--oro); user-select: none; -webkit-tap-highlight-color: transparent; }
+        :root { --noche: #0A192F; --adviento: #6A0573; --oro: #FFD700; --rojo: #E74C3C; }
+        
+        body { 
+            margin: 0; background: var(--noche); font-family: sans-serif; color: white; 
+            display: flex; flex-direction: column; align-items: center; 
+            overflow: hidden; touch-action: none; 
+        }
+
+        /* BOTÓN DE REGRESO UNIVERSAL */
+        #btn-fixed-return {
+            position: fixed; top: 10px; left: 10px; z-index: 2000;
+            background: var(--rojo); color: white; border: 2px solid var(--oro);
+            width: 45px; height: 45px; border-radius: 50%; font-size: 24px;
+            font-weight: bold; cursor: pointer; display: flex;
+            align-items: center; justify-content: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        #header { 
+            width: 100%; padding: 10px; padding-left: 65px;
+            background: var(--adviento); display: flex; 
+            justify-content: space-around; border-bottom: 3px solid var(--oro); 
+            font-weight: bold; box-sizing: border-box;
+        }
+
+        #canvas-wrap { margin-top: 5px; border: 4px solid var(--adviento); background: #000; line-height: 0; }
+        canvas { display: block; max-width: 85vw; max-height: 50vh; }
+
+        .overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(10, 25, 47, 0.98); display: flex; 
+            flex-direction: column; align-items: center; justify-content: center; 
+            z-index: 999; text-align: center; padding: 20px; box-sizing: border-box;
+        }
+
+        .btn { 
+            background: var(--adviento); color: white; border: 2px solid var(--oro); 
+            padding: 15px 35px; border-radius: 50px; font-size: 1.2rem; 
+            cursor: pointer; margin-top: 20px; font-weight: bold; 
+        }
+
+        #controls { 
+            display: grid; grid-template-columns: repeat(3, 65px); 
+            gap: 8px; margin-top: 10px; padding-bottom: 15px; 
+        }
+
+        .ctrl-btn { 
+            background: rgba(255,255,255,0.1); border: 2px solid var(--oro); 
+            border-radius: 12px; height: 55px; display: flex; 
+            align-items: center; justify-content: center; font-size: 1.8rem; 
+            color: var(--oro); user-select: none; -webkit-tap-highlight-color: transparent; 
+        }
     </style>
 </head>
 <body>
 
+    <button id="btn-fixed-return" onclick="window.location.href='https://hsvcl.github.io/Asistencia/Index_Juego.html'">←</button>
+
     <div id="header">
-        <div>NIVEL: <span id="lvl">1</span>/5</div>
+        <div>LVL: <span id="lvl">1</span></div>
         <div>VIDAS: <span id="vds">3</span></div>
         <div>PTS: <span id="pts">0</span></div>
     </div>
 
     <div id="canvas-wrap">
         <canvas id="gCanvas"></canvas>
-    </div>
-
-    <div id="scr-start" class="overlay">
-        <h1 style="color:var(--oro)">Pac-Man Navideño</h1>
-       
-        <button class="btn" onclick="startGame()">¡JUGAR!</button>
-        <button class="btn" onclick="window.location.href='https://hsvcl.github.io/Asistencia/Index_Juego.html'">REGRESAR</button>
-    </div>
-
-    <div id="scr-msg" class="overlay" style="display:none">
-        <h1 id="msg-t" style="color:var(--oro)"></h1>
-        <p id="msg-b"></p>
-        <button id="msg-btn" class="btn">CONTINUAR</button>
     </div>
 
     <div id="controls">
@@ -48,23 +80,36 @@
         <div style="grid-row:2;grid-column:3" class="ctrl-btn" onpointerdown="setD(1,0)">→</div>
     </div>
 
+    <div id="scr-start" class="overlay">
+        <h1 style="color:var(--oro)">PAC-MAN NAVAL</h1>
+        <p>¡Recoge los puntos y evita los fantasmas!</p>
+        <button class="btn" onclick="startGame()">¡JUGAR!</button>
+    </div>
+
+    <div id="scr-msg" class="overlay" style="display:none">
+        <h1 id="msg-t" style="color:var(--oro)"></h1>
+        <p id="msg-b"></p>
+        <button id="msg-btn" class="btn">CONTINUAR</button>
+    </div>
+
     <script>
         const cvs = document.getElementById('gCanvas');
         const ctx = cvs.getContext('2d');
         const T = 20;
-        let score=0, level=1, lives=3, active=false, power=0, bgmOn=false;
+        let score=0, level=1, lives=3, active=false, power=0;
         let map=[], ghosts=[], pacman={};
 
-        // Audio simplificado para no bloquear el hilo principal
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function beep(f, t, d, v) {
-            const o = audioCtx.createOscillator();
-            const g = audioCtx.createGain();
-            o.type = t; o.frequency.value = f;
-            g.gain.setValueAtTime(v, audioCtx.currentTime);
-            g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + d);
-            o.connect(g); g.connect(audioCtx.destination);
-            o.start(); o.stop(audioCtx.currentTime + d);
+            try {
+                const o = audioCtx.createOscillator();
+                const g = audioCtx.createGain();
+                o.type = t; o.frequency.value = f;
+                g.gain.setValueAtTime(v, audioCtx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + d);
+                o.connect(g); g.connect(audioCtx.destination);
+                o.start(); o.stop(audioCtx.currentTime + d);
+            } catch(e){}
         }
 
         const layout = [
@@ -97,19 +142,19 @@
         function initLevel(full) {
             if(full) map = JSON.parse(JSON.stringify(layout));
             pacman = { x:9*T, y:15*T, dx:0, dy:0, nextDx:0, nextDy:0, s:2 };
-            const nG = 1 + (level * 2);
-            const cols = ['#F00','#0FF','#F0F','#FB0','#FFF','#0F0','#F99','#99F','#FF0','#F0A','#A0F'];
+            const nG = Math.min(1 + (level * 1), 10);
+            const cols = ['#F00','#0FF','#F0F','#FB0','#FFF','#0F0','#F99','#99F','#FF0','#F0A'];
             ghosts = [];
             for(let i=0; i<nG; i++) ghosts.push({ x:9*T, y:9*T, dx:(i%2?1:-1), dy:0, col:cols[i%cols.length], s:2 });
             power = 0;
             document.getElementById('lvl').innerText = level;
+            document.getElementById('vds').innerText = lives;
             document.getElementById('pts').innerText = score;
         }
 
         function gameStep() {
             if(!active) return;
 
-            // LÓGICA PACMAN
             if(pacman.x % T === 0 && pacman.y % T === 0) {
                 let gx = pacman.x/T, gy = pacman.y/T;
                 if(map[gy+pacman.nextDy] && map[gy+pacman.nextDy][gx+pacman.nextDx]!==1) {
@@ -123,7 +168,6 @@
             }
             pacman.x += pacman.dx * pacman.s; pacman.y += pacman.dy * pacman.s;
 
-            // LÓGICA FANTASMAS
             ghosts.forEach(g => {
                 if(g.x % T === 0 && g.y % T === 0) {
                     let gx=g.x/T, gy=g.y/T;
@@ -134,32 +178,26 @@
                 }
                 g.x += g.dx * g.s; g.y += g.dy * g.s;
                 if(Math.hypot(pacman.x-g.x, pacman.y-g.y) < 15) {
-                    if(power>0) { g.x=9*T; g.y=9*T; score+=200; } else { die(); }
+                    if(power>0) { g.x=9*T; g.y=9*T; score+=200; beep(1000,'sine',0.1,0.1); } 
+                    else { die(); }
                 }
             });
             if(power > 0) power--;
-            
-            // MUSICA (Jingle Bells simple)
-            if(active && Date.now() % 400 < 20 && !bgmOn) {
-                const notes = [659, 659, 659, 659, 659, 659, 659, 783, 523, 587, 659];
-                let n = notes[Math.floor(Date.now()/400) % notes.length];
-                beep(n, 'sine', 0.1, 0.02);
-            }
         }
 
         function die() {
             active = false; beep(200,'sawtooth',0.5,0.1); lives--;
             document.getElementById('vds').innerText = lives;
-            if(lives > 0) showMsg("¡UPS!", "Vidas: "+lives, "REINTENTAR", () => { initLevel(false); active=true; });
-            else showMsg("FIN", "Puntos: "+score, "INICIO", () => location.reload());
+            if(lives > 0) showMsg("¡OH NO!", "Te atraparon.", "REINTENTAR", () => { initLevel(false); active=true; });
+            else showMsg("GAME OVER", "Puntuación final: "+score, "INICIO", () => location.reload());
         }
 
         function checkWin() {
             let dots = 0; map.forEach(r => r.forEach(c => { if(c===0) dots++; }));
             if(dots === 0) {
                 active = false; beep(1000,'square',0.5,0.1);
-                if(level < 5) { level++; showMsg("NIVEL "+(level-1), "Más fantasmas ahora.", "SIGUIENTE", () => { initLevel(true); active=true; }); }
-                else showMsg("¡VICTORIA!", "Feliz Navidad", "REINICIAR", () => location.reload());
+                if(level < 5) { level++; showMsg("NIVEL COMPLETO", "Siguiente nivel más difícil.", "SIGUIENTE", () => { initLevel(true); active=true; }); }
+                else showMsg("¡VICTORIA TOTAL!", "Eres el rey de la Navidad", "REINICIAR", () => location.reload());
             }
         }
 
@@ -174,15 +212,17 @@
             ctx.clearRect(0,0,cvs.width,cvs.height);
             for(let y=0; y<map.length; y++) {
                 for(let x=0; x<map[y].length; x++) {
-                    if(map[y][x]===1) { ctx.fillStyle='#10294c'; ctx.fillRect(x*T+1,y*T+1,T-2,T-2); }
+                    if(map[y][x]===1) { ctx.fillStyle='#1a3a6c'; ctx.fillRect(x*T+1,y*T+1,T-2,T-2); }
                     else if(map[y][x]===0) { ctx.fillStyle='#FFD700'; ctx.beginPath(); ctx.arc(x*T+T/2,y*T+T/2,2,0,7); ctx.fill(); }
                     else if(map[y][x]===3) { ctx.fillStyle='#FFF'; ctx.beginPath(); ctx.arc(x*T+T/2,y*T+T/2,5,0,7); ctx.fill(); }
                 }
             }
+            // Dibujar Pacman
             ctx.fillStyle = power>0 ? (Date.now()%200<100?'#FFF':'#FFD700') : '#FFD700';
             ctx.beginPath(); let a = (Math.sin(Date.now()/100)+1)*0.2;
             ctx.arc(pacman.x+T/2, pacman.y+T/2, 8, a*Math.PI, (2-a)*Math.PI);
             ctx.lineTo(pacman.x+T/2, pacman.y+T/2); ctx.fill();
+            // Dibujar Fantasmas
             ghosts.forEach(g => {
                 ctx.fillStyle = power>0 ? '#44F' : g.col;
                 ctx.beginPath(); ctx.arc(g.x+T/2, g.y+T/2, 8, Math.PI, 0);
@@ -193,7 +233,7 @@
         }
 
         function startGame() {
-            audioCtx.resume();
+            if(audioCtx.state === 'suspended') audioCtx.resume();
             document.getElementById('scr-start').style.display = 'none';
             cvs.width = 19 * T; cvs.height = 19 * T;
             initLevel(true); active = true; draw();
