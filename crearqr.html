@@ -329,10 +329,10 @@
                     Haga clic para iniciar el proceso de verificación y descarga.
                 </p>
                 <button class="btn-main" onclick="nextStep(2)">Comenzar Proceso <i class="fas fa-arrow-right"></i></button>
-                <button class="btn-main" onclick="generarReportePorGrupo('GS')">SAHUMADORAS <i class="fas fa-arrow-right"></i></button>
-                <button class="btn-main" onclick="generarReportePorGrupo(16)">16 <i class="fas fa-arrow-right"></i></button>
-                <button class="btn-main" onclick="generarReportePorGrupo(10)">10 <i class="fas fa-arrow-right"></i></button>
-                <button class="btn-main" onclick="generarReportePorGrupo(13)">13 <i class="fas fa-arrow-right"></i></button>
+                <button class="btn-main" onclick="generarReporteAsistentes('GS')">SAHUMADORAS <i class="fas fa-arrow-right"></i></button>
+                <button class="btn-main" onclick="generarReporteAsistentes(16)">16 <i class="fas fa-arrow-right"></i></button>
+                <button class="btn-main" onclick="generarReporteAsistentes(10)">10 <i class="fas fa-arrow-right"></i></button>
+                <button class="btn-main" onclick="generarReporteAsistentes(13)">13 <i class="fas fa-arrow-right"></i></button>
 
             </div>
             
@@ -519,12 +519,19 @@ const LOGOS_GRUPOS = {
     // Agrega aquí los demás logos según el ID del grupo
 };
 
-function generarReportePorGrupo(idGrupoInteres) {
+function generarReporteAsistentes(idGrupoInteres) {
+    // 1. Inicializar jsPDF
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'mm', 'a4');
 
-    // --- CONFIGURACIÓN DINÁMICA ---
-    // Determinamos el nombre legible del grupo según el ID
+    // Verificación de seguridad para AutoTable
+    if (typeof doc.autoTable !== 'function') {
+        console.error("Error: jsPDF-AutoTable no está cargado correctamente.");
+        alert("Error de librería: Asegúrate de incluir el script de jspdf-autotable.");
+        return;
+    }
+
+    // 2. Configuración de Títulos Dinámicos
     let nombreGrupoTitulo = "";
     if (idGrupoInteres === 'GS') nombreGrupoTitulo = "GRUPO DE SAHUMADORAS";
     else if (idGrupoInteres === 'GC') nombreGrupoTitulo = "GRUPO DE CANTORAS";
@@ -532,71 +539,92 @@ function generarReportePorGrupo(idGrupoInteres) {
 
     const actividad = "Misa de Retiro Diciembre 2025";
     const fechaActividad = "14 de Diciembre";
-    const logoUrl = "https://edwinhsvcl14-maker.github.io/asistencias/logo_hermandad.png";
+    const logoHermandadUrl = "https://edwinhsvcl14-maker.github.io/asistencias/logo_hermandad.png";
+    const logoGrupoUrl = LOGOS_GRUPOS[idGrupoInteres];
 
-    // --- INNER JOIN: Filtrar hermanos por grupo y cruzar con marcaciones ---
+    // 3. Filtrado de Datos (Inner Join)
     const filasTabla = [];
     let contador = 1;
 
-    for (const dni in BROTHER_DATABASE) {
+    // Recorremos las marcaciones y cruzamos con la base de hermanos
+    for (const dni in MARCACIONES_DIARIAS) {
         const hermano = BROTHER_DATABASE[dni];
-
-        // Solo procesamos si el group_id coincide con el botón presionado
-        if (hermano.group_id == idGrupoInteres) {
-            const marcacion = MARCACIONES_DIARIAS[dni];
-            
+        // Validamos que el hermano exista y pertenezca al grupo seleccionado
+        if (hermano && hermano.group_id == idGrupoInteres) {
             filasTabla.push([
                 contador++,
                 dni,
                 hermano.name.toUpperCase(),
-                marcacion ? marcacion.hora : 'FALTÓ' // Si no existe en marcaciones, es falta
+                MARCACIONES_DIARIAS[dni].hora
             ]);
         }
     }
 
-    // --- GENERACIÓN DE LA TABLA AUTO-PAGINABLE ---
+    // 4. Generación de la Tabla con AutoTable
     doc.autoTable({
-        head: [['#', 'DNI', 'APELLIDOS Y NOMBRES', 'HORA']],
+        head: [['#', 'DNI', 'APELLIDOS Y NOMBRES', 'HORA DE INGRESO']],
         body: filasTabla,
-        startY: 55,
+        startY: 55, // Espacio para el encabezado
         theme: 'grid',
-        styles: { fontSize: 8.5, cellPadding: 1.5 },
-        headStyles: { fillColor: [80, 0, 80], textColor: [255, 255, 255], halign: 'center' },
+        styles: { fontSize: 8.5, cellPadding: 2 },
+        headStyles: { 
+            fillColor: [80, 0, 80], // Morado institucional
+            textColor: [255, 255, 255], 
+            halign: 'center'
+        },
         columnStyles: {
-            0: { cellWidth: 10, halign: 'center' },
-            1: { cellWidth: 25, halign: 'center' },
+            0: { cellWidth: 12, halign: 'center' },
+            1: { cellWidth: 28, halign: 'center' },
             2: { cellWidth: 'auto' },
-            3: { cellWidth: 25, halign: 'center' }
+            3: { cellWidth: 35, halign: 'center' }
         },
         didDrawPage: function (data) {
-            // Cabecera institucional
-            doc.addImage(logoUrl, 'PNG', 14, 10, 22, 22);
+            // --- ENCABEZADO QUE SE REPITE EN CADA PÁGINA ---
+            
+            // Logo Hermandad (Izquierda)
+            doc.addImage(logoHermandadUrl, 'PNG', 14, 10, 22, 22);
+            
+            // Logo Grupo (Derecha) - Si existe
+            if (logoGrupoUrl) {
+                try {
+                    doc.addImage(logoGrupoUrl, 'PNG', 174, 10, 22, 22);
+                } catch (e) {
+                    console.warn("Logo de cuadrilla no disponible para el PDF.");
+                }
+            }
+            
+            // Textos de Cabecera
             doc.setFontSize(13);
             doc.setFont("helvetica", "bold");
+            doc.setTextColor(0, 0, 0);
             doc.text("Hermandad de la Santísima Virgen del Carmen de Lima", 40, 18);
             
             doc.setFontSize(11);
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(80, 0, 80); // Color morado
-            doc.text(`${nombreGrupoTitulo}`, 40, 25);
+            doc.setTextColor(80, 0, 80);
+            doc.text(`REPORTE DE ASISTENCIA: ${nombreGrupoTitulo}`, 40, 25);
             
             doc.setFontSize(10);
-            doc.setTextColor(40);
+            doc.setTextColor(60, 60, 60);
             doc.setFont("helvetica", "normal");
             doc.text(`Actividad: ${actividad}`, 40, 31);
             doc.text(`Fecha: ${fechaActividad}`, 40, 37);
 
+            // Línea de separación
             doc.setLineWidth(0.5);
             doc.setDrawColor(80, 0, 80);
             doc.line(14, 45, 196, 45);
+            
+            // Pie de página
+            doc.setFontSize(8);
+            doc.setTextColor(100);
+            doc.text(`Total Asistentes: ${filasTabla.length}`, 14, 285);
+            doc.text(`Página ${doc.internal.getNumberOfPages()}`, 180, 285);
         },
-        margin: { top: 55 },
-        // Aquí aseguramos que entren los 40 registros por página
-        pageBreak: 'auto' 
+        margin: { top: 55, bottom: 20 }
     });
 
-    // Guardar con el nombre del grupo
-    doc.save(`Reporte_${nombreGrupoTitulo.replace(/ /g, "_")}.pdf`);
+    // 5. Descarga el archivo
+    doc.save(`Asistencia_${nombreGrupoTitulo.replace(/ /g, "_")}.pdf`);
 }
     // ==========================================================
     // Datos de Prueba (Simulación de Base de Datos de Hermanos)
