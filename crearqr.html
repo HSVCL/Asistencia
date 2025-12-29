@@ -517,11 +517,12 @@ const LOGOS_GRUPOS = {
     // Agrega aquí los demás logos según el ID del grupo
 };
 
-function generarReporteAsistentes(idGrupoInteres) {
+function generarReportePorGrupo(idGrupoInteres) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'mm', 'a4');
 
-    // --- CONFIGURACIÓN DE TÍTULOS ---
+    // --- CONFIGURACIÓN DINÁMICA ---
+    // Determinamos el nombre legible del grupo según el ID
     let nombreGrupoTitulo = "";
     if (idGrupoInteres === 'GS') nombreGrupoTitulo = "GRUPO DE SAHUMADORAS";
     else if (idGrupoInteres === 'GC') nombreGrupoTitulo = "GRUPO DE CANTORAS";
@@ -529,86 +530,71 @@ function generarReporteAsistentes(idGrupoInteres) {
 
     const actividad = "Misa de Retiro Diciembre 2025";
     const fechaActividad = "14 de Diciembre";
-    const logoHermandadUrl = "https://edwinhsvcl14-maker.github.io/asistencias/logo_hermandad.png";
-    const logoGrupoUrl = LOGOS_GRUPOS[idGrupoInteres]; // Obtiene el logo del grupo
+    const logoUrl = "https://edwinhsvcl14-maker.github.io/asistencias/logo_hermandad.png";
 
-    // --- INNER JOIN: SOLO LOS QUE ASISTIERON ---
+    // --- INNER JOIN: Filtrar hermanos por grupo y cruzar con marcaciones ---
     const filasTabla = [];
     let contador = 1;
 
-    for (const dni in MARCACIONES_DIARIAS) {
+    for (const dni in BROTHER_DATABASE) {
         const hermano = BROTHER_DATABASE[dni];
-        if (hermano && hermano.group_id == idGrupoInteres) {
+
+        // Solo procesamos si el group_id coincide con el botón presionado
+        if (hermano.group_id == idGrupoInteres) {
+            const marcacion = MARCACIONES_DIARIAS[dni];
+            
             filasTabla.push([
                 contador++,
                 dni,
                 hermano.name.toUpperCase(),
-                MARCACIONES_DIARIAS[dni].hora
+                marcacion ? marcacion.hora : 'FALTÓ' // Si no existe en marcaciones, es falta
             ]);
         }
     }
 
-    // --- GENERACIÓN DEL PDF ---
+    // --- GENERACIÓN DE LA TABLA AUTO-PAGINABLE ---
     doc.autoTable({
-        head: [['#', 'DNI', 'APELLIDOS Y NOMBRES', 'HORA DE INGRESO']],
+        head: [['#', 'DNI', 'APELLIDOS Y NOMBRES', 'HORA']],
         body: filasTabla,
         startY: 55,
         theme: 'grid',
-        styles: { fontSize: 8.5, cellPadding: 2 },
-        headStyles: { 
-            fillColor: [80, 0, 80], 
-            textColor: [255, 255, 255], 
-            halign: 'center'
-        },
+        styles: { fontSize: 8.5, cellPadding: 1.5 },
+        headStyles: { fillColor: [80, 0, 80], textColor: [255, 255, 255], halign: 'center' },
         columnStyles: {
-            0: { cellWidth: 12, halign: 'center' },
-            1: { cellWidth: 28, halign: 'center' },
+            0: { cellWidth: 10, halign: 'center' },
+            1: { cellWidth: 25, halign: 'center' },
             2: { cellWidth: 'auto' },
-            3: { cellWidth: 35, halign: 'center' }
+            3: { cellWidth: 25, halign: 'center' }
         },
         didDrawPage: function (data) {
-            // 1. Logo Hermandad (Izquierda)
-            doc.addImage(logoHermandadUrl, 'PNG', 14, 10, 22, 22);
-            
-            // 2. Logo Cuadrilla/Grupo (Derecha) - Solo si existe la URL
-            if (logoGrupoUrl) {
-                try {
-                    doc.addImage(logoGrupoUrl, 'PNG', 174, 10, 22, 22);
-                } catch (e) {
-                    console.error("No se pudo cargar el logo del grupo: ", e);
-                }
-            }
-            
-            // 3. Textos Centrales
+            // Cabecera institucional
+            doc.addImage(logoUrl, 'PNG', 14, 10, 22, 22);
             doc.setFontSize(13);
             doc.setFont("helvetica", "bold");
-            doc.setTextColor(0, 0, 0);
             doc.text("Hermandad de la Santísima Virgen del Carmen de Lima", 40, 18);
             
             doc.setFontSize(11);
-            doc.setTextColor(80, 0, 80);
-            doc.text(`REPORTE DE ASISTENCIA: ${nombreGrupoTitulo}`, 40, 25);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(80, 0, 80); // Color morado
+            doc.text(`${nombreGrupoTitulo}`, 40, 25);
             
             doc.setFontSize(10);
-            doc.setTextColor(60, 60, 60);
+            doc.setTextColor(40);
             doc.setFont("helvetica", "normal");
             doc.text(`Actividad: ${actividad}`, 40, 31);
             doc.text(`Fecha: ${fechaActividad}`, 40, 37);
 
-            // Línea morada
             doc.setLineWidth(0.5);
             doc.setDrawColor(80, 0, 80);
             doc.line(14, 45, 196, 45);
-            
-            // Pie de página
-            doc.setFontSize(8);
-            doc.text(`Total Asistentes: ${filasTabla.length}`, 14, 285);
-            doc.text(`Página ${doc.internal.getNumberOfPages()}`, 180, 285);
         },
-        margin: { top: 55 }
+        margin: { top: 55 },
+        // Aquí aseguramos que entren los 40 registros por página
+        pageBreak: 'auto' 
     });
 
-    doc.save(`Asistencia_${nombreGrupoTitulo.replace(/ /g, "_")}.pdf`);
+    // Guardar con el nombre del grupo
+    doc.save(`Reporte_${nombreGrupoTitulo.replace(/ /g, "_")}.pdf`);
 }
     // ==========================================================
     // Datos de Prueba (Simulación de Base de Datos de Hermanos)
