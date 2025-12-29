@@ -407,29 +407,33 @@
     </div>
 
 
-    <div id="reporteTablaFormat" style="position: absolute; left: -9999px; width: 800px; background: white; padding: 20px; font-family: Arial, sans-serif;">
-    <div style="display: flex; align-items: center; border-bottom: 2px solid morado; padding-bottom: 10px;">
-        <img src="https://edwinhsvcl14-maker.github.io/asistencias/logo_hermandad.png" style="width: 80px;">
-        <div style="margin-left: 20px;">
-            <h2 style="margin: 0; font-size: 18px;">Hermandad de la Santísima Virgen del Carmen de Lima</h2>
-            <h3 id="reporteTituloGrupo" style="margin: 5px 0; color: #500050;"></h3>
-            <p style="margin: 0; font-size: 14px;">Misa de Retiro - 14 de Diciembre 2025</p>
+    <div id="reporteTablaFormat" style="position: absolute; left: -9999px; width: 750px; background: white; padding: 30px; font-family: 'Arial', sans-serif;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #3d2314; padding-bottom: 10px;">
+        <img src="https://edwinhsvcl14-maker.github.io/asistencias/logo_hermandad.png" style="width: 70px;">
+        <div style="text-align: center; flex-grow: 1;">
+            <h2 style="margin: 0; font-size: 17px; color: #3d2314; font-weight: bold;">Hermandad de la Santísima Virgen del Carmen de Lima</h2>
+            <h3 id="reporteTituloGrupo" style="margin: 5px 0; color: #3d2314; font-size: 15px;"></h3>
+            <p style="margin: 0; font-size: 12px;">Misa de Retiro - 14 de Diciembre 2025</p>
         </div>
+        <img id="reporteLogoCuadrilla" src="" style="width: 70px; object-fit: contain;">
     </div>
     
-    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
         <thead>
-            <tr style="background-color: #500050; color: white;">
-                <th style="border: 1px solid #ddd; padding: 8px;">#</th>
-                <th style="border: 1px solid #ddd; padding: 8px;">DNI</th>
-                <th style="border: 1px solid #ddd; padding: 8px;">APELLIDOS Y NOMBRES</th>
-                <th style="border: 1px solid #ddd; padding: 8px;">HORA</th>
+            <tr style="background-color: #3d2314; color: white;">
+                <th style="border: 1px solid #3d2314; padding: 10px; font-size: 13px;">#</th>
+                <th style="border: 1px solid #3d2314; padding: 10px; font-size: 13px;">DNI</th>
+                <th style="border: 1px solid #3d2314; padding: 10px; font-size: 13px; text-align: left;">APELLIDOS Y NOMBRES</th>
+                <th style="border: 1px solid #3d2314; padding: 10px; font-size: 13px;">HORA</th>
             </tr>
         </thead>
-        <tbody id="reporteTablaBody">
+        <tbody id="reporteTablaBody" style="color: #3d2314;">
             </tbody>
     </table>
-    <p id="reporteTotal" style="margin-top: 15px; font-weight: bold;"></p>
+    <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+        <p id="reporteTotal" style="font-weight: bold; color: #3d2314; font-size: 12px;"></p>
+        <p id="reporteNumPagina" style="color: #3d2314; font-size: 12px;"></p>
+    </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -675,7 +679,7 @@ const LOGOS_GRUPOS = {
     '08530304': { name: 'BERNABÉ LOPEZ, Claudio Oscar', group_id: 13 },
     '06957955': { name: 'BUSTAMANTE LARA, Miguel Eugenio', group_id: 13 },
     '06170853': { name: 'CARDENAS ZOLEZZI, Jorge Luis', group_id: 13 },
-    '40357769': { name: 'CASAVERDE MARTINEZ, Eduardo Jesús', group_id: 13 },
+    '72749981': { name: 'CASAVERDE MARTINEZ, Eduardo Jesús', group_id: 13 },
     '40351769': { name: 'CASAVERDE MARTINEZ, Edwin Antonio', group_id: 13 },
     '42453309': { name: 'CASTILLO SANCHEZ, Fredy Antonio', group_id: 13 },
     '06031830': { name: 'CAVERO RODRIGUEZ, José Luis', group_id: 13 },
@@ -810,6 +814,7 @@ const LOGOS_GRUPOS = {
            "06235943": { "name": "CÁCEDA LAURI, Walter Manuel", "group_id": 10 },
  "09921892": { "name": "SANTOS CHACARA, Alexander Hans", "group_id": 10 },
         "06149143": { "name": "CARRANZA LEÓN, Ángel Alberto", "group_id": 10 },
+        "07484304": { "name": "PRETELL GALVINS, Humberto Santiago", "group_id": 10 },
     /* Registros con DNI pendiente (ahora con group_id: 10) */
     "PEND_ALPACA": { "name": "ALPACA MURGA, Catalino Carlos Ángel", "group_id": 10 },
     "PEND_ALVAREZ": { "name": "ALVAREZ PRETELL, Brayan Jesús", "group_id": 10 },
@@ -844,7 +849,7 @@ const LOGOS_GRUPOS = {
     "PEND_ORMENO": { "name": "ORMEÑO ALVÁN, Giulio Anthony", "group_id": 10 },
     "PEND_PACHECO": { "name": "PACHECO DEL VALLE, César Esteban", "group_id": 10 },
     "PEND_PAZ_WINCHEZ": { "name": "PAZ WINCHEZ, Harold", "group_id": 10 },
-    "PEND_PRETELL_GALVINS": { "name": "PRETELL GALVINS, Humberto Santiago", "group_id": 10 },
+    
     "PEND_PRETELL_SILVA": { "name": "PRETELL SILVA, Humberto José Martin", "group_id": 10 },
     "PEND_RAZZETTO": { "name": "RAZZETTO BARRUETO, Renato Alfredo", "group_id": 10 },
     "PEND_RIVASPLATA": { "name": "RIVASPLATA GARCÍA, Ricardo Charlie", "group_id": 10 },
@@ -922,7 +927,7 @@ const LOGOS_GRUPOS = {
     "10430152": { "name": "MELO TRUJILLO, Cesar Manuel", "group_id": 16 },
     "42191859": { "name": "NAVARRO GUTIERREZ, Gustavo Pedro", "group_id": 16 },
     "44488777": { "name": "NAVARRO MARTINEZ, Luis Henry", "group_id": 16 },
-    "08303279": { "name": "NOLAZCO VILLAR, Juan Antonio", "group_id": 16 },
+    "07709779": { "name": "NOLAZCO VILLAR, Juan Antonio", "group_id": 16 },
     "07304344": { "name": "NUÑEZ SALAS, Carlos Abraham", "group_id": 16 },
     "40525963": { "name": "NUÑUVERO ALEJO, Wilson Alfredo", "group_id": 16 },
     "73500755": { "name": "ORDINOLA RAMIREZ, Martin Alberto", "group_id": 16 },
@@ -957,17 +962,20 @@ const LOGOS_GRUPOS = {
     "09938704": { "name": "ZURITA CHANGANAQUI, Luis", "group_id": 16 },
     "07462713": { "name": "LLANOS CISNEROS, Guillermo Jesus Mateo", "group_id": 16 },
     "42163023": { "name": "MANCILLA CEPERO, Luis Ernesto", "group_id": 16 },
-
+    "60819460": { "name": "MACEDO RODRIGUEZ, Fhabiano Alexander", "group_id": 16 },
+    "75157479": { "name": "NAVARRO DAVALOS, Dante Alexander", "group_id": 16 },
+    "42987490": { "name": "NAVARRO GUTIERREZ, Alex Jhonatan", "group_id": 16 },
+    "49016182": { "name": "BALDEÓN YATACO, Marcelo Zenobio", "group_id": 16 },
     /* Registros con DNI/Identificador Pendiente */
-    "PEND_BALDEON_MARCELO": { "name": "BALDEÓN YATACO, Marcelo Zenobio", "group_id": 16 },
+   
     "PEND_DIAZ_PONCE_DOBLE": { "name": "DIAZ PONCE, Jorge Alberto (doble)", "group_id": 16 },
     "PEND_GONZALES_GONZALES": { "name": "GONZALES GONZALES, Jose Daniel", "group_id": 16 },
     "PEND_IPARRAGUIRRE": { "name": "IPARRAGUIRRE GUARDIA, Jose Luis", "group_id": 16 },
-    "PEND_MACEDO_RODRIGUEZ": { "name": "MACEDO RODRIGUEZ, Fhabiano Alexander", "group_id": 16 },
+    
     "PEND_MANCILLA_CEPERO": { "name": "MANCILLA CEPERO, Luis Ernesto", "group_id": 16 },
     "PEND_MONTALVAN": { "name": "MONTALVAN QUILLA, Cesar Eduardo", "group_id": 16 },
-    "PEND_NAVARRO_DAVALOS": { "name": "NAVARRO DAVALOS, Dante Alexander", "group_id": 16 },
-    "PEND_NAVARRO_GUTIERREZ_ALEX": { "name": "NAVARRO GUTIERREZ, Alex Jhonatan", "group_id": 16 },
+    
+    
     "PEND_PARDO_FIGUEROA": { "name": "PARDO FIGUEROA, Nolli Nestor Fernando", "group_id": 16 },
     "PEND_PFLUCKER": { "name": "PFLUCKER MARTINEZ, Luis Oswaldo", "group_id": 16 },
     "PEND_REYES_CARAZAS": { "name": "REYES CARAZAS, Ronald William", "group_id": 16 },
@@ -1002,67 +1010,92 @@ const LOGOS_GRUPOS = {
     };
 
    async function generarReporteAsistentes(idGrupoInteres) {
-    const tablaBody = document.getElementById('reporteTablaBody');
-    const tituloGrupo = document.getElementById('reporteTituloGrupo');
-    const totalTexto = document.getElementById('reporteTotal');
-    const contenedorReporte = document.getElementById('reporteTablaFormat');
-
-    // 1. Limpiar tabla anterior
-    tablaBody.innerHTML = '';
-    
-    // 2. Título dinámico
-    let nombreGrupo = (idGrupoInteres === 'GS') ? "GRUPO DE SAHUMADORAS" : 
-                      (idGrupoInteres === 'GC') ? "GRUPO DE CANTORAS" : 
-                      `CUADRILLA ${idGrupoInteres}`;
-    tituloGrupo.textContent = `REPORTE DE ASISTENCIA: ${nombreGrupo}`;
-
-    // 3. Filtrado de datos (Inner Join)
-    let contador = 1;
+    // 1. Filtrar y Ordenar Datos
+    let asistentes = [];
     for (const dni in MARCACIONES_DIARIAS) {
         const hermano = BROTHER_DATABASE[dni];
         if (hermano && hermano.group_id == idGrupoInteres) {
-            const fila = `
-                <tr>
-                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${contador++}</td>
-                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${dni}</td>
-                    <td style="border: 1px solid #ddd; padding: 8px;">${hermano.name.toUpperCase()}</td>
-                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${MARCACIONES_DIARIAS[dni].hora}</td>
-                </tr>`;
-            tablaBody.innerHTML += fila;
+            asistentes.push({
+                dni: dni,
+                nombre: hermano.name.toUpperCase(),
+                hora: MARCACIONES_DIARIAS[dni].hora
+            });
         }
     }
 
-    if (contador === 1) {
-        Swal.fire('Aviso', 'No hay asistencias registradas para este grupo.', 'info');
+    // Ordenar por hora (de menor a mayor)
+    asistentes.sort((a, b) => a.hora.localeCompare(b.hora));
+
+    if (asistentes.length === 0) {
+        Swal.fire('Aviso', 'No hay asistencias registradas.', 'info');
         return;
     }
 
-    totalTexto.textContent = `Total Asistentes: ${contador - 1}`;
+    // 2. Preparar PDF
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'mm', 'a4');
+    const registrosPorPagina = 24;
+    const totalPaginas = Math.ceil(asistentes.length / registrosPorPagina);
 
-    // 4. Capturar y Generar PDF (Igual que tu función downloadPDF)
-    try {
-        const canvas = await html2canvas(contenedorReporte, { scale: 2, useCORS: true });
-        const imgData = canvas.toDataURL('image/jpeg', 0.9);
-        
-        // Usamos jsPDF como ya lo tienes configurado
-        const doc = new jspdf.jsPDF({
-            orientation: 'portrait',
-            unit: 'mm',
-            format: 'a4'
+    // Configurar elementos del molde HTML
+    const tablaBody = document.getElementById('reporteTablaBody');
+    const tituloGrupo = document.getElementById('reporteTituloGrupo');
+    const logoCuadrilla = document.getElementById('reporteLogoCuadrilla');
+    const contenedor = document.getElementById('reporteTablaFormat');
+    const txtTotal = document.getElementById('reporteTotal');
+    const txtPagina = document.getElementById('reporteNumPagina');
+
+    // Título y Logo según Grupo
+    const infoGrupo = GROUP_MAP[idGrupoInteres];
+    tituloGrupo.textContent = `REPORTE DE ASISTENCIA: ${infoGrupo ? infoGrupo.name : idGrupoInteres}`;
+    logoCuadrilla.src = generateLogoUrl(idGrupoInteres);
+    txtTotal.textContent = `Total Asistentes: ${asistentes.length}`;
+
+    // Mostrar modal de carga
+    Swal.fire({ title: 'Generando Reporte...', text: 'Procesando páginas', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+    // 3. Generar Páginas
+    for (let i = 0; i < totalPaginas; i++) {
+        // Limpiar tabla para la nueva página
+        tablaBody.innerHTML = '';
+        txtPagina.textContent = `Página ${i + 1} de ${totalPaginas}`;
+
+        // Obtener el bloque de 24
+        const inicio = i * registrosPorPagina;
+        const fin = inicio + registrosPorPagina;
+        const bloque = asistentes.slice(inicio, fin);
+
+        bloque.forEach((asistente, index) => {
+            tablaBody.innerHTML += `
+                <tr>
+                    <td style="border: 1px solid #3d2314; padding: 6px; text-align: center; font-size: 11px;">${inicio + index + 1}</td>
+                    <td style="border: 1px solid #3d2314; padding: 6px; text-align: center; font-size: 11px;">${asistente.dni}</td>
+                    <td style="border: 1px solid #3d2314; padding: 6px; font-size: 11px;">${asistente.nombre}</td>
+                    <td style="border: 1px solid #3d2314; padding: 6px; text-align: center; font-size: 11px;">${asistente.hora}</td>
+                </tr>`;
         });
 
+        // Esperar un momento para que el navegador renderice el HTML
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Capturar esta página
+        const canvas = await html2canvas(contenedor, { scale: 2, useCORS: true });
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+        if (i > 0) doc.addPage();
+        
         const pdfWidth = doc.internal.pageSize.getWidth();
-        const imgWidthMM = 190; // Casi todo el ancho de la hoja
+        const imgWidthMM = 190;
         const imgHeightMM = (canvas.height * imgWidthMM) / canvas.width;
-
+        
         doc.addImage(imgData, 'JPEG', 10, 10, imgWidthMM, imgHeightMM);
-        doc.save(`Reporte_Asistencia_${idGrupoInteres}.pdf`);
-
-        Swal.fire('Éxito', 'Reporte generado correctamente', 'success');
-    } catch (error) {
-        console.error("Error:", error);
-        Swal.fire('Error', 'No se pudo generar el reporte', 'error');
     }
+
+    // 4. Finalizar
+    const nombreArchivo = `Asistencia_${idGrupoInteres}_${new Date().getTime()}.pdf`;
+    doc.save(nombreArchivo);
+    Swal.close();
+    Swal.fire('¡Éxito!', 'Reporte generado con todas las páginas.', 'success');
 }
     // Almacenamiento temporal de los datos del hermano verificado
     let verifiedBrotherData = null;
