@@ -520,112 +520,7 @@ const LOGOS_GRUPOS = {
     // Agrega aquí los demás logos según el ID del grupo
 };
 
-function generarReporteAsistentes(idGrupoInteres) {
-    // 1. Inicializar jsPDF
-    const doc = new jsPDF('p', 'mm', 'a4');
 
-    // Verificación de seguridad para AutoTable
-    if (typeof doc.autoTable !== 'function') {
-        console.error("Error: jsPDF-AutoTable no está cargado correctamente.");
-        alert("Error de librería: Asegúrate de incluir el script de jspdf-autotable.");
-        return;
-    }
-
-    // 2. Configuración de Títulos Dinámicos
-    let nombreGrupoTitulo = "";
-    if (idGrupoInteres === 'GS') nombreGrupoTitulo = "GRUPO DE SAHUMADORAS";
-    else if (idGrupoInteres === 'GC') nombreGrupoTitulo = "GRUPO DE CANTORAS";
-    else nombreGrupoTitulo = `CUADRILLA ${idGrupoInteres}`;
-
-    const actividad = "Misa de Retiro Diciembre 2025";
-    const fechaActividad = "14 de Diciembre";
-    const logoHermandadUrl = "https://edwinhsvcl14-maker.github.io/asistencias/logo_hermandad.png";
-    const logoGrupoUrl = LOGOS_GRUPOS[idGrupoInteres];
-
-    // 3. Filtrado de Datos (Inner Join)
-    const filasTabla = [];
-    let contador = 1;
-
-    // Recorremos las marcaciones y cruzamos con la base de hermanos
-    for (const dni in MARCACIONES_DIARIAS) {
-        const hermano = BROTHER_DATABASE[dni];
-        // Validamos que el hermano exista y pertenezca al grupo seleccionado
-        if (hermano && hermano.group_id == idGrupoInteres) {
-            filasTabla.push([
-                contador++,
-                dni,
-                hermano.name.toUpperCase(),
-                MARCACIONES_DIARIAS[dni].hora
-            ]);
-        }
-    }
-
-    // 4. Generación de la Tabla con AutoTable
-    doc.autoTable({
-        head: [['#', 'DNI', 'APELLIDOS Y NOMBRES', 'HORA DE INGRESO']],
-        body: filasTabla,
-        startY: 55, // Espacio para el encabezado
-        theme: 'grid',
-        styles: { fontSize: 8.5, cellPadding: 2 },
-        headStyles: { 
-            fillColor: [80, 0, 80], // Morado institucional
-            textColor: [255, 255, 255], 
-            halign: 'center'
-        },
-        columnStyles: {
-            0: { cellWidth: 12, halign: 'center' },
-            1: { cellWidth: 28, halign: 'center' },
-            2: { cellWidth: 'auto' },
-            3: { cellWidth: 35, halign: 'center' }
-        },
-        didDrawPage: function (data) {
-            // --- ENCABEZADO QUE SE REPITE EN CADA PÁGINA ---
-            
-            // Logo Hermandad (Izquierda)
-            doc.addImage(logoHermandadUrl, 'PNG', 14, 10, 22, 22);
-            
-            // Logo Grupo (Derecha) - Si existe
-            if (logoGrupoUrl) {
-                try {
-                    doc.addImage(logoGrupoUrl, 'PNG', 174, 10, 22, 22);
-                } catch (e) {
-                    console.warn("Logo de cuadrilla no disponible para el PDF.");
-                }
-            }
-            
-            // Textos de Cabecera
-            doc.setFontSize(13);
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(0, 0, 0);
-            doc.text("Hermandad de la Santísima Virgen del Carmen de Lima", 40, 18);
-            
-            doc.setFontSize(11);
-            doc.setTextColor(80, 0, 80);
-            doc.text(`REPORTE DE ASISTENCIA: ${nombreGrupoTitulo}`, 40, 25);
-            
-            doc.setFontSize(10);
-            doc.setTextColor(60, 60, 60);
-            doc.setFont("helvetica", "normal");
-            doc.text(`Actividad: ${actividad}`, 40, 31);
-            doc.text(`Fecha: ${fechaActividad}`, 40, 37);
-
-            // Línea de separación
-            doc.setLineWidth(0.5);
-            doc.setDrawColor(80, 0, 80);
-            doc.line(14, 45, 196, 45);
-            
-            // Pie de página
-            doc.setFontSize(8);
-            doc.setTextColor(100);
-            doc.text(`Total Asistentes: ${filasTabla.length}`, 14, 285);
-            doc.text(`Página ${doc.internal.getNumberOfPages()}`, 180, 285);
-        },
-        margin: { top: 55, bottom: 20 }
-    });
-
-    // 5. Descarga el archivo
-    doc.save(`Asistencia_${nombreGrupoTitulo.replace(/ /g, "_")}.pdf`);
-}
     // ==========================================================
     // Datos de Prueba (Simulación de Base de Datos de Hermanos)
     // ==========================================================
@@ -1080,7 +975,115 @@ function generarReporteAsistentes(idGrupoInteres) {
         'GC': { name: 'Grupo de Cantoras', logo_suffix: 'gc_.png' }
        
     };
+
+    function generarReporteAsistentes(idGrupoInteres) {
+   // Usamos la instancia de jsPDF que ya tienes disponible globalmente
+    // Si no, la obtenemos de window.jspdf
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'mm', 'a4');
+
+    // --- SOLUCIÓN AL ERROR: VINCULAR AUTOTABLE ---
+    // Si doc.autoTable no existe, lo buscamos en el prototipo de la librería
+    if (typeof doc.autoTable !== 'function') {
+        if (typeof window.jspdf.jsPDF.API.autoTable === 'function') {
+            doc.autoTable = window.jspdf.jsPDF.API.autoTable;
+        } else {
+            Swal.fire('Error', 'El plugin jsPDF-AutoTable no se encontró. Revisa tus scripts.', 'error');
+            return;
+        }
+    }
+
+    // 1. Configuración de Títulos y Logos
+    let nombreGrupoTitulo = "";
+    if (idGrupoInteres === 'GS') nombreGrupoTitulo = "GRUPO DE SAHUMADORAS";
+    else if (idGrupoInteres === 'GC') nombreGrupoTitulo = "GRUPO DE CANTORAS";
+    else nombreGrupoTitulo = `CUADRILLA ${idGrupoInteres}`;
+
+    const actividad = "Misa de Retiro Diciembre 2025";
+    const fechaActividad = "14 de Diciembre";
+    const logoHermandadUrl = 'https://edwinhsvcl14-maker.github.io/asistencias/logo_hermandad.png';
     
+    // Intentamos obtener el logo específico del grupo, si no, usamos el de la hermandad
+    const logoGrupoUrl = LOGOS_REPORTE_GRUPOS[idGrupoInteres] || logoHermandadUrl;
+
+    // 2. Filtrado de Datos (Inner Join entre MARCACIONES_DIARIAS y BROTHER_DATABASE)
+    const filasTabla = [];
+    let contador = 1;
+
+    for (const dni in MARCACIONES_DIARIAS) {
+        const hermano = BROTHER_DATABASE[dni];
+        // Solo incluimos si el hermano existe y coincide el grupo
+        if (hermano && hermano.group_id == idGrupoInteres) {
+            filasTabla.push([
+                contador++,
+                dni,
+                hermano.name.toUpperCase(),
+                MARCACIONES_DIARIAS[dni].hora
+            ]);
+        }
+    }
+
+    // Validación si no hay nadie del grupo que haya marcado
+    if (filasTabla.length === 0) {
+        Swal.fire('Sin registros', `No se encontraron asistencias para ${nombreGrupoTitulo}`, 'info');
+        return;
+    }
+
+    // 3. Generación de la Tabla (Auto-paginable, 40 registros aprox por página)
+    doc.autoTable({
+        head: [['#', 'DNI', 'APELLIDOS Y NOMBRES', 'HORA DE INGRESO']],
+        body: filasTabla,
+        startY: 55,
+        theme: 'grid',
+        styles: { fontSize: 8.5, cellPadding: 2 },
+        headStyles: { 
+            fillColor: [80, 0, 80], // Morado institucional
+            textColor: [255, 255, 255], 
+            halign: 'center' 
+        },
+        columnStyles: {
+            0: { cellWidth: 12, halign: 'center' },
+            1: { cellWidth: 28, halign: 'center' },
+            2: { cellWidth: 'auto' },
+            3: { cellWidth: 35, halign: 'center' }
+        },
+        didDrawPage: function (data) {
+            // --- ENCABEZADO DE PÁGINA ---
+            // Logo Hermandad (Izquierda)
+            doc.addImage(logoHermandadUrl, 'PNG', 14, 10, 22, 22);
+            
+            // Logo Grupo (Derecha)
+            if (logoGrupoUrl) {
+                try {
+                    doc.addImage(logoGrupoUrl, 'PNG', 174, 10, 22, 22);
+                } catch (e) { console.warn("No se pudo cargar logo de grupo"); }
+            }
+            
+            // Textos institucionales
+            doc.setFontSize(13).setFont("helvetica", "bold").setTextColor(0);
+            doc.text("Hermandad de la Santísima Virgen del Carmen de Lima", 40, 18);
+            
+            doc.setFontSize(11).setTextColor(80, 0, 80);
+            doc.text(`REPORTE DE ASISTENCIA: ${nombreGrupoTitulo}`, 40, 25);
+            
+            doc.setFontSize(10).setTextColor(60).setFont("helvetica", "normal");
+            doc.text(`Actividad: ${actividad}`, 40, 31);
+            doc.text(`Fecha: ${fechaActividad}`, 40, 37);
+
+            // Línea morada decorativa
+            doc.setLineWidth(0.5).setDrawColor(80, 0, 80).line(14, 45, 196, 45);
+            
+            // Pie de página
+            doc.setFontSize(8).setTextColor(100);
+            doc.text(`Total Asistentes: ${filasTabla.length}`, 14, 285);
+            doc.text(`Página ${doc.internal.getNumberOfPages()}`, 180, 285);
+        },
+        margin: { top: 55, bottom: 20 }
+    });
+
+    // 4. Guardar archivo
+    doc.save(`Asistencia_${nombreGrupoTitulo.replace(/ /g, "_")}.pdf`);
+}
     // Almacenamiento temporal de los datos del hermano verificado
     let verifiedBrotherData = null;
     const defaultLogoUrl = 'https://edwinhsvcl14-maker.github.io/asistencias/logo_hermandad.png';
