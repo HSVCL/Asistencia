@@ -327,6 +327,11 @@
                     Haga clic para iniciar el proceso de verificación y descarga.
                 </p>
                 <button class="btn-main" onclick="nextStep(2)">Comenzar Proceso <i class="fas fa-arrow-right"></i></button>
+                <button class="btn-main" onclick="generarReportePorGrupo('GS')">SAHUMADORAS <i class="fas fa-arrow-right"></i></button>
+                <button class="btn-main" onclick="generarReportePorGrupo(16)">16 <i class="fas fa-arrow-right"></i></button>
+                <button class="btn-main" onclick="generarReportePorGrupo(10)">10 <i class="fas fa-arrow-right"></i></button>
+                <button class="btn-main" onclick="generarReportePorGrupo(13)">13 <i class="fas fa-arrow-right"></i></button>
+
             </div>
             
             <div id="step2" class="step-content">
@@ -403,7 +408,208 @@
 
 <script>
     const { jsPDF } = window.jspdf;
+const MARCACIONES_DIARIAS = {
+    // Formato: 'DNI': { hora: 'HH:MM AM/PM', status: 'Registrado' }
+    '42622168': { hora: '10:43 AM', status: 'OK' },
+    '06015376': { hora: '10:47 AM', status: 'OK' },
+    '07404433': { hora: '10:47 AM', status: 'OK' },
+    '71627610': { hora: '10:47 AM', status: 'OK' },
+    '46491697': { hora: '10:48 AM', status: 'OK' },
+    '07216627': { hora: '10:48 AM', status: 'OK' },
+    '07079483': { hora: '10:48 AM', status: 'OK' },
+    '10724302': { hora: '10:49 AM', status: 'OK' },
+    '09969059': { hora: '10:49 AM', status: 'OK' },
+    '06460818': { hora: '10:50 AM', status: 'OK' },
+    '06771578': { hora: '10:50 AM', status: 'OK' },
+    '06031830': { hora: '10:50 AM', status: 'OK' },
+    '10730708': { hora: '10:51 AM', status: 'OK' },
+    '45789639': { hora: '10:51 AM', status: 'OK' },
+    '42163023': { hora: '10:51 AM', status: 'OK' },
+    '06037030': { hora: '10:51 AM', status: 'OK' },
+    '70613649': { hora: '10:52 AM', status: 'OK' },
+    '09072656': { hora: '10:52 AM', status: 'OK' },
+    '07709779': { hora: '10:52 AM', status: 'OK' },
+    '41740906': { hora: '10:53 AM', status: 'OK' },
+    '06494699': { hora: '10:53 AM', status: 'OK' },
+    '41945002': { hora: '10:54 AM', status: 'OK' },
+    '73034319': { hora: '10:54 AM', status: 'OK' },
+    '20996766': { hora: '10:56 AM', status: 'OK' },
+    '40491110': { hora: '10:57 AM', status: 'OK' },
+    '09472269': { hora: '10:57 AM', status: 'OK' },
+    '45821842': { hora: '10:58 AM', status: 'OK' },
+    '40748581': { hora: '10:58 AM', status: 'OK' },
+    '72196193': { hora: '10:59 AM', status: 'OK' },
+    '74823079': { hora: '10:59 AM', status: 'OK' },
+    '43134345': { hora: '10:59 AM', status: 'OK' },
+    '06173879': { hora: '11:04 AM', status: 'OK' },
+    '07429783': { hora: '11:05 AM', status: 'OK' },
+    '46453311': { hora: '11:06 AM', status: 'OK' },
+    '60819460': { hora: '11:06 AM', status: 'OK' },
+    '75157479': { hora: '11:07 AM', status: 'OK' },
+    '73500755': { hora: '11:07 AM', status: 'OK' },
+    '42987490': { hora: '11:07 AM', status: 'OK' },
+    '43312355': { hora: '11:08 AM', status: 'OK' },
+    '71834133': { hora: '11:08 AM', status: 'OK' },
+    '72749981': { hora: '11:08 AM', status: 'OK' },
+    '07278563': { hora: '11:09 AM', status: 'OK' },
+    '09956051': { hora: '11:12 AM', status: 'OK' },
+    '09101684': { hora: '11:12 AM', status: 'OK' },
+    '40508469': { hora: '11:12 AM', status: 'OK' },
+    '09796894': { hora: '11:12 AM', status: 'OK' },
+    '09954439': { hora: '11:13 AM', status: 'OK' },
+    '42756747': { hora: '11:15 AM', status: 'OK' },
+    '41258385': { hora: '11:15 AM', status: 'OK' },
+    '73351596': { hora: '11:15 AM', status: 'OK' },
+    '07618683': { hora: '11:15 AM', status: 'OK' },
+    '46569951': { hora: '11:16 AM', status: 'OK' },
+    '44109202': { hora: '11:19 AM', status: 'OK' },
+    '70782975': { hora: '11:19 AM', status: 'OK' },
+    '71693639': { hora: '11:20 AM', status: 'OK' },
+    '41181530': { hora: '11:21 AM', status: 'OK' },
+    '40883537': { hora: '11:21 AM', status: 'OK' },
+    '70286463': { hora: '11:21 AM', status: 'OK' },
+    '71947974': { hora: '11:21 AM', status: 'OK' },
+    '72951110': { hora: '11:22 AM', status: 'OK' },
+    '47151244': { hora: '11:22 AM', status: 'OK' },
+    '09930194': { hora: '11:23 AM', status: 'OK' },
+    '06226397': { hora: '11:24 AM', status: 'OK' },
+    '48104169': { hora: '11:24 AM', status: 'OK' },
+    '49016182': { hora: '11:25 AM', status: 'OK' },
+    '06235943': { hora: '11:25 AM', status: 'OK' },
+    '47704784': { hora: '11:27 AM', status: 'OK' },
+    '25629997': { hora: '11:28 AM', status: 'OK' },
+    '07403504': { hora: '11:29 AM', status: 'OK' },
+    '43074453': { hora: '11:29 AM', status: 'OK' },
+    '17430283': { hora: '11:29 AM', status: 'OK' },
+    '44229972': { hora: '11:30 AM', status: 'OK' },
+    '43604209': { hora: '11:30 AM', status: 'OK' },
+    '72536307': { hora: '11:31 AM', status: 'OK' },
+    '06012971': { hora: '11:32 AM', status: 'OK' },
+    '44041114': { hora: '11:33 AM', status: 'OK' },
+    '40664547': { hora: '11:33 AM', status: 'OK' },
+    '25749543': { hora: '11:34 AM', status: 'OK' },
+    '46844483': { hora: '11:35 AM', status: 'OK' },
+    '07484304': { hora: '11:35 AM', status: 'OK' },
+    '73122973': { hora: '11:35 AM', status: 'OK' },
+    '06043036': { hora: '11:36 AM', status: 'OK' },
+    '17446057': { hora: '11:37 AM', status: 'OK' },
+    '48536651': { hora: '11:37 AM', status: 'OK' },
+    '48560398': { hora: '11:38 AM', status: 'OK' },
+    '72299877': { hora: '11:40 AM', status: 'OK' },
+    '07847804': { hora: '11:43 AM', status: 'OK' },
+    '45982718': { hora: '11:44 AM', status: 'OK' },
+    '70643313': { hora: '11:45 AM', status: 'OK' },
+    '09921892': { hora: '11:48 AM', status: 'OK' },
+    '43251345': { hora: '11:48 AM', status: 'OK' },
+    '08814269': { hora: '11:51 AM', status: 'OK' },
+    '07382037': { hora: '12:10 PM', status: 'OK' },
+    '09567320': { hora: '12:10 PM', status: 'OK' },
+    '45156736': { hora: '12:31 PM', status: 'OK' },
+    '08530304': { hora: '10:45 AM', status: 'OK' }
+};
 
+    // --- CONFIGURACIÓN DE LOGOS POR GRUPO ---
+const LOGOS_GRUPOS = {
+    '16': 'https://edwinhsvcl14-maker.github.io/asistencias/16_.png',
+    '10': 'https://edwinhsvcl14-maker.github.io/asistencias/10_.png',
+    'GS': 'https://edwinhsvcl14-maker.github.io/asistencias/gs_.png',
+    '13': 'https://edwinhsvcl14-maker.github.io/asistencias/13_.png'
+    // Agrega aquí los demás logos según el ID del grupo
+};
+
+function generarReporteAsistentes(idGrupoInteres) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'mm', 'a4');
+
+    // --- CONFIGURACIÓN DE TÍTULOS ---
+    let nombreGrupoTitulo = "";
+    if (idGrupoInteres === 'GS') nombreGrupoTitulo = "GRUPO DE SAHUMADORAS";
+    else if (idGrupoInteres === 'GC') nombreGrupoTitulo = "GRUPO DE CANTORAS";
+    else nombreGrupoTitulo = `CUADRILLA ${idGrupoInteres}`;
+
+    const actividad = "Misa de Retiro Diciembre 2025";
+    const fechaActividad = "14 de Diciembre";
+    const logoHermandadUrl = "https://edwinhsvcl14-maker.github.io/asistencias/logo_hermandad.png";
+    const logoGrupoUrl = LOGOS_GRUPOS[idGrupoInteres]; // Obtiene el logo del grupo
+
+    // --- INNER JOIN: SOLO LOS QUE ASISTIERON ---
+    const filasTabla = [];
+    let contador = 1;
+
+    for (const dni in MARCACIONES_DIARIAS) {
+        const hermano = BROTHER_DATABASE[dni];
+        if (hermano && hermano.group_id == idGrupoInteres) {
+            filasTabla.push([
+                contador++,
+                dni,
+                hermano.name.toUpperCase(),
+                MARCACIONES_DIARIAS[dni].hora
+            ]);
+        }
+    }
+
+    // --- GENERACIÓN DEL PDF ---
+    doc.autoTable({
+        head: [['#', 'DNI', 'APELLIDOS Y NOMBRES', 'HORA DE INGRESO']],
+        body: filasTabla,
+        startY: 55,
+        theme: 'grid',
+        styles: { fontSize: 8.5, cellPadding: 2 },
+        headStyles: { 
+            fillColor: [80, 0, 80], 
+            textColor: [255, 255, 255], 
+            halign: 'center'
+        },
+        columnStyles: {
+            0: { cellWidth: 12, halign: 'center' },
+            1: { cellWidth: 28, halign: 'center' },
+            2: { cellWidth: 'auto' },
+            3: { cellWidth: 35, halign: 'center' }
+        },
+        didDrawPage: function (data) {
+            // 1. Logo Hermandad (Izquierda)
+            doc.addImage(logoHermandadUrl, 'PNG', 14, 10, 22, 22);
+            
+            // 2. Logo Cuadrilla/Grupo (Derecha) - Solo si existe la URL
+            if (logoGrupoUrl) {
+                try {
+                    doc.addImage(logoGrupoUrl, 'PNG', 174, 10, 22, 22);
+                } catch (e) {
+                    console.error("No se pudo cargar el logo del grupo: ", e);
+                }
+            }
+            
+            // 3. Textos Centrales
+            doc.setFontSize(13);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(0, 0, 0);
+            doc.text("Hermandad de la Santísima Virgen del Carmen de Lima", 40, 18);
+            
+            doc.setFontSize(11);
+            doc.setTextColor(80, 0, 80);
+            doc.text(`REPORTE DE ASISTENCIA: ${nombreGrupoTitulo}`, 40, 25);
+            
+            doc.setFontSize(10);
+            doc.setTextColor(60, 60, 60);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Actividad: ${actividad}`, 40, 31);
+            doc.text(`Fecha: ${fechaActividad}`, 40, 37);
+
+            // Línea morada
+            doc.setLineWidth(0.5);
+            doc.setDrawColor(80, 0, 80);
+            doc.line(14, 45, 196, 45);
+            
+            // Pie de página
+            doc.setFontSize(8);
+            doc.text(`Total Asistentes: ${filasTabla.length}`, 14, 285);
+            doc.text(`Página ${doc.internal.getNumberOfPages()}`, 180, 285);
+        },
+        margin: { top: 55 }
+    });
+
+    doc.save(`Asistencia_${nombreGrupoTitulo.replace(/ /g, "_")}.pdf`);
+}
     // ==========================================================
     // Datos de Prueba (Simulación de Base de Datos de Hermanos)
     // ==========================================================
