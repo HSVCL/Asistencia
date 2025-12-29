@@ -406,6 +406,31 @@
         </div>
     </div>
 
+
+    <div id="reporteTablaFormat" style="position: absolute; left: -9999px; width: 800px; background: white; padding: 20px; font-family: Arial, sans-serif;">
+    <div style="display: flex; align-items: center; border-bottom: 2px solid morado; padding-bottom: 10px;">
+        <img src="https://edwinhsvcl14-maker.github.io/asistencias/logo_hermandad.png" style="width: 80px;">
+        <div style="margin-left: 20px;">
+            <h2 style="margin: 0; font-size: 18px;">Hermandad de la Santísima Virgen del Carmen de Lima</h2>
+            <h3 id="reporteTituloGrupo" style="margin: 5px 0; color: #500050;"></h3>
+            <p style="margin: 0; font-size: 14px;">Misa de Retiro - 14 de Diciembre 2025</p>
+        </div>
+    </div>
+    
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+        <thead>
+            <tr style="background-color: #500050; color: white;">
+                <th style="border: 1px solid #ddd; padding: 8px;">#</th>
+                <th style="border: 1px solid #ddd; padding: 8px;">DNI</th>
+                <th style="border: 1px solid #ddd; padding: 8px;">APELLIDOS Y NOMBRES</th>
+                <th style="border: 1px solid #ddd; padding: 8px;">HORA</th>
+            </tr>
+        </thead>
+        <tbody id="reporteTablaBody">
+            </tbody>
+    </table>
+    <p id="reporteTotal" style="margin-top: 15px; font-weight: bold;"></p>
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -976,113 +1001,68 @@ const LOGOS_GRUPOS = {
        
     };
 
-    function generarReporteAsistentes(idGrupoInteres) {
-   // Usamos la instancia de jsPDF que ya tienes disponible globalmente
-    // Si no, la obtenemos de window.jspdf
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p', 'mm', 'a4');
+   async function generarReporteAsistentes(idGrupoInteres) {
+    const tablaBody = document.getElementById('reporteTablaBody');
+    const tituloGrupo = document.getElementById('reporteTituloGrupo');
+    const totalTexto = document.getElementById('reporteTotal');
+    const contenedorReporte = document.getElementById('reporteTablaFormat');
 
-    // --- SOLUCIÓN AL ERROR: VINCULAR AUTOTABLE ---
-    // Si doc.autoTable no existe, lo buscamos en el prototipo de la librería
-    if (typeof doc.autoTable !== 'function') {
-        if (typeof window.jspdf.jsPDF.API.autoTable === 'function') {
-            doc.autoTable = window.jspdf.jsPDF.API.autoTable;
-        } else {
-            Swal.fire('Error', 'El plugin jsPDF-AutoTable no se encontró. Revisa tus scripts.', 'error');
-            return;
-        }
-    }
-
-    // 1. Configuración de Títulos y Logos
-    let nombreGrupoTitulo = "";
-    if (idGrupoInteres === 'GS') nombreGrupoTitulo = "GRUPO DE SAHUMADORAS";
-    else if (idGrupoInteres === 'GC') nombreGrupoTitulo = "GRUPO DE CANTORAS";
-    else nombreGrupoTitulo = `CUADRILLA ${idGrupoInteres}`;
-
-    const actividad = "Misa de Retiro Diciembre 2025";
-    const fechaActividad = "14 de Diciembre";
-    const logoHermandadUrl = 'https://edwinhsvcl14-maker.github.io/asistencias/logo_hermandad.png';
+    // 1. Limpiar tabla anterior
+    tablaBody.innerHTML = '';
     
-    // Intentamos obtener el logo específico del grupo, si no, usamos el de la hermandad
-    const logoGrupoUrl = LOGOS_REPORTE_GRUPOS[idGrupoInteres] || logoHermandadUrl;
+    // 2. Título dinámico
+    let nombreGrupo = (idGrupoInteres === 'GS') ? "GRUPO DE SAHUMADORAS" : 
+                      (idGrupoInteres === 'GC') ? "GRUPO DE CANTORAS" : 
+                      `CUADRILLA ${idGrupoInteres}`;
+    tituloGrupo.textContent = `REPORTE DE ASISTENCIA: ${nombreGrupo}`;
 
-    // 2. Filtrado de Datos (Inner Join entre MARCACIONES_DIARIAS y BROTHER_DATABASE)
-    const filasTabla = [];
+    // 3. Filtrado de datos (Inner Join)
     let contador = 1;
-
     for (const dni in MARCACIONES_DIARIAS) {
         const hermano = BROTHER_DATABASE[dni];
-        // Solo incluimos si el hermano existe y coincide el grupo
         if (hermano && hermano.group_id == idGrupoInteres) {
-            filasTabla.push([
-                contador++,
-                dni,
-                hermano.name.toUpperCase(),
-                MARCACIONES_DIARIAS[dni].hora
-            ]);
+            const fila = `
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${contador++}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${dni}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">${hermano.name.toUpperCase()}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${MARCACIONES_DIARIAS[dni].hora}</td>
+                </tr>`;
+            tablaBody.innerHTML += fila;
         }
     }
 
-    // Validación si no hay nadie del grupo que haya marcado
-    if (filasTabla.length === 0) {
-        Swal.fire('Sin registros', `No se encontraron asistencias para ${nombreGrupoTitulo}`, 'info');
+    if (contador === 1) {
+        Swal.fire('Aviso', 'No hay asistencias registradas para este grupo.', 'info');
         return;
     }
 
-    // 3. Generación de la Tabla (Auto-paginable, 40 registros aprox por página)
-    doc.autoTable({
-        head: [['#', 'DNI', 'APELLIDOS Y NOMBRES', 'HORA DE INGRESO']],
-        body: filasTabla,
-        startY: 55,
-        theme: 'grid',
-        styles: { fontSize: 8.5, cellPadding: 2 },
-        headStyles: { 
-            fillColor: [80, 0, 80], // Morado institucional
-            textColor: [255, 255, 255], 
-            halign: 'center' 
-        },
-        columnStyles: {
-            0: { cellWidth: 12, halign: 'center' },
-            1: { cellWidth: 28, halign: 'center' },
-            2: { cellWidth: 'auto' },
-            3: { cellWidth: 35, halign: 'center' }
-        },
-        didDrawPage: function (data) {
-            // --- ENCABEZADO DE PÁGINA ---
-            // Logo Hermandad (Izquierda)
-            doc.addImage(logoHermandadUrl, 'PNG', 14, 10, 22, 22);
-            
-            // Logo Grupo (Derecha)
-            if (logoGrupoUrl) {
-                try {
-                    doc.addImage(logoGrupoUrl, 'PNG', 174, 10, 22, 22);
-                } catch (e) { console.warn("No se pudo cargar logo de grupo"); }
-            }
-            
-            // Textos institucionales
-            doc.setFontSize(13).setFont("helvetica", "bold").setTextColor(0);
-            doc.text("Hermandad de la Santísima Virgen del Carmen de Lima", 40, 18);
-            
-            doc.setFontSize(11).setTextColor(80, 0, 80);
-            doc.text(`REPORTE DE ASISTENCIA: ${nombreGrupoTitulo}`, 40, 25);
-            
-            doc.setFontSize(10).setTextColor(60).setFont("helvetica", "normal");
-            doc.text(`Actividad: ${actividad}`, 40, 31);
-            doc.text(`Fecha: ${fechaActividad}`, 40, 37);
+    totalTexto.textContent = `Total Asistentes: ${contador - 1}`;
 
-            // Línea morada decorativa
-            doc.setLineWidth(0.5).setDrawColor(80, 0, 80).line(14, 45, 196, 45);
-            
-            // Pie de página
-            doc.setFontSize(8).setTextColor(100);
-            doc.text(`Total Asistentes: ${filasTabla.length}`, 14, 285);
-            doc.text(`Página ${doc.internal.getNumberOfPages()}`, 180, 285);
-        },
-        margin: { top: 55, bottom: 20 }
-    });
+    // 4. Capturar y Generar PDF (Igual que tu función downloadPDF)
+    try {
+        const canvas = await html2canvas(contenedorReporte, { scale: 2, useCORS: true });
+        const imgData = canvas.toDataURL('image/jpeg', 0.9);
+        
+        // Usamos jsPDF como ya lo tienes configurado
+        const doc = new jspdf.jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+        });
 
-    // 4. Guardar archivo
-    doc.save(`Asistencia_${nombreGrupoTitulo.replace(/ /g, "_")}.pdf`);
+        const pdfWidth = doc.internal.pageSize.getWidth();
+        const imgWidthMM = 190; // Casi todo el ancho de la hoja
+        const imgHeightMM = (canvas.height * imgWidthMM) / canvas.width;
+
+        doc.addImage(imgData, 'JPEG', 10, 10, imgWidthMM, imgHeightMM);
+        doc.save(`Reporte_Asistencia_${idGrupoInteres}.pdf`);
+
+        Swal.fire('Éxito', 'Reporte generado correctamente', 'success');
+    } catch (error) {
+        console.error("Error:", error);
+        Swal.fire('Error', 'No se pudo generar el reporte', 'error');
+    }
 }
     // Almacenamiento temporal de los datos del hermano verificado
     let verifiedBrotherData = null;
