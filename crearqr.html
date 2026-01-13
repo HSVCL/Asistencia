@@ -349,7 +349,26 @@
                 <button class="btn-main" style="margin-top: 30px;" onclick="verifyDNI()">
                     <i class="fas fa-search"></i> Buscar Hermano(a)
                 </button>
+
+                <button class="btn-main" style="margin-top: 30px;" onclick="generarReporteAsistentes('SH')">
+    <i class="fas fa-file-export"></i> SH
+</button>
+                  <button class="btn-main" style="margin-top: 30px;" onclick="generarReporteAsistentes('10')">
+    <i class="fas fa-file-export"></i> 10
+</button>
             </div>
+              <button class="btn-main" style="margin-top: 30px;" onclick="generarReporteAsistentes('13')">
+    <i class="fas fa-file-export"></i> 13
+</button>
+            </div>
+
+         <button class="btn-main" style="margin-top: 30px;" onclick="generarReporteAsistentes('16')">
+    <i class="fas fa-file-export"></i> 16
+</button>
+            </div>
+
+
+        
             
             <div id="step3" class="step-content">
                 <i class="fas fa-check-circle step-icon success" id="statusIcon"></i>
@@ -437,6 +456,86 @@
 
 <script>
     const { jsPDF } = window.jspdf;
+
+    const MARCACIONES_DIARIAS_ENERO = {
+    '08694353': { hora: '11:49 AM', status: 'OK' },
+    '41740906': { hora: '11:48 AM', status: 'OK' },
+    '40664547': { hora: '11:48 AM', status: 'OK' },
+    '46844483': { hora: '11:46 AM', status: 'OK' },
+    '06031830': { hora: '11:41 AM', status: 'OK' },
+    '09921892': { hora: '11:41 AM', status: 'OK' },
+    '07847804': { hora: '11:34 AM', status: 'OK' },
+    '72715870': { hora: '11:33 AM', status: 'OK' },
+    '42987490': { hora: '11:31 AM', status: 'OK' },
+    '74743024': { hora: '11:30 AM', status: 'OK' },
+    '06173879': { hora: '11:30 AM', status: 'OK' },
+    '75177547': { hora: '11:30 AM', status: 'OK' },
+    '46453311': { hora: '11:29 AM', status: 'OK' },
+    '76188505': { hora: '11:29 AM', status: 'OK' },
+    '45821880': { hora: '11:29 AM', status: 'OK' },
+    '06460818': { hora: '11:29 AM', status: 'OK' },
+    '09953226': { hora: '11:26 AM', status: 'OK' },
+    '10467841': { hora: '11:25 AM', status: 'OK' },
+    '71655670': { hora: '11:24 AM', status: 'OK' },
+    '44041114': { hora: '11:24 AM', status: 'OK' },
+    '09796894': { hora: '11:22 AM', status: 'OK' },
+    '17446057': { hora: '11:21 AM', status: 'OK' },
+    '43134345': { hora: '11:21 AM', status: 'OK' },
+    '48104169': { hora: '11:21 AM', status: 'OK' },
+    '49016182': { hora: '11:20 AM', status: 'OK' },
+    '76850999': { hora: '11:19 AM', status: 'OK' },
+    '09956051': { hora: '11:18 AM', status: 'OK' },
+    '43012657': { hora: '11:17 AM', status: 'OK' },
+    '09954439': { hora: '11:16 AM', status: 'OK' },
+    '09072656': { hora: '11:16 AM', status: 'OK' },
+    '40343100': { hora: '11:15 AM', status: 'OK' },
+    '45821842': { hora: '11:14 AM', status: 'OK' },
+    '70643313': { hora: '11:14 AM', status: 'OK' },
+    '08760827': { hora: '11:13 AM', status: 'OK' },
+    '06043036': { hora: '11:13 AM', status: 'OK' },
+    '41181530': { hora: '11:12 AM', status: 'OK' },
+    '72536307': { hora: '11:12 AM', status: 'OK' },
+    '73351596': { hora: '11:12 AM', status: 'OK' },
+    '09684158': { hora: '11:12 AM', status: 'OK' },
+    '42756747': { hora: '11:11 AM', status: 'OK' },
+    '09567320': { hora: '11:11 AM', status: 'OK' },
+    '71947974': { hora: '11:11 AM', status: 'OK' },
+    '44342889': { hora: '11:10 AM', status: 'OK' },
+    '70286463': { hora: '11:10 AM', status: 'OK' },
+    '06227976': { hora: '11:10 AM', status: 'OK' },
+    '07382037': { hora: '11:09 AM', status: 'OK' },
+    '07497083': { hora: '11:09 AM', status: 'OK' },
+    '09472269': { hora: '11:09 AM', status: 'OK' },
+    '43312355': { hora: '11:08 AM', status: 'OK' },
+    '45789628': { hora: '11:08 AM', status: 'OK' },
+    '72749981': { hora: '11:08 AM', status: 'OK' },
+    '40508469': { hora: '11:07 AM', status: 'OK' },
+    '42198642': { hora: '11:07 AM', status: 'OK' },
+    '40491110': { hora: '11:07 AM', status: 'OK' },
+    '09930194': { hora: '11:07 AM', status: 'OK' },
+    '06771578': { hora: '11:06 AM', status: 'OK' },
+    '73601188': { hora: '11:05 AM', status: 'OK' },
+    '45880229': { hora: '11:04 AM', status: 'OK' },
+    '46492028': { hora: '11:04 AM', status: 'OK' },
+    '74823079': { hora: '11:04 AM', status: 'OK' },
+    '45982718': { hora: '11:04 AM', status: 'OK' },
+    '09444632': { hora: '11:03 AM', status: 'OK' },
+    '46592606': { hora: '11:03 AM', status: 'OK' },
+    '40699696': { hora: '11:03 AM', status: 'OK' },
+    '09969059': { hora: '11:03 AM', status: 'OK' },
+    '42505624': { hora: '11:03 AM', status: 'OK' },
+    '43202876': { hora: '11:02 AM', status: 'OK' },
+    '46335705': { hora: '11:01 AM', status: 'OK' },
+    '72951110': { hora: '11:01 AM', status: 'OK' },
+    '70782975': { hora: '11:01 AM', status: 'OK' },
+    '46569951': { hora: '11:01 AM', status: 'OK' },
+    '06226397': { hora: '11:00 AM', status: 'OK' },
+    '42622168': { hora: '10:47 AM', status: 'OK' },
+    '08530304': { hora: '10:47 AM', status: 'OK' },
+    '09836778': { hora: '10:47 AM', status: 'OK' },
+    '10730708': { hora: '10:47 AM', status: 'OK' },
+    '06037030': { hora: '10:47 AM', status: 'OK' }
+};
 const MARCACIONES_DIARIAS = {
     // Formato: 'DNI': { hora: 'HH:MM AM/PM', status: 'Registrado' }
     '42622168': { hora: '10:43 AM', status: 'OK' },
@@ -1009,13 +1108,13 @@ const LOGOS_GRUPOS = {
    async function generarReporteAsistentes(idGrupoInteres) {
     // 1. Filtrar y Ordenar Datos
     let asistentes = [];
-    for (const dni in MARCACIONES_DIARIAS) {
+    for (const dni in MARCACIONES_DIARIAS_ENERO) {
         const hermano = BROTHER_DATABASE[dni];
         if (hermano && hermano.group_id == idGrupoInteres) {
             asistentes.push({
                 dni: dni,
                 nombre: hermano.name.toUpperCase(),
-                hora: MARCACIONES_DIARIAS[dni].hora
+                hora: MARCACIONES_DIARIAS_ENERO[dni].hora
             });
         }
     }
