@@ -197,7 +197,7 @@
             if(dots === 0) {
                 active = false; beep(1000,'square',0.5,0.1);
                 if(level < 5) { level++; showMsg("NIVEL COMPLETO", "Siguiente nivel más difícil.", "SIGUIENTE", () => { initLevel(true); active=true; }); }
-                else showMsg("¡VICTORIA TOTAL!", "Eres el rey de la Navidad", "REINICIAR", () => location.reload());
+                else showMsg("¡VICTORIA TOTAL!", "Eres el rey de este juego", "REINICIAR", () => location.reload());
             }
         }
 
